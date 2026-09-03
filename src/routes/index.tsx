@@ -137,6 +137,12 @@ const pillars = [
     heading: "Small schemes, seen through",
     body: "Site appraisal, planning, build and handover on one- to six-unit residential schemes. One team from the first survey to the final snag, with the costs held where we said they would be.",
   },
+  {
+    index: "03",
+    label: "Landscaping",
+    heading: "Gardens that finish the job",
+    body: "Outdoor spaces cleared, levelled and planted: decking, lawns, fencing, paths, raised beds and lighting. Built to the same detail as the house, so the whole property holds together.",
+  },
 ];
 
 function Home() {
@@ -157,7 +163,7 @@ function Home() {
           <Reveal>
             <p className="eyebrow flex items-center gap-3 text-primary-foreground/70">
               <span className="block h-px w-10 bg-primary" aria-hidden="true" />
-              Renovation &amp; Property Development
+              Renovation, Development &amp; Landscaping
             </p>
           </Reveal>
           <Reveal delay={120}>
@@ -165,14 +171,17 @@ function Home() {
               Old houses, put right.
               <br />
               New ones, built properly.
+              <br />
+              Gardens, transformed.
             </h1>
           </Reveal>
           <Reveal delay={240}>
             <div className="mt-9 flex flex-col gap-8 border-t border-primary-foreground/20 pt-8 md:flex-row md:items-end md:justify-between">
               <p className="max-w-lg text-primary-foreground/75">
-                Homes by Hines takes on period refurbishments, extensions and
-                small residential developments across Kent, East Sussex and London — run directly,
-                finished carefully, handed over clean.
+                Homes by Hines takes on period refurbishments, extensions,
+                small residential developments and garden landscaping across Kent,
+                East Sussex and London — run directly, finished carefully, handed
+                over clean.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
@@ -222,8 +231,8 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Nine recent projects across refurbishment,
-                extension, landscaping and development.
+                Drag, or use the arrows. Nine recent projects across renovation,
+                landscaping and development.
               </p>
             </div>
           </Reveal>
