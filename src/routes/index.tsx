@@ -213,7 +213,7 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Seven recent projects across refurbishment,
+                Drag, or use the arrows. Eight recent projects across refurbishment,
                 extension, landscaping and development.
               </p>
             </div>
