@@ -13,9 +13,9 @@ import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
 import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
 import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
 
-const title = "Homes by Hines — Renovation & Property Development";
+const title = "Homes by Hines — Renovation, Development & Landscaping";
 const description =
-  "A British renovation and property development company restoring period homes and delivering considered new schemes.";
+  "A British renovation, property development and landscaping company restoring period homes, delivering considered new schemes and transforming gardens.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
