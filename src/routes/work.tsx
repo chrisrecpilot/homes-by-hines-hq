@@ -137,41 +137,46 @@ function WorkPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="text-3xl">Projects</h2>
-        <div className="mt-10 space-y-16">
-          {projects.map((project) => (
-            <article
-              key={project.name}
-              className="grid gap-8 border-t border-border pt-10 md:grid-cols-2 md:gap-14"
-            >
-              <img
-                src={project.image}
-                alt={project.name}
-                loading="lazy"
-                width={1280}
-                height={960}
-                className="aspect-[4/3] w-full object-cover"
-              />
-              <div>
-                <h3 className="text-2xl">{project.name}</h3>
-                <p className="eyebrow mt-2 text-muted-foreground">
-                  {project.meta}
-                </p>
-                <div className="mt-6 space-y-5">
-                  <div>
-                    <p className="eyebrow text-muted-foreground">Before</p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {project.before}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="eyebrow text-primary">After</p>
-                    <p className="mt-2 text-sm">{project.after}</p>
+      <section className="mx-auto max-w-6xl px-6 py-24">
+        <h2 className="text-3xl sm:text-5xl">Projects</h2>
+        <div className="mt-14 space-y-20">
+          {projects.map((project, index) => (
+            <Reveal key={project.name} as="article">
+              <div className="grid gap-8 border-t border-foreground pt-10 md:grid-cols-2 md:gap-14">
+                <div
+                  className={`overflow-hidden ${index % 2 === 1 ? "md:order-2" : ""}`}
+                >
+                  <img
+                    src={project.image}
+                    alt={project.name}
+                    loading="lazy"
+                    width={1600}
+                    height={1200}
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
+                  />
+                </div>
+                <div className="md:pt-2">
+                  <h3 className="font-display text-2xl sm:text-3xl">
+                    {project.name}
+                  </h3>
+                  <p className="eyebrow mt-3 text-muted-foreground">
+                    {project.meta}
+                  </p>
+                  <div className="mt-8 space-y-6">
+                    <div className="border-l border-border pl-5">
+                      <p className="eyebrow text-muted-foreground">Before</p>
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {project.before}
+                      </p>
+                    </div>
+                    <div className="border-l border-primary pl-5">
+                      <p className="eyebrow text-primary">After</p>
+                      <p className="mt-2 text-sm">{project.after}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </article>
+            </Reveal>
           ))}
         </div>
       </section>
