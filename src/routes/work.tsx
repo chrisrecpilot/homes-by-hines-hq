@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Reveal } from "@/components/reveal";
+import { PhotoFade } from "@/components/photo-fade";
 import projectOne from "@/assets/project-one.jpg";
 import projectOneBefore from "@/assets/project-one-before.jpg";
 import projectTwo from "@/assets/project-two.jpg";
@@ -13,6 +14,11 @@ import projectSix from "@/assets/project-six.jpg";
 import projectSixBefore from "@/assets/project-six-before.jpg";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
 import gardenBefore from "@/assets/garden-east-london-before.jpg.asset.json";
+import kitchenBeforeOne from "@/assets/kitchen-maidstone-image.jpg.asset.json";
+import kitchenBeforeTwo from "@/assets/kitchen-maidstone-image-2.jpg.asset.json";
+import kitchenAfterOne from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
+import kitchenAfterTwo from "@/assets/kitchen-maidstone-image-4.jpg.asset.json";
+
 
 const title = "Renovation & Development — Homes by Hines";
 const description =
@@ -77,10 +83,21 @@ const process = [
   },
 ];
 
-const projects = [
+type Project = {
+  images: string[];
+  beforeImages: string[];
+  aspect: string;
+  name: string;
+  meta: string;
+  before: string;
+  after: string;
+};
+
+const projects: Project[] = [
   {
-    image: projectOne,
-    beforeImage: projectOneBefore,
+    images: [projectOne],
+    beforeImages: [projectOneBefore],
+    aspect: "aspect-[4/3]",
     name: "Albany Terrace",
     meta: "Georgian townhouse · Orpington · 11 months",
     before:
@@ -89,8 +106,20 @@ const projects = [
       "Returned to a single family house: replanned ground floor, restored cornice and shutters, new services throughout.",
   },
   {
-    image: projectTwo,
-    beforeImage: projectTwoBefore,
+    images: [kitchenAfterOne.url, kitchenAfterTwo.url],
+    beforeImages: [kitchenBeforeOne.url, kitchenBeforeTwo.url],
+    aspect: "aspect-[4/3]",
+    name: "Kitchen redesign",
+    meta: "Full kitchen redesign · Maidstone · 2 months",
+    before:
+      "Cramped cream cabinets, laminate worktops, tiled splashbacks and a dark cooker recess, with the room still split by the original partition.",
+    after:
+      "Shaker units in soft grey, marble-effect worktops and a full-height bank of cabinetry, herringbone floor, brass tap and belfast sink, with a seating peninsula opening onto the garden doors.",
+  },
+  {
+    images: [projectTwo],
+    beforeImages: [projectTwoBefore],
+    aspect: "aspect-[4/3]",
     name: "Chapel Lane",
     meta: "Rear extension · Allington · 5 months",
     before:
@@ -99,8 +128,9 @@ const projects = [
       "Reclaimed stock brick, dark steel glazing and a level threshold onto a re-laid walled garden.",
   },
   {
-    image: projectThree,
-    beforeImage: projectThreeBefore,
+    images: [projectThree],
+    beforeImages: [projectThreeBefore],
+    aspect: "aspect-[4/3]",
     name: "Weaver's Row",
     meta: "Two-house development · Benfleet · 14 months",
     before: "An overgrown infill plot between two cottages.",
@@ -108,8 +138,9 @@ const projects = [
       "Two houses on slate and sash proportions, consented at the first attempt and sold before completion.",
   },
   {
-    image: projectFive,
-    beforeImage: projectFiveBefore,
+    images: [projectFive],
+    beforeImages: [projectFiveBefore],
+    aspect: "aspect-[4/3]",
     name: "Fell Cottage",
     meta: "Whole-house renovation · Orpington · 9 months",
     before:
@@ -118,8 +149,9 @@ const projects = [
       "Repointed in lime, reroofed in reclaimed slate, and a quiet contemporary wing added to the rear.",
   },
   {
-    image: projectSix,
-    beforeImage: projectSixBefore,
+    images: [projectSix],
+    beforeImages: [projectSixBefore],
+    aspect: "aspect-[4/3]",
     name: "Millstream House",
     meta: "Kitchen & garden room · Eastbourne · 4 months",
     before: "A partitioned back-of-house with one small window onto the garden.",
@@ -127,16 +159,18 @@ const projects = [
       "One lime-plastered room with a hand-built kitchen and crittall doors the full width of the wall.",
   },
   {
-    image: gardenAfter.url,
-    beforeImage: gardenBefore.url,
+    images: [gardenAfter.url],
+    beforeImages: [gardenBefore.url],
+    aspect: "aspect-[3/4]",
     name: "Rear garden, terraced house",
-    meta: "Garden landscaping · East London · 3 weeks",
+    meta: "Garden landscaping · East London · 1 week",
     before:
       "A collapsed timber outbuilding, rotten decking and fly-tipped waste filling the whole plot, with the boundary hedge left to run wild.",
     after:
       "Cleared and levelled, new turf laid to the length of the garden, raised planting bed, fresh decking off the house and a re-laid concrete side path.",
   },
 ];
+
 
 function WorkPage() {
   return (
@@ -190,30 +224,21 @@ function WorkPage() {
                 >
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <div className="overflow-hidden">
-                        <img
-                          src={project.beforeImage}
-                          alt={`${project.name} before renovation`}
-                          loading="lazy"
-                          width={800}
-                          height={600}
-                          className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
-                        />
-                      </div>
+                      <PhotoFade
+                        images={project.beforeImages}
+                        alt={`${project.name} before renovation`}
+                        aspect={project.aspect}
+                      />
                       <p className="eyebrow mt-2 text-muted-foreground">Before</p>
                     </div>
                     <div>
-                      <div className="overflow-hidden">
-                        <img
-                          src={project.image}
-                          alt={`${project.name} after renovation`}
-                          loading="lazy"
-                          width={800}
-                          height={600}
-                          className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
-                        />
-                      </div>
+                      <PhotoFade
+                        images={project.images}
+                        alt={`${project.name} after renovation`}
+                        aspect={project.aspect}
+                      />
                       <p className="eyebrow mt-2 text-primary">After</p>
+
                     </div>
                   </div>
                 </div>

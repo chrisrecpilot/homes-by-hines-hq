@@ -10,6 +10,7 @@ import projectFour from "@/assets/project-four.jpg";
 import projectFive from "@/assets/project-five.jpg";
 import projectSix from "@/assets/project-six.jpg";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
+import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
 
 const title = "Homes by Hines — Renovation & Property Development";
 const description =
@@ -55,6 +56,15 @@ const slides: WorkSlide[] = [
       "A neglected Georgian townhouse taken back to brick, replanned, and finished with restored joinery throughout.",
     alt: "Restored Georgian townhouse interior with period detailing",
   },
+  {
+    image: kitchenAfter.url,
+    name: "Kitchen redesign",
+    meta: "Full kitchen redesign · Maidstone",
+    caption:
+      "A partitioned, dated kitchen opened up and rebuilt: grey shaker units, marble-effect worktops and a herringbone floor.",
+    alt: "Grey shaker kitchen with marble-effect worktops and herringbone floor",
+  },
+
   {
     image: projectFour,
     name: "No. 12 Sydney Place",
@@ -203,7 +213,7 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Seven recent projects across refurbishment,
+                Drag, or use the arrows. Eight recent projects across refurbishment,
                 extension, landscaping and development.
               </p>
             </div>
