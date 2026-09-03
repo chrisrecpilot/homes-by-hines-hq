@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Reveal } from "@/components/reveal";
-import { PhotoFade } from "@/components/photo-fade";
+import { PhotoFadePair } from "@/components/photo-fade";
 import projectOne from "@/assets/project-one.jpg";
 import projectOneBefore from "@/assets/project-one-before.jpg";
 import projectTwo from "@/assets/project-two.jpg";
@@ -108,7 +108,7 @@ const projects: Project[] = [
   {
     images: [kitchenAfterOne.url, kitchenAfterTwo.url],
     beforeImages: [kitchenBeforeOne.url, kitchenBeforeTwo.url],
-    aspect: "aspect-[4/3]",
+    aspect: "aspect-[3/4]",
     name: "Kitchen redesign",
     meta: "Full kitchen redesign · Maidstone · 2 months",
     before:
