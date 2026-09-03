@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { Reveal } from "@/components/reveal";
 import projectOne from "@/assets/project-one.jpg";
 import projectTwo from "@/assets/project-two.jpg";
 import projectThree from "@/assets/project-three.jpg";
+import projectFive from "@/assets/project-five.jpg";
+import projectSix from "@/assets/project-six.jpg";
 
 const title = "Renovation & Development — Homes by Hines";
 const description =
