@@ -199,6 +199,20 @@
   }
 }
 
+@utility slow-zoom {
+  animation: slow-zoom 18s ease-in-out infinite alternate;
+}
+
+@keyframes slow-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+
 @utility hairline-grid {
   background-image: linear-gradient(
     to right,
