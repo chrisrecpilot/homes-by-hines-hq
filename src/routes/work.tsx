@@ -18,6 +18,8 @@ import kitchenBeforeOne from "@/assets/kitchen-maidstone-image.jpg.asset.json";
 import kitchenBeforeTwo from "@/assets/kitchen-maidstone-image-2.jpg.asset.json";
 import kitchenAfterOne from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
 import kitchenAfterTwo from "@/assets/kitchen-maidstone-image-4.jpg.asset.json";
+import allingtonGardenBefore from "@/assets/garden-allington-before.png.asset.json";
+import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
 
 
 const title = "Renovation & Development — Homes by Hines";
@@ -168,6 +170,17 @@ const projects: Project[] = [
       "A collapsed timber outbuilding, rotten decking and fly-tipped waste filling the whole plot, with the boundary hedge left to run wild.",
     after:
       "Cleared and levelled, new turf laid to the length of the garden, raised planting bed, fresh decking off the house and a re-laid concrete side path.",
+  },
+  {
+    images: [allingtonGardenAfter.url],
+    beforeImages: [allingtonGardenBefore.url],
+    aspect: "aspect-[4/3]",
+    name: "Garden refurbishment, Allington",
+    meta: "Garden refurbishment · Allington",
+    before:
+      "A tired block-paved patio, patchy lawn and mixed fence panels, with the far end of the garden given over to worn borders and storage.",
+    after:
+      "Full-width composite decking off the house, artificial lawn laid level across the plot, new close-board fencing and a pergola-covered seating and hot tub area.",
   },
 ];
 
