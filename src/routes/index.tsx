@@ -95,6 +95,14 @@ const slides: WorkSlide[] = [
       "Stone repointed in lime, roof relaid in reclaimed slate, and a quiet contemporary wing added to the rear.",
     alt: "Renovated stone cottage at dusk with lit windows",
   },
+  {
+    image: gardenAfter.url,
+    name: "Rear garden, terraced house",
+    meta: "Garden landscaping · East London",
+    caption:
+      "A rubble-filled plot cleared and rebuilt — new turf, raised planting, fresh decking and a re-laid side path.",
+    alt: "Rear garden with newly laid lawn, planting bed and timber decking",
+  },
 ];
 
 const pillars = [
@@ -195,8 +203,8 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Six recent projects across refurbishment,
-                extension and development.
+                Drag, or use the arrows. Seven recent projects across refurbishment,
+                extension, landscaping and development.
               </p>
             </div>
           </Reveal>
