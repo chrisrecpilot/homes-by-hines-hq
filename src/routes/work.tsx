@@ -176,7 +176,7 @@ const projects: Project[] = [
     beforeImages: [allingtonGardenBefore.url],
     aspect: "aspect-[4/3]",
     name: "Garden refurbishment, Allington",
-    meta: "Garden refurbishment · Allington",
+    meta: "Garden refurbishment · Allington · 6 weeks",
     before:
       "A tired block-paved patio, patchy lawn and mixed fence panels, with the far end of the garden given over to worn borders and storage.",
     after:

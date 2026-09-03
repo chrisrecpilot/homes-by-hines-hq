@@ -117,7 +117,7 @@ const slides: WorkSlide[] = [
   {
     image: allingtonGardenAfter.url,
     name: "Garden refurbishment, Allington",
-    meta: "Garden refurbishment · Allington",
+    meta: "Garden refurbishment · Allington · 6 weeks",
     caption:
       "Patio and patchy lawn replaced with full-width decking, level artificial grass, new fencing and a covered seating area.",
     alt: "Refurbished garden with composite decking, artificial lawn and pergola seating area",
