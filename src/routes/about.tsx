@@ -48,7 +48,7 @@ function AboutPage() {
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-16">
         <p className="eyebrow text-primary">About</p>
         <h1 className="mt-5 max-w-3xl font-display text-4xl leading-[1.1] sm:text-5xl">
-          A builder's firm that grew into a developer
+          A builder's firm that grew into a developer and landscaper
         </h1>
         <div className="mt-8 grid gap-10 md:grid-cols-2 md:gap-16">
           <p className="text-muted-foreground">
