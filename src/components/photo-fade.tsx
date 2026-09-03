@@ -29,7 +29,7 @@ export function PhotoFade({
 }: {
   images: string[];
   alt: string;
-  aspect?: string;
+  aspect?: string | undefined;
   interval?: number;
   activeIndex?: number;
 }) {
@@ -64,7 +64,7 @@ export function PhotoFadePair({
   beforeImages: string[];
   afterImages: string[];
   name: string;
-  aspect?: string;
+  aspect?: string | undefined;
   interval?: number;
 }) {
   const steps = Math.max(beforeImages.length, afterImages.length);
