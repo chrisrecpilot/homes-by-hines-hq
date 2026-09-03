@@ -10,7 +10,7 @@ The carousel and work page currently use fictional locations (Bath, Oxfordshire,
      - No. 12 Sydney Place → Maidstone
      - Chapel Lane → Allington
      - Millstream House → Eastbourne
-     - Weaver's Row → Maidstone
+     - Weaver's Row → Benfleet
      - Fell Cottage → Orpington
    - Update `meta` strings and any captions that reference location.
    - Keep project names as placeholders unless you want to supply real names.
