@@ -1,6 +1,6 @@
-# Plan: Update project locations to real Kent / East Sussex sites
+# Plan: Update project locations and add before/after photography
 
-The carousel and work page currently use fictional locations (Bath, Oxfordshire, Wiltshire, Suffolk, Cumbria). Replace them with the real locations you provided: **Orpington, Maidstone, Allington, Eastbourne**.
+The carousel and work page currently use fictional locations (Bath, Oxfordshire, Wiltshire, Suffolk, Cumbria). Replace them with the real locations you provided: **Orpington, Maidstone, Allington, Eastbourne, Benfleet**. Each project case study also needs a before image paired with its existing after image.
 
 ## What will change
 
