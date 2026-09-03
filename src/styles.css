@@ -228,7 +228,8 @@
     transform: none;
     transition: none;
   }
-  .ken-burns {
+  .ken-burns,
+  .slow-zoom {
     animation: none;
   }
 }

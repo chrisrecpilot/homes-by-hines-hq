@@ -174,7 +174,7 @@ const projects: Project[] = [
   {
     images: [allingtonGardenAfter.url],
     beforeImages: [allingtonGardenBefore.url],
-    aspect: "aspect-[3/4]",
+    aspect: "aspect-[4/3]",
     name: "Garden refurbishment, Allington",
     meta: "Garden refurbishment · Allington · 6 weeks",
     before:
