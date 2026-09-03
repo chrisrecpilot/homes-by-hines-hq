@@ -49,7 +49,7 @@ const slides: WorkSlide[] = [
   {
     image: projectOne,
     name: "Albany Terrace",
-    meta: "Full refurbishment · Bath",
+    meta: "Full refurbishment · Orpington",
     caption:
       "A neglected Georgian townhouse taken back to brick, replanned, and finished with restored joinery throughout.",
     alt: "Restored Georgian townhouse interior with period detailing",
@@ -57,7 +57,7 @@ const slides: WorkSlide[] = [
   {
     image: projectFour,
     name: "No. 12 Sydney Place",
-    meta: "Interior restoration · Bath",
+    meta: "Interior restoration · Maidstone",
     caption:
       "Cornice and shutters repaired rather than replaced, floors lifted and relaid, services hidden where they belong.",
     alt: "Restored drawing room with tall sash windows and original cornice",
@@ -65,7 +65,7 @@ const slides: WorkSlide[] = [
   {
     image: projectTwo,
     name: "Chapel Lane",
-    meta: "Rear extension · Oxfordshire",
+    meta: "Rear extension · Allington",
     caption:
       "Reclaimed stock brick and dark steel glazing opening a tight Victorian plan onto a walled garden.",
     alt: "Brick rear extension with steel glazing onto a garden",
@@ -73,7 +73,7 @@ const slides: WorkSlide[] = [
   {
     image: projectSix,
     name: "Millstream House",
-    meta: "Kitchen & garden room · Wiltshire",
+    meta: "Kitchen & garden room · Eastbourne",
     caption:
       "A hand-built kitchen set into a lime-plastered shell, opened to the garden with crittall doors.",
     alt: "Dark green hand-built kitchen with marble worktop and brass fittings",
@@ -81,7 +81,7 @@ const slides: WorkSlide[] = [
   {
     image: projectThree,
     name: "Weaver's Row",
-    meta: "Two-house development · Suffolk",
+    meta: "Two-house development · Benfleet",
     caption:
       "A pair of houses built to sit quietly on a village street — slate, sash windows, proper proportions.",
     alt: "Pair of newly built traditional village houses",
@@ -89,7 +89,7 @@ const slides: WorkSlide[] = [
   {
     image: projectFive,
     name: "Fell Cottage",
-    meta: "Whole-house renovation · Cumbria",
+    meta: "Whole-house renovation · Orpington",
     caption:
       "Stone repointed in lime, roof relaid in reclaimed slate, and a quiet contemporary wing added to the rear.",
     alt: "Renovated stone cottage at dusk with lit windows",
@@ -143,7 +143,7 @@ function Home() {
             <div className="mt-9 flex flex-col gap-8 border-t border-primary-foreground/20 pt-8 md:flex-row md:items-end md:justify-between">
               <p className="max-w-lg text-primary-foreground/75">
                 Homes by Hines takes on period refurbishments, extensions and
-                small residential developments across Britain — run directly,
+                small residential developments across Kent and East Sussex — run directly,
                 finished carefully, handed over clean.
               </p>
               <div className="flex flex-wrap items-center gap-4">
@@ -211,7 +211,7 @@ function Home() {
             {[
               ["18 years", "Building and developing"],
               ["60+ homes", "Renovated and delivered"],
-              ["South & East", "Counties covered"],
+              ["Kent & East Sussex", "Counties covered"],
             ].map(([figure, label]) => (
               <div key={label}>
                 <dt className="font-display text-4xl sm:text-5xl">{figure}</dt>
