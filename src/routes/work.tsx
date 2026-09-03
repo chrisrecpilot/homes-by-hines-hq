@@ -11,6 +11,8 @@ import projectFive from "@/assets/project-five.jpg";
 import projectFiveBefore from "@/assets/project-five-before.jpg";
 import projectSix from "@/assets/project-six.jpg";
 import projectSixBefore from "@/assets/project-six-before.jpg";
+import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
+import gardenBefore from "@/assets/garden-east-london-before.jpg.asset.json";
 
 const title = "Renovation & Development — Homes by Hines";
 const description =
@@ -123,6 +125,16 @@ const projects = [
     before: "A partitioned back-of-house with one small window onto the garden.",
     after:
       "One lime-plastered room with a hand-built kitchen and crittall doors the full width of the wall.",
+  },
+  {
+    image: gardenAfter.url,
+    beforeImage: gardenBefore.url,
+    name: "Rear garden, terraced house",
+    meta: "Garden landscaping · East London · 3 weeks",
+    before:
+      "A collapsed timber outbuilding, rotten decking and fly-tipped waste filling the whole plot, with the boundary hedge left to run wild.",
+    after:
+      "Cleared and levelled, new turf laid to the length of the garden, raised planting bed, fresh decking off the house and a re-laid concrete side path.",
   },
 ];
 

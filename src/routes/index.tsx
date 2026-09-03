@@ -9,6 +9,7 @@ import projectThree from "@/assets/project-three.jpg";
 import projectFour from "@/assets/project-four.jpg";
 import projectFive from "@/assets/project-five.jpg";
 import projectSix from "@/assets/project-six.jpg";
+import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
 
 const title = "Homes by Hines — Renovation & Property Development";
 const description =
@@ -94,6 +95,14 @@ const slides: WorkSlide[] = [
       "Stone repointed in lime, roof relaid in reclaimed slate, and a quiet contemporary wing added to the rear.",
     alt: "Renovated stone cottage at dusk with lit windows",
   },
+  {
+    image: gardenAfter.url,
+    name: "Rear garden, terraced house",
+    meta: "Garden landscaping · East London",
+    caption:
+      "A rubble-filled plot cleared and rebuilt — new turf, raised planting, fresh decking and a re-laid side path.",
+    alt: "Rear garden with newly laid lawn, planting bed and timber decking",
+  },
 ];
 
 const pillars = [
@@ -143,7 +152,7 @@ function Home() {
             <div className="mt-9 flex flex-col gap-8 border-t border-primary-foreground/20 pt-8 md:flex-row md:items-end md:justify-between">
               <p className="max-w-lg text-primary-foreground/75">
                 Homes by Hines takes on period refurbishments, extensions and
-                small residential developments across Kent and East Sussex — run directly,
+                small residential developments across Kent, East Sussex and London — run directly,
                 finished carefully, handed over clean.
               </p>
               <div className="flex flex-wrap items-center gap-4">
@@ -194,8 +203,8 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Six recent projects across refurbishment,
-                extension and development.
+                Drag, or use the arrows. Seven recent projects across refurbishment,
+                extension, landscaping and development.
               </p>
             </div>
           </Reveal>
@@ -211,7 +220,7 @@ function Home() {
             {[
               ["18 years", "Building and developing"],
               ["60+ homes", "Renovated and delivered"],
-              ["Kent & East Sussex", "Counties covered"],
+              ["Kent, Sussex & London", "Areas covered"],
             ].map(([figure, label]) => (
               <div key={label}>
                 <dt className="font-display text-4xl sm:text-5xl">{figure}</dt>
