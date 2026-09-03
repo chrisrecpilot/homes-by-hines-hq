@@ -110,11 +110,11 @@ const projects: Project[] = [
     beforeImages: [kitchenBeforeOne.url, kitchenBeforeTwo.url],
     aspect: "aspect-[3/4]",
     name: "Kitchen redesign",
-    meta: "Full kitchen redesign · Maidstone · 2 months",
+    meta: "Full kitchen redesign · Semi-detached house · Maidstone · 2 months",
     before:
-      "Cramped cream cabinets, laminate worktops, tiled splashbacks and a dark cooker recess, with the room still split by the original partition.",
+      "A cramped kitchen in a semi-detached house in Maidstone: cream cabinets, laminate worktops, tiled splashbacks and a dark cooker recess, with the room still split by the original partition.",
     after:
-      "Shaker units in soft grey, marble-effect worktops and a full-height bank of cabinetry, herringbone floor, brass tap and belfast sink, with a seating peninsula opening onto the garden doors.",
+      "Shaker units in soft grey, marble-effect worktops and a full-height bank of cabinetry, herringbone floor, brass tap and Belfast sink, with a seating peninsula opening onto the garden doors.",
   },
   {
     images: [projectTwo],
