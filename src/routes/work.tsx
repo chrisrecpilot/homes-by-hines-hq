@@ -106,7 +106,7 @@ const projects: Project[] = [
       "Returned to a single family house: replanned ground floor, restored cornice and shutters, new services throughout.",
   },
   {
-    images: [kitchenAfterOne.url, kitchenAfterTwo.url],
+    images: [kitchenAfterTwo.url, kitchenAfterOne.url],
     beforeImages: [kitchenBeforeOne.url, kitchenBeforeTwo.url],
     aspect: "aspect-[3/4]",
     name: "Kitchen redesign",
