@@ -94,6 +94,23 @@ const projects = [
     after:
       "Two houses on slate and sash proportions, consented at the first attempt and sold before completion.",
   },
+  {
+    image: projectFive,
+    name: "Fell Cottage",
+    meta: "Whole-house renovation · Cumbria · 9 months",
+    before:
+      "Cement-pointed stone holding damp, a failing slate roof and rooms that had never been insulated.",
+    after:
+      "Repointed in lime, reroofed in reclaimed slate, and a quiet contemporary wing added to the rear.",
+  },
+  {
+    image: projectSix,
+    name: "Millstream House",
+    meta: "Kitchen & garden room · Wiltshire · 4 months",
+    before: "A partitioned back-of-house with one small window onto the garden.",
+    after:
+      "One lime-plastered room with a hand-built kitchen and crittall doors the full width of the wall.",
+  },
 ];
 
 function WorkPage() {
