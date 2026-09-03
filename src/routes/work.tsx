@@ -222,25 +222,13 @@ function WorkPage() {
                 <div
                   className={`space-y-4 ${index % 2 === 1 ? "md:order-2" : ""}`}
                 >
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <PhotoFade
-                        images={project.beforeImages}
-                        alt={`${project.name} before renovation`}
-                        aspect={project.aspect}
-                      />
-                      <p className="eyebrow mt-2 text-muted-foreground">Before</p>
-                    </div>
-                    <div>
-                      <PhotoFade
-                        images={project.images}
-                        alt={`${project.name} after renovation`}
-                        aspect={project.aspect}
-                      />
-                      <p className="eyebrow mt-2 text-primary">After</p>
+                  <PhotoFadePair
+                    beforeImages={project.beforeImages}
+                    afterImages={project.images}
+                    name={project.name}
+                    aspect={project.aspect}
+                  />
 
-                    </div>
-                  </div>
                 </div>
                 <div className="md:pt-2">
                   <h3 className="font-display text-2xl sm:text-3xl">
