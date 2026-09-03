@@ -10,6 +10,7 @@ import projectFour from "@/assets/project-four.jpg";
 import projectFive from "@/assets/project-five.jpg";
 import projectSix from "@/assets/project-six.jpg";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
+import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
 
 const title = "Homes by Hines — Renovation & Property Development";
 const description =
