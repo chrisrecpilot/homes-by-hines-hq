@@ -152,7 +152,7 @@ function Home() {
             <div className="mt-9 flex flex-col gap-8 border-t border-primary-foreground/20 pt-8 md:flex-row md:items-end md:justify-between">
               <p className="max-w-lg text-primary-foreground/75">
                 Homes by Hines takes on period refurbishments, extensions and
-                small residential developments across Kent and East Sussex — run directly,
+                small residential developments across Kent, East Sussex and London — run directly,
                 finished carefully, handed over clean.
               </p>
               <div className="flex flex-wrap items-center gap-4">
@@ -220,7 +220,7 @@ function Home() {
             {[
               ["18 years", "Building and developing"],
               ["60+ homes", "Renovated and delivered"],
-              ["Kent & East Sussex", "Counties covered"],
+              ["Kent, Sussex & London", "Areas covered"],
             ].map(([figure, label]) => (
               <div key={label}>
                 <dt className="font-display text-4xl sm:text-5xl">{figure}</dt>
