@@ -4,7 +4,7 @@ import { EnquiryForm } from "@/components/enquiry-form";
 
 const title = "About & Contact — Homes by Hines";
 const description =
-  "Who we are, how we work, and how to reach Homes by Hines about a renovation or development project.";
+  "Who we are, how we work, and how to reach Homes by Hines about a renovation, development or landscaping project.";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -54,15 +54,15 @@ function AboutPage() {
           <p className="text-muted-foreground">
             Homes by Hines began on site — a small team taking on the
             refurbishments other firms found awkward: listed frontages, failing
-            structures, houses that had been altered badly for fifty years. That
-            work taught us how buildings actually fail, and how they should be
-            put back.
+            structures, gardens left to run wild, houses that had been altered
+            badly for fifty years. That work taught us how buildings actually
+            fail, and how they should be put back.
           </p>
           <p className="text-muted-foreground">
-            Today we run renovations and our own small residential developments
-            side by side. The same people appraise the site, hold the programme
-            and hand over the keys. It keeps us honest about what a job costs
-            and how long it really takes.
+            Today we run renovations, our own small residential developments and
+            garden landscaping side by side. The same people appraise the site,
+            hold the programme and hand over the keys. It keeps us honest about
+            what a job costs and how long it really takes.
           </p>
         </div>
       </section>
