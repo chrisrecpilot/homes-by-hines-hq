@@ -2,10 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Reveal } from "@/components/reveal";
 import projectOne from "@/assets/project-one.jpg";
+import projectOneBefore from "@/assets/project-one-before.jpg";
 import projectTwo from "@/assets/project-two.jpg";
+import projectTwoBefore from "@/assets/project-two-before.jpg";
 import projectThree from "@/assets/project-three.jpg";
+import projectThreeBefore from "@/assets/project-three-before.jpg";
 import projectFive from "@/assets/project-five.jpg";
+import projectFiveBefore from "@/assets/project-five-before.jpg";
 import projectSix from "@/assets/project-six.jpg";
+import projectSixBefore from "@/assets/project-six-before.jpg";
 
 const title = "Renovation & Development — Homes by Hines";
 const description =
@@ -73,8 +78,9 @@ const process = [
 const projects = [
   {
     image: projectOne,
+    beforeImage: projectOneBefore,
     name: "Albany Terrace",
-    meta: "Georgian townhouse · Bath · 11 months",
+    meta: "Georgian townhouse · Orpington · 11 months",
     before:
       "Subdivided into bedsits in the 1970s, with the original plan lost and the front elevation failing.",
     after:
@@ -82,8 +88,9 @@ const projects = [
   },
   {
     image: projectTwo,
+    beforeImage: projectTwoBefore,
     name: "Chapel Lane",
-    meta: "Rear extension · Oxfordshire · 5 months",
+    meta: "Rear extension · Allington · 5 months",
     before:
       "A dark galley kitchen and a lean-to with no foundation to speak of.",
     after:
@@ -91,16 +98,18 @@ const projects = [
   },
   {
     image: projectThree,
+    beforeImage: projectThreeBefore,
     name: "Weaver's Row",
-    meta: "Two-house development · Suffolk · 14 months",
-    before: "An overgrown infill plot between two listed cottages.",
+    meta: "Two-house development · Benfleet · 14 months",
+    before: "An overgrown infill plot between two cottages.",
     after:
       "Two houses on slate and sash proportions, consented at the first attempt and sold before completion.",
   },
   {
     image: projectFive,
+    beforeImage: projectFiveBefore,
     name: "Fell Cottage",
-    meta: "Whole-house renovation · Cumbria · 9 months",
+    meta: "Whole-house renovation · Orpington · 9 months",
     before:
       "Cement-pointed stone holding damp, a failing slate roof and rooms that had never been insulated.",
     after:
@@ -108,8 +117,9 @@ const projects = [
   },
   {
     image: projectSix,
+    beforeImage: projectSixBefore,
     name: "Millstream House",
-    meta: "Kitchen & garden room · Wiltshire · 4 months",
+    meta: "Kitchen & garden room · Eastbourne · 4 months",
     before: "A partitioned back-of-house with one small window onto the garden.",
     after:
       "One lime-plastered room with a hand-built kitchen and crittall doors the full width of the wall.",
@@ -164,16 +174,36 @@ function WorkPage() {
             <Reveal key={project.name} as="article">
               <div className="grid gap-8 border-t border-foreground pt-10 md:grid-cols-2 md:gap-14">
                 <div
-                  className={`overflow-hidden ${index % 2 === 1 ? "md:order-2" : ""}`}
+                  className={`space-y-4 ${index % 2 === 1 ? "md:order-2" : ""}`}
                 >
-                  <img
-                    src={project.image}
-                    alt={project.name}
-                    loading="lazy"
-                    width={1600}
-                    height={1200}
-                    className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
-                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <div className="overflow-hidden">
+                        <img
+                          src={project.beforeImage}
+                          alt={`${project.name} before renovation`}
+                          loading="lazy"
+                          width={800}
+                          height={600}
+                          className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
+                        />
+                      </div>
+                      <p className="eyebrow mt-2 text-muted-foreground">Before</p>
+                    </div>
+                    <div>
+                      <div className="overflow-hidden">
+                        <img
+                          src={project.image}
+                          alt={`${project.name} after renovation`}
+                          loading="lazy"
+                          width={800}
+                          height={600}
+                          className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
+                        />
+                      </div>
+                      <p className="eyebrow mt-2 text-primary">After</p>
+                    </div>
+                  </div>
                 </div>
                 <div className="md:pt-2">
                   <h3 className="font-display text-2xl sm:text-3xl">
