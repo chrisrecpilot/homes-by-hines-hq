@@ -213,6 +213,21 @@ function WorkPage() {
               <p className="mt-3 text-sm text-muted-foreground">{item.body}</p>
             </div>
           ))}
+          <div className="flex flex-col justify-between bg-background p-8">
+            <div>
+              <h2 className="text-2xl">Start a project</h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Tell us what you are looking at and we will reply with plain advice and a realistic cost.
+              </p>
+            </div>
+            <Link
+              to="/about"
+              hash="enquire"
+              className="mt-8 inline-block border border-foreground px-6 py-3 text-center text-xs uppercase tracking-[0.18em] transition-colors hover:bg-foreground hover:text-background"
+            >
+              Enquire now
+            </Link>
+          </div>
         </div>
       </section>
 
