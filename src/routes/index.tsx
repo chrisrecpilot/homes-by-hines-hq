@@ -59,9 +59,9 @@ const slides: WorkSlide[] = [
   {
     image: kitchenAfter.url,
     name: "Kitchen redesign",
-    meta: "Full kitchen redesign · Maidstone",
+    meta: "Full kitchen redesign · Semi-detached house · Maidstone",
     caption:
-      "A partitioned, dated kitchen opened up and rebuilt: grey shaker units, marble-effect worktops and a herringbone floor.",
+      "A cramped kitchen in a semi-detached house in Maidstone opened up and rebuilt: grey shaker units, marble-effect worktops and a herringbone floor.",
     alt: "Grey shaker kitchen with marble-effect worktops and herringbone floor",
   },
 
