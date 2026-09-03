@@ -56,6 +56,15 @@ const slides: WorkSlide[] = [
     alt: "Restored Georgian townhouse interior with period detailing",
   },
   {
+    image: kitchenAfter.url,
+    name: "Kitchen redesign",
+    meta: "Full kitchen redesign · Maidstone",
+    caption:
+      "A partitioned, dated kitchen opened up and rebuilt: grey shaker units, marble-effect worktops and a herringbone floor.",
+    alt: "Grey shaker kitchen with marble-effect worktops and herringbone floor",
+  },
+
+  {
     image: projectFour,
     name: "No. 12 Sydney Place",
     meta: "Interior restoration · Maidstone",
