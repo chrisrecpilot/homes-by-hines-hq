@@ -206,7 +206,7 @@ function WorkPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-20">
-        <div className="grid gap-px border border-border bg-border sm:grid-cols-2">
+        <div className="grid gap-px border border-border bg-border md:grid-cols-3">
           {capability.map((item) => (
             <div key={item.heading} className="bg-background p-8">
               <h2 className="text-2xl">{item.heading}</h2>
