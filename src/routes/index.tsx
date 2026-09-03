@@ -204,7 +204,7 @@ function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-24 sm:py-28">
-        <div className="grid gap-14 md:grid-cols-2 md:gap-20">
+        <div className="grid gap-14 md:grid-cols-3 md:gap-10">
           {pillars.map((pillar, index) => (
             <Reveal key={pillar.index} delay={index * 120} as="article">
               <div className="border-t border-foreground pt-8">
