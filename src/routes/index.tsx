@@ -11,6 +11,7 @@ import projectFive from "@/assets/project-five.jpg";
 import projectSix from "@/assets/project-six.jpg";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
 import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
+import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
 
 const title = "Homes by Hines — Renovation & Property Development";
 const description =
@@ -112,6 +113,14 @@ const slides: WorkSlide[] = [
     caption:
       "A rubble-filled plot cleared and rebuilt — new turf, raised planting, fresh decking and a re-laid side path.",
     alt: "Rear garden with newly laid lawn, planting bed and timber decking",
+  },
+  {
+    image: allingtonGardenAfter.url,
+    name: "Garden refurbishment, Allington",
+    meta: "Garden refurbishment · Allington",
+    caption:
+      "Patio and patchy lawn replaced with full-width decking, level artificial grass, new fencing and a covered seating area.",
+    alt: "Refurbished garden with composite decking, artificial lawn and pergola seating area",
   },
 ];
 
