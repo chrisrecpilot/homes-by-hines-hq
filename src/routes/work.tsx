@@ -224,30 +224,21 @@ function WorkPage() {
                 >
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <div className="overflow-hidden">
-                        <img
-                          src={project.beforeImage}
-                          alt={`${project.name} before renovation`}
-                          loading="lazy"
-                          width={800}
-                          height={600}
-                          className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
-                        />
-                      </div>
+                      <PhotoFade
+                        images={project.beforeImages}
+                        alt={`${project.name} before renovation`}
+                        aspect={project.aspect}
+                      />
                       <p className="eyebrow mt-2 text-muted-foreground">Before</p>
                     </div>
                     <div>
-                      <div className="overflow-hidden">
-                        <img
-                          src={project.image}
-                          alt={`${project.name} after renovation`}
-                          loading="lazy"
-                          width={800}
-                          height={600}
-                          className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
-                        />
-                      </div>
+                      <PhotoFade
+                        images={project.images}
+                        alt={`${project.name} after renovation`}
+                        aspect={project.aspect}
+                      />
                       <p className="eyebrow mt-2 text-primary">After</p>
+
                     </div>
                   </div>
                 </div>
