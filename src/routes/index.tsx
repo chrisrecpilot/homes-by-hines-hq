@@ -13,9 +13,9 @@ import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
 import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
 import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
 
-const title = "Homes by Hines — Renovation & Property Development";
+const title = "Homes by Hines — Renovation, Development & Landscaping";
 const description =
-  "A British renovation and property development company restoring period homes and delivering considered new schemes.";
+  "A British renovation, property development and landscaping company restoring period homes, delivering considered new schemes and transforming gardens.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -137,6 +137,12 @@ const pillars = [
     heading: "Small schemes, seen through",
     body: "Site appraisal, planning, build and handover on one- to six-unit residential schemes. One team from the first survey to the final snag, with the costs held where we said they would be.",
   },
+  {
+    index: "03",
+    label: "Landscaping",
+    heading: "Gardens that finish the job",
+    body: "Outdoor spaces cleared, levelled and planted: decking, lawns, fencing, paths, raised beds and lighting. Built to the same detail as the house, so the whole property holds together.",
+  },
 ];
 
 function Home() {
@@ -157,7 +163,7 @@ function Home() {
           <Reveal>
             <p className="eyebrow flex items-center gap-3 text-primary-foreground/70">
               <span className="block h-px w-10 bg-primary" aria-hidden="true" />
-              Renovation &amp; Property Development
+              Renovation, Development &amp; Landscaping
             </p>
           </Reveal>
           <Reveal delay={120}>
@@ -165,14 +171,17 @@ function Home() {
               Old houses, put right.
               <br />
               New ones, built properly.
+              <br />
+              Gardens, transformed.
             </h1>
           </Reveal>
           <Reveal delay={240}>
             <div className="mt-9 flex flex-col gap-8 border-t border-primary-foreground/20 pt-8 md:flex-row md:items-end md:justify-between">
               <p className="max-w-lg text-primary-foreground/75">
-                Homes by Hines takes on period refurbishments, extensions and
-                small residential developments across Kent, East Sussex and London — run directly,
-                finished carefully, handed over clean.
+                Homes by Hines takes on period refurbishments, extensions,
+                small residential developments and garden landscaping across Kent,
+                East Sussex and London — run directly, finished carefully, handed
+                over clean.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
@@ -195,7 +204,7 @@ function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-24 sm:py-28">
-        <div className="grid gap-14 md:grid-cols-2 md:gap-20">
+        <div className="grid gap-14 md:grid-cols-3 md:gap-10">
           {pillars.map((pillar, index) => (
             <Reveal key={pillar.index} delay={index * 120} as="article">
               <div className="border-t border-foreground pt-8">
@@ -222,8 +231,8 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Nine recent projects across refurbishment,
-                extension, landscaping and development.
+                Drag, or use the arrows. Nine recent projects across renovation,
+                landscaping and development.
               </p>
             </div>
           </Reveal>

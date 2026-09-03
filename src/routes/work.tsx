@@ -22,9 +22,9 @@ import allingtonGardenBefore from "@/assets/garden-allington-before.png.asset.js
 import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
 
 
-const title = "Renovation & Development — Homes by Hines";
+const title = "Renovation, Development & Landscaping — Homes by Hines";
 const description =
-  "Refurbishments, extensions, conversions and small residential developments, from site appraisal through to handover.";
+  "Refurbishments, extensions, conversions, landscaping and small residential developments, from site appraisal through to handover.";
 
 export const Route = createFileRoute("/work")({
   head: () => ({
@@ -59,6 +59,10 @@ const capability = [
   {
     heading: "Residential development",
     body: "One- to six-unit schemes: land appraisal, feasibility, planning and delivery, with a build programme and cost plan you can hold us to.",
+  },
+  {
+    heading: "Landscaping & gardens",
+    body: "Clearance, levelling, planting, decking, fencing, paths and outdoor lighting. We treat the garden as part of the same project, not an afterthought.",
   },
 ];
 
@@ -191,7 +195,8 @@ function WorkPage() {
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-14">
         <p className="eyebrow text-primary">Capability</p>
         <h1 className="mt-5 max-w-3xl font-display text-4xl leading-[1.1] sm:text-5xl">
-          Renovation and development, run by the people doing the work
+          Renovation, development and landscaping, run by the people doing the
+          work
         </h1>
         <p className="mt-6 max-w-2xl text-muted-foreground">
           We are a small firm on purpose. The person who prices your job is on
@@ -201,13 +206,28 @@ function WorkPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-20">
-        <div className="grid gap-px border border-border bg-border sm:grid-cols-2">
+        <div className="grid gap-px border border-border bg-border md:grid-cols-3">
           {capability.map((item) => (
             <div key={item.heading} className="bg-background p-8">
               <h2 className="text-2xl">{item.heading}</h2>
               <p className="mt-3 text-sm text-muted-foreground">{item.body}</p>
             </div>
           ))}
+          <div className="flex flex-col justify-between bg-background p-8">
+            <div>
+              <h2 className="text-2xl">Start a project</h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Tell us what you are looking at and we will reply with plain advice and a realistic cost.
+              </p>
+            </div>
+            <Link
+              to="/about"
+              hash="enquire"
+              className="mt-8 inline-block border border-foreground px-6 py-3 text-center text-xs uppercase tracking-[0.18em] transition-colors hover:bg-foreground hover:text-background"
+            >
+              Enquire now
+            </Link>
+          </div>
         </div>
       </section>
 

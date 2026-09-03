@@ -4,7 +4,7 @@ import { EnquiryForm } from "@/components/enquiry-form";
 
 const title = "About & Contact — Homes by Hines";
 const description =
-  "Who we are, how we work, and how to reach Homes by Hines about a renovation or development project.";
+  "Who we are, how we work, and how to reach Homes by Hines about a renovation, development or landscaping project.";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -48,21 +48,21 @@ function AboutPage() {
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-16">
         <p className="eyebrow text-primary">About</p>
         <h1 className="mt-5 max-w-3xl font-display text-4xl leading-[1.1] sm:text-5xl">
-          A builder's firm that grew into a developer
+          A builder's firm that grew into a developer and landscaper
         </h1>
         <div className="mt-8 grid gap-10 md:grid-cols-2 md:gap-16">
           <p className="text-muted-foreground">
             Homes by Hines began on site — a small team taking on the
             refurbishments other firms found awkward: listed frontages, failing
-            structures, houses that had been altered badly for fifty years. That
-            work taught us how buildings actually fail, and how they should be
-            put back.
+            structures, gardens left to run wild, houses that had been altered
+            badly for fifty years. That work taught us how buildings actually
+            fail, and how they should be put back.
           </p>
           <p className="text-muted-foreground">
-            Today we run renovations and our own small residential developments
-            side by side. The same people appraise the site, hold the programme
-            and hand over the keys. It keeps us honest about what a job costs
-            and how long it really takes.
+            Today we run renovations, our own small residential developments and
+            garden landscaping side by side. The same people appraise the site,
+            hold the programme and hand over the keys. It keeps us honest about
+            what a job costs and how long it really takes.
           </p>
         </div>
       </section>

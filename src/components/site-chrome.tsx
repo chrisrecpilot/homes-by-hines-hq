@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 const nav = [
   { to: "/", label: "Home" },
-  { to: "/work", label: "Renovation & Development" },
+  { to: "/work", label: "Renovation, Development & Landscaping" },
   { to: "/about", label: "About & Contact" },
 ] as const;
 
@@ -48,8 +48,8 @@ export function SiteFooter() {
         <div>
           <p className="font-display text-xl">Homes by Hines</p>
           <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-            Renovation and property development, carried out with the care an old
-            house deserves.
+            Renovation, development and landscaping, carried out with the care
+            an old house deserves.
           </p>
         </div>
         <div className="text-sm text-muted-foreground">
