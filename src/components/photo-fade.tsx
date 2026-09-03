@@ -45,7 +45,7 @@ export function PhotoFade({
           alt={index === 0 ? alt : ""}
           aria-hidden={index === 0 ? undefined : true}
           loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out"
+          className="slow-zoom absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out will-change-transform"
           style={{ opacity: index === active ? 1 : 0 }}
         />
       ))}
