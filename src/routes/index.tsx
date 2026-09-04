@@ -47,27 +47,33 @@ export const Route = createFileRoute("/")({
 const slides: WorkSlide[] = [
   {
     image: kitchenAfter.url,
+    beforeImage: kitchenBefore.url,
     name: "Kitchen redesign",
     meta: "Full kitchen redesign · Semi-detached house · Maidstone",
     caption:
       "A cramped kitchen in a semi-detached house in Maidstone opened up and rebuilt: grey shaker units, marble-effect worktops and a herringbone floor.",
     alt: "Grey shaker kitchen with marble-effect worktops and herringbone floor",
+    beforeAlt: "Cramped kitchen with cream cabinets and laminate worktops before renovation",
   },
   {
     image: gardenAfter.url,
+    beforeImage: gardenBefore.url,
     name: "Rear garden, terraced house",
     meta: "Garden landscaping · East London",
     caption:
       "A rubble-filled plot cleared and rebuilt — new turf, raised planting, fresh decking and a re-laid side path.",
     alt: "Rear garden with newly laid lawn, planting bed and timber decking",
+    beforeAlt: "Overgrown rear garden with collapsed outbuilding and waste before clearance",
   },
   {
     image: allingtonGardenAfter.url,
+    beforeImage: allingtonGardenBefore.url,
     name: "Garden refurbishment, Allington",
     meta: "Garden refurbishment · Allington · 6 weeks",
     caption:
       "Patio and patchy lawn replaced with full-width decking, level artificial grass, new fencing and a covered seating area.",
     alt: "Refurbished garden with composite decking, artificial lawn and pergola seating area",
+    beforeAlt: "Tired garden with block-paved patio and patchy lawn before refurbishment",
   },
 ];
 
