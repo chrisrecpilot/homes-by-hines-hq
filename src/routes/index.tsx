@@ -175,8 +175,8 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Nine recent projects across renovation,
-                landscaping and development.
+                Drag, or use the arrows. Recent completed projects, photographed
+                on site.
               </p>
             </div>
           </Reveal>
