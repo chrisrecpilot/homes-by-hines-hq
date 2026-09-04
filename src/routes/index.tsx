@@ -95,8 +95,8 @@ function Home() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <img
-            src={heroImage}
-            alt="A Victorian red-brick townhouse under renovation with scaffolding to the front elevation"
+            src={allingtonGardenAfter.url}
+            alt="A refurbished rear garden with composite decking, level lawn and a covered seating area"
             width={1920}
             height={1280}
             className="ken-burns h-full w-full object-cover"
