@@ -212,13 +212,20 @@ function WorkPage() {
                 <div
                   className={`space-y-4 ${index % 2 === 1 ? "md:order-2" : ""}`}
                 >
-                  <PhotoFadePair
-                    beforeImages={project.beforeImages}
-                    afterImages={project.images}
-                    name={project.name}
-                    aspect={project.aspect}
-                  />
-
+                  {project.comingSoon ? (
+                    <div className="flex aspect-[4/3] w-full items-center justify-center border border-dashed border-border bg-muted/40 px-8 text-center">
+                      <p className="eyebrow text-muted-foreground">
+                        Photographs coming soon
+                      </p>
+                    </div>
+                  ) : (
+                    <PhotoFadePair
+                      beforeImages={project.beforeImages ?? []}
+                      afterImages={project.images ?? []}
+                      name={project.name}
+                      aspect={project.aspect}
+                    />
+                  )}
                 </div>
                 <div className="md:pt-2">
                   <h3 className="font-display text-2xl sm:text-3xl">
@@ -227,6 +234,11 @@ function WorkPage() {
                   <p className="eyebrow mt-3 text-muted-foreground">
                     {project.meta}
                   </p>
+                  {project.comingSoon ? (
+                    <p className="mt-8 border-l border-border pl-5 text-sm text-muted-foreground">
+                      {project.note}
+                    </p>
+                  ) : (
                   <div className="mt-8 space-y-6">
                     <div className="border-l border-border pl-5">
                       <p className="eyebrow text-muted-foreground">Before</p>
@@ -239,7 +251,7 @@ function WorkPage() {
                       <p className="mt-2 text-sm">{project.after}</p>
                     </div>
                   </div>
-                </div>
+                  )}
               </div>
             </Reveal>
           ))}
