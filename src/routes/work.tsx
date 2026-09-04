@@ -80,27 +80,18 @@ const process = [
 ];
 
 type Project = {
-  images: string[];
-  beforeImages: string[];
-  aspect: string;
+  images?: string[];
+  beforeImages?: string[];
+  aspect?: string;
   name: string;
   meta: string;
-  before: string;
-  after: string;
+  before?: string;
+  after?: string;
+  comingSoon?: boolean;
+  note?: string;
 };
 
 const projects: Project[] = [
-  {
-    images: [projectOne],
-    beforeImages: [projectOneBefore],
-    aspect: "aspect-[4/3]",
-    name: "Albany Terrace",
-    meta: "Georgian townhouse · Orpington · 11 months",
-    before:
-      "Subdivided into bedsits in the 1970s, with the original plan lost and the front elevation failing.",
-    after:
-      "Returned to a single family house: replanned ground floor, restored cornice and shutters, new services throughout.",
-  },
   {
     images: [kitchenAfterTwo.url, kitchenAfterOne.url],
     beforeImages: [kitchenBeforeOne.url, kitchenBeforeTwo.url],
@@ -111,48 +102,6 @@ const projects: Project[] = [
       "A cramped kitchen in a semi-detached house in Maidstone: cream cabinets, laminate worktops, tiled splashbacks and a dark cooker recess, with the room still split by the original partition.",
     after:
       "Shaker units in soft grey, marble-effect worktops and a full-height bank of cabinetry, herringbone floor, brass tap and Belfast sink, with a seating peninsula opening onto the garden doors.",
-  },
-  {
-    images: [projectTwo],
-    beforeImages: [projectTwoBefore],
-    aspect: "aspect-[4/3]",
-    name: "Chapel Lane",
-    meta: "Rear extension · Allington · 5 months",
-    before:
-      "A dark galley kitchen and a lean-to with no foundation to speak of.",
-    after:
-      "Reclaimed stock brick, dark steel glazing and a level threshold onto a re-laid walled garden.",
-  },
-  {
-    images: [projectThree],
-    beforeImages: [projectThreeBefore],
-    aspect: "aspect-[4/3]",
-    name: "Weaver's Row",
-    meta: "Two-house development · Benfleet · 14 months",
-    before: "An overgrown infill plot between two cottages.",
-    after:
-      "Two houses on slate and sash proportions, consented at the first attempt and sold before completion.",
-  },
-  {
-    images: [projectFive],
-    beforeImages: [projectFiveBefore],
-    aspect: "aspect-[4/3]",
-    name: "Fell Cottage",
-    meta: "Whole-house renovation · Orpington · 9 months",
-    before:
-      "Cement-pointed stone holding damp, a failing slate roof and rooms that had never been insulated.",
-    after:
-      "Repointed in lime, reroofed in reclaimed slate, and a quiet contemporary wing added to the rear.",
-  },
-  {
-    images: [projectSix],
-    beforeImages: [projectSixBefore],
-    aspect: "aspect-[4/3]",
-    name: "Millstream House",
-    meta: "Kitchen & garden room · Eastbourne · 4 months",
-    before: "A partitioned back-of-house with one small window onto the garden.",
-    after:
-      "One lime-plastered room with a hand-built kitchen and crittall doors the full width of the wall.",
   },
   {
     images: [gardenAfter.url],
@@ -175,6 +124,24 @@ const projects: Project[] = [
       "A tired block-paved patio, patchy lawn and mixed fence panels, with the far end of the garden given over to worn borders and storage.",
     after:
       "Full-width composite decking off the house, artificial lawn laid level across the plot, new close-board fencing and a pergola-covered seating and hot tub area.",
+  },
+  {
+    name: "Garden landscaping",
+    meta: "Garden project · Details to follow",
+    comingSoon: true,
+    note: "Another garden transformation, recently completed. Photographs coming soon.",
+  },
+  {
+    name: "Loft conversion",
+    meta: "Upstairs loft conversion · Details to follow",
+    comingSoon: true,
+    note: "An upstairs loft turned into usable living space. Photographs coming soon.",
+  },
+  {
+    name: "Kitchen extension",
+    meta: "Kitchen extension · Details to follow",
+    comingSoon: true,
+    note: "A rear kitchen extension opening the ground floor onto the garden. Photographs coming soon.",
   },
 ];
 
