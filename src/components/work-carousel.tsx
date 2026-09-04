@@ -3,13 +3,36 @@ import useEmblaCarousel from "embla-carousel-react";
 
 export type WorkSlide = {
   image: string;
+  beforeImage?: string;
   name: string;
   meta: string;
   caption: string;
   alt: string;
+  beforeAlt?: string;
 };
 
 const pad = (value: number) => String(value + 1).padStart(2, "0");
+
+/** Shared before/after phase so every slide flips in step. */
+function useBeforeAfterPhase(interval = 4000) {
+  const [showAfter, setShowAfter] = useState(true);
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+    const id = window.setInterval(() => {
+      setShowAfter((current) => !current);
+    }, interval);
+    return () => window.clearInterval(id);
+  }, [interval]);
+
+  return showAfter;
+}
+
 
 export function WorkCarousel({ slides }: { slides: WorkSlide[] }) {
   const [emblaRef, embla] = useEmblaCarousel({
