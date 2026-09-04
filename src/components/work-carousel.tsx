@@ -68,6 +68,7 @@ export function WorkCarousel({ slides }: { slides: WorkSlide[] }) {
   }, [embla]);
 
   const active = slides[selected];
+  const showAfter = useBeforeAfterPhase();
 
   return (
     <div className="relative">
