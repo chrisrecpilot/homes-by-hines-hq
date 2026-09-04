@@ -252,6 +252,7 @@ function WorkPage() {
                     </div>
                   </div>
                   )}
+                </div>
               </div>
             </Reveal>
           ))}
