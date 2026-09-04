@@ -2,13 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Reveal } from "@/components/reveal";
 import { WorkCarousel, type WorkSlide } from "@/components/work-carousel";
-import heroImage from "@/assets/hero-renovation.jpg";
-import projectOne from "@/assets/project-one.jpg";
-import projectTwo from "@/assets/project-two.jpg";
-import projectThree from "@/assets/project-three.jpg";
-import projectFour from "@/assets/project-four.jpg";
-import projectFive from "@/assets/project-five.jpg";
-import projectSix from "@/assets/project-six.jpg";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
 import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
 import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
