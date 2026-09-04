@@ -3,13 +3,36 @@ import useEmblaCarousel from "embla-carousel-react";
 
 export type WorkSlide = {
   image: string;
+  beforeImage?: string;
   name: string;
   meta: string;
   caption: string;
   alt: string;
+  beforeAlt?: string;
 };
 
 const pad = (value: number) => String(value + 1).padStart(2, "0");
+
+/** Shared before/after phase so every slide flips in step. */
+function useBeforeAfterPhase(interval = 4000) {
+  const [showAfter, setShowAfter] = useState(true);
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+    const id = window.setInterval(() => {
+      setShowAfter((current) => !current);
+    }, interval);
+    return () => window.clearInterval(id);
+  }, [interval]);
+
+  return showAfter;
+}
+
 
 export function WorkCarousel({ slides }: { slides: WorkSlide[] }) {
   const [emblaRef, embla] = useEmblaCarousel({
@@ -45,6 +68,7 @@ export function WorkCarousel({ slides }: { slides: WorkSlide[] }) {
   }, [embla]);
 
   const active = slides[selected];
+  const showAfter = useBeforeAfterPhase();
 
   return (
     <div className="relative">
@@ -57,22 +81,45 @@ export function WorkCarousel({ slides }: { slides: WorkSlide[] }) {
               aria-roledescription="slide"
               aria-label={`${pad(index)} — ${slide.name}`}
             >
-              <div className="group relative overflow-hidden bg-ink">
+              <div
+                className={`group relative aspect-[4/3] w-full overflow-hidden bg-ink transition-[transform,opacity,filter] duration-[900ms] ease-out ${
+                  index === selected
+                    ? "scale-100 opacity-100 saturate-100"
+                    : "scale-[1.04] opacity-45 saturate-[0.65]"
+                }`}
+              >
+                {slide.beforeImage ? (
+                  <img
+                    src={slide.beforeImage}
+                    alt={slide.beforeAlt ?? `${slide.name} before`}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out"
+                    style={{ opacity: showAfter ? 0 : 1 }}
+                  />
+                ) : null}
                 <img
                   src={slide.image}
                   alt={slide.alt}
                   loading="lazy"
                   width={1600}
                   height={1200}
-                  className={`aspect-[4/3] w-full object-cover transition-[transform,opacity,filter] duration-[900ms] ease-out ${
-                    index === selected
-                      ? "scale-100 opacity-100 saturate-100"
-                      : "scale-[1.04] opacity-45 saturate-[0.65]"
-                  }`}
+                  className="absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out"
+                  style={{ opacity: slide.beforeImage && !showAfter ? 0 : 1 }}
                 />
                 <span className="pointer-events-none absolute left-0 top-0 bg-background px-4 py-2 font-display text-sm tabular-nums">
                   {pad(index)}
                 </span>
+                {slide.beforeImage ? (
+                  <span
+                    className={`pointer-events-none absolute bottom-0 left-0 px-4 py-2 text-xs uppercase tracking-[0.2em] transition-colors duration-500 ${
+                      showAfter
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-background text-foreground"
+                    }`}
+                  >
+                    {showAfter ? "After" : "Before"}
+                  </span>
+                ) : null}
               </div>
             </figure>
           ))}
