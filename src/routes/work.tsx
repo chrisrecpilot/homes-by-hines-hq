@@ -2,16 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Reveal } from "@/components/reveal";
 import { PhotoFadePair } from "@/components/photo-fade";
-import projectOne from "@/assets/project-one.jpg";
-import projectOneBefore from "@/assets/project-one-before.jpg";
-import projectTwo from "@/assets/project-two.jpg";
-import projectTwoBefore from "@/assets/project-two-before.jpg";
-import projectThree from "@/assets/project-three.jpg";
-import projectThreeBefore from "@/assets/project-three-before.jpg";
-import projectFive from "@/assets/project-five.jpg";
-import projectFiveBefore from "@/assets/project-five-before.jpg";
-import projectSix from "@/assets/project-six.jpg";
-import projectSixBefore from "@/assets/project-six-before.jpg";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
 import gardenBefore from "@/assets/garden-east-london-before.jpg.asset.json";
 import kitchenBeforeOne from "@/assets/kitchen-maidstone-image.jpg.asset.json";
