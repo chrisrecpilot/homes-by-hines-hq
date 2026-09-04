@@ -2,13 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Reveal } from "@/components/reveal";
 import { WorkCarousel, type WorkSlide } from "@/components/work-carousel";
-import heroImage from "@/assets/hero-renovation.jpg";
-import projectOne from "@/assets/project-one.jpg";
-import projectTwo from "@/assets/project-two.jpg";
-import projectThree from "@/assets/project-three.jpg";
-import projectFour from "@/assets/project-four.jpg";
-import projectFive from "@/assets/project-five.jpg";
-import projectSix from "@/assets/project-six.jpg";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
 import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
 import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
@@ -50,61 +43,12 @@ export const Route = createFileRoute("/")({
 
 const slides: WorkSlide[] = [
   {
-    image: projectOne,
-    name: "Albany Terrace",
-    meta: "Full refurbishment · Orpington",
-    caption:
-      "A neglected Georgian townhouse taken back to brick, replanned, and finished with restored joinery throughout.",
-    alt: "Restored Georgian townhouse interior with period detailing",
-  },
-  {
     image: kitchenAfter.url,
     name: "Kitchen redesign",
     meta: "Full kitchen redesign · Semi-detached house · Maidstone",
     caption:
       "A cramped kitchen in a semi-detached house in Maidstone opened up and rebuilt: grey shaker units, marble-effect worktops and a herringbone floor.",
     alt: "Grey shaker kitchen with marble-effect worktops and herringbone floor",
-  },
-
-  {
-    image: projectFour,
-    name: "No. 12 Sydney Place",
-    meta: "Interior restoration · Maidstone",
-    caption:
-      "Cornice and shutters repaired rather than replaced, floors lifted and relaid, services hidden where they belong.",
-    alt: "Restored drawing room with tall sash windows and original cornice",
-  },
-  {
-    image: projectTwo,
-    name: "Chapel Lane",
-    meta: "Rear extension · Allington",
-    caption:
-      "Reclaimed stock brick and dark steel glazing opening a tight Victorian plan onto a walled garden.",
-    alt: "Brick rear extension with steel glazing onto a garden",
-  },
-  {
-    image: projectSix,
-    name: "Millstream House",
-    meta: "Kitchen & garden room · Eastbourne",
-    caption:
-      "A hand-built kitchen set into a lime-plastered shell, opened to the garden with crittall doors.",
-    alt: "Dark green hand-built kitchen with marble worktop and brass fittings",
-  },
-  {
-    image: projectThree,
-    name: "Weaver's Row",
-    meta: "Two-house development · Benfleet",
-    caption:
-      "A pair of houses built to sit quietly on a village street — slate, sash windows, proper proportions.",
-    alt: "Pair of newly built traditional village houses",
-  },
-  {
-    image: projectFive,
-    name: "Fell Cottage",
-    meta: "Whole-house renovation · Orpington",
-    caption:
-      "Stone repointed in lime, roof relaid in reclaimed slate, and a quiet contemporary wing added to the rear.",
-    alt: "Renovated stone cottage at dusk with lit windows",
   },
   {
     image: gardenAfter.url,
@@ -151,8 +95,8 @@ function Home() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <img
-            src={heroImage}
-            alt="A Victorian red-brick townhouse under renovation with scaffolding to the front elevation"
+            src={allingtonGardenAfter.url}
+            alt="A refurbished rear garden with composite decking, level lawn and a covered seating area"
             width={1920}
             height={1280}
             className="ken-burns h-full w-full object-cover"
@@ -231,8 +175,8 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Nine recent projects across renovation,
-                landscaping and development.
+                Drag, or use the arrows. Recent completed projects, photographed
+                on site.
               </p>
             </div>
           </Reveal>
