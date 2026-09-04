@@ -121,7 +121,6 @@ export function WorkCarousel({ slides }: { slides: WorkSlide[] }) {
                   </span>
                 ) : null}
               </div>
-              </div>
             </figure>
           ))}
         </div>
