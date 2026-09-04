@@ -3,8 +3,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/reveal";
 import { WorkCarousel, type WorkSlide } from "@/components/work-carousel";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
+import gardenBefore from "@/assets/garden-east-london-before.jpg.asset.json";
 import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
+import kitchenBefore from "@/assets/kitchen-maidstone-image-2.jpg.asset.json";
 import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
+import allingtonGardenBefore from "@/assets/garden-allington-before.png.asset.json";
 
 const title = "Homes by Hines — Renovation, Development & Landscaping";
 const description =
