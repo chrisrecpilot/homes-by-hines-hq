@@ -15,6 +15,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "../components/site-chrome";
 import { Toaster } from "../components/ui/sonner";
 import { TeamChat } from "../components/team-chat";
+import { PageTracker } from "../components/page-tracker";
+import { supabase } from "@/integrations/supabase/client";
+import { useRouterState } from "@tanstack/react-router";
 
 
 function NotFoundComponent() {
@@ -128,6 +131,18 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const path = useRouterState({ select: (st) => st.location.pathname });
+  const staffArea = path.startsWith("/admin") || path.startsWith("/auth");
+
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => data.subscription.unsubscribe();
+  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -139,7 +154,8 @@ function RootComponent() {
         </main>
         <SiteFooter />
       </div>
-      <TeamChat />
+      {!staffArea && <TeamChat />}
+      <PageTracker />
       <Toaster />
     </QueryClientProvider>
   );

@@ -38,6 +38,36 @@ function loadStored(): Stored {
   return fresh;
 }
 
+const STARTERS = ["How do you charge?", "I'm planning a kitchen", "Loft conversion", "Garden makeover"];
+
+function splitSuggestions(text: string): { body: string; suggestions: string[] } {
+  const m = text.match(/<suggestions>([\s\S]*?)(<\/suggestions>|$)/);
+  const body = text.replace(/<suggestions>[\s\S]*$/, "").replace(/<[a-z]*$/, "").trim();
+  const suggestions = m?.[2]
+    ? (m[1] ?? "").split("|").map((s) => s.trim()).filter(Boolean).slice(0, 4)
+    : [];
+  return { body, suggestions };
+}
+
+function Pills({ items, onPick, disabled }: { items: string[]; onPick: (t: string) => void; disabled: boolean }) {
+  if (!items.length) return null;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map((s) => (
+        <button
+          key={s}
+          type="button"
+          disabled={disabled}
+          onClick={() => onPick(s)}
+          className="border border-foreground/25 bg-background px-3 py-1.5 text-xs transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
+        >
+          {s}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Monogram() {
   return (
     <span className="flex h-8 w-8 shrink-0 items-center justify-center bg-primary font-display text-sm text-primary-foreground">
@@ -127,6 +157,17 @@ function ChatWindow({ stored }: { stored: Stored }) {
     },
   });
   const busy = status === "submitted" || status === "streaming";
+  const send = (text: string) => {
+    if (!text.trim() || busy) return;
+    sendMessage({ text });
+  };
+  const last = messages[messages.length - 1];
+  const lastSuggestions =
+    !busy && last?.role === "assistant"
+      ? splitSuggestions(
+          last.parts.filter((p) => p.type === "text").map((p) => (p as { text: string }).text).join("\n"),
+        ).suggestions
+      : [];
 
   useEffect(() => {
     if (status === "ready" || status === "error") {
@@ -149,6 +190,9 @@ function ChatWindow({ stored }: { stored: Stored }) {
                 Tell us about your house, site or garden. We plan and manage the whole job — architects,
                 builders, council, building control — and you pay the trades directly.
               </p>
+              <div className="mt-5">
+                <Pills items={STARTERS} onPick={send} disabled={busy} />
+              </div>
             </div>
           )}
           {messages.map((message) => (
@@ -162,7 +206,8 @@ function ChatWindow({ stored }: { stored: Stored }) {
               >
                 {message.parts.map((part, i) => {
                   if (part.type === "text") {
-                    return <MessageResponse key={i}>{part.text}</MessageResponse>;
+                    const { body } = splitSuggestions(part.text);
+                    return body ? <MessageResponse key={i}>{body}</MessageResponse> : null;
                   }
                   if (part.type === "tool-submit_enquiry") {
                     return (
@@ -179,6 +224,7 @@ function ChatWindow({ stored }: { stored: Stored }) {
               </MessageContent>
             </Message>
           ))}
+          {lastSuggestions.length > 0 && <Pills items={lastSuggestions} onPick={send} disabled={busy} />}
           {status === "submitted" && (
             <Shimmer className="text-sm">The team is typing…</Shimmer>
           )}
@@ -187,10 +233,7 @@ function ChatWindow({ stored }: { stored: Stored }) {
       </Conversation>
       <div className="border-t border-border p-3">
         <PromptInput
-          onSubmit={({ text }) => {
-            if (!text.trim() || busy) return;
-            sendMessage({ text });
-          }}
+          onSubmit={({ text }) => send(text)}
         >
           <PromptInputTextarea
             ref={textareaRef}
