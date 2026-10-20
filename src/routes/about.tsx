@@ -25,12 +25,12 @@ export const Route = createFileRoute("/about")({
 
 const standards = [
   [
-    "Directly employed trades",
-    "Our carpenters, bricklayers and finishers are ours, not a chain of subcontractors meeting on the day.",
+    "You pay the trades directly",
+    "Every builder and trade invoices you themselves. You see the real cost of the work; we charge a fee for managing it.",
   ],
   [
-    "Costs held",
-    "A proper cost plan before work starts, and written variations for anything that moves it.",
+    "We deal with everyone",
+    "Architects, engineers, the council, building control, regulatory bodies and the water company — coordinated by us, so you have one point of contact.",
   ],
   [
     "Old-building literacy",
@@ -48,7 +48,7 @@ function AboutPage() {
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-16">
         <p className="eyebrow text-primary">About</p>
         <h1 className="mt-5 max-w-3xl font-display text-4xl leading-[1.1] sm:text-5xl">
-          A builder's firm that grew into a developer and landscaper
+          We plan it, manage it and see it through
         </h1>
         <div className="mt-8 grid gap-10 md:grid-cols-2 md:gap-16">
           <p className="text-muted-foreground">
@@ -59,10 +59,10 @@ function AboutPage() {
             fail, and how they should be put back.
           </p>
           <p className="text-muted-foreground">
-            Today we run renovations, our own small residential developments and
-            garden landscaping side by side. The same people appraise the site,
-            hold the programme and hand over the keys. It keeps us honest about
-            what a job costs and how long it really takes.
+            Today we plan and project-manage renovations, developments and
+            gardens end to end — from the architect and the planning application
+            to building control sign-off. You pay the trades directly and we
+            charge a fee for running the job, so the costs stay transparent.
           </p>
         </div>
       </section>

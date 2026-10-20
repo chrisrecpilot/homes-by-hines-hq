@@ -14,7 +14,7 @@ import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json
 
 const title = "Renovation, Development & Landscaping — Homes by Hines";
 const description =
-  "Refurbishments, extensions, conversions, landscaping and small residential developments, from site appraisal through to handover.";
+  "End-to-end planning and project management for renovations, developments and gardens — architects, builders, council, building control and utilities, all coordinated. You pay the trades directly.";
 
 export const Route = createFileRoute("/work")({
   head: () => ({
@@ -60,22 +60,22 @@ const process = [
   {
     step: "01",
     heading: "Site appraisal",
-    body: "We walk the property, take the survey, and tell you plainly what is possible and what it will realistically cost.",
+    body: "We walk the property, take the survey, and tell you plainly what is possible, what it involves and who needs to be brought in.",
   },
   {
     step: "02",
-    heading: "Design & planning",
-    body: "Drawings, consultants and the planning or listed-building application, coordinated by us so nothing waits on a handover.",
+    heading: "Design & approvals",
+    body: "We brief the architect and engineers, handle the council and planning, building control, party walls and the water company — so nothing waits on a handover.",
   },
   {
     step: "03",
     heading: "Build",
-    body: "Directly employed trades, a fixed programme, weekly reporting, and a site kept in a state you would not mind visiting.",
+    body: "We source and schedule vetted builders and trades, run the programme and the site, and report weekly. You pay each trade directly — no markup in between.",
   },
   {
     step: "04",
     heading: "Handover",
-    body: "Commissioning, snagging closed out before you move in, warranties and manuals collated, and a call back at six months.",
+    body: "Building control sign-off, snagging closed out, certificates, warranties and manuals collated, and a call back at six months.",
   },
 ];
 
@@ -152,13 +152,14 @@ function WorkPage() {
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-14">
         <p className="eyebrow text-primary">Capability</p>
         <h1 className="mt-5 max-w-3xl font-display text-4xl leading-[1.1] sm:text-5xl">
-          Renovation, development and landscaping, run by the people doing the
-          work
+          We plan it, manage it and deal with everyone — you pay the trades
+          directly
         </h1>
         <p className="mt-6 max-w-2xl text-muted-foreground">
-          We are a small firm on purpose. The person who prices your job is on
-          site while it is built, and there is no layer of account management
-          between you and the trades.
+          Homes by Hines runs your project end to end: architects, builders and
+          trades, the council, building control, regulatory bodies, water and
+          utilities. The trades invoice you directly, so you see exactly what the
+          work costs. We charge a clear fee for planning and managing it.
         </p>
       </section>
 
@@ -174,7 +175,7 @@ function WorkPage() {
             <div>
               <h2 className="text-2xl">Start a project</h2>
               <p className="mt-3 text-sm text-muted-foreground">
-                Tell us what you are looking at and we will reply with plain advice and a realistic cost.
+                Tell us what you are looking at and we will reply with plain advice and a clear fee proposal.
               </p>
             </div>
             <Link
@@ -184,6 +185,27 @@ function WorkPage() {
             >
               Enquire now
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-20">
+        <div className="grid gap-10 border-y border-border py-14 md:grid-cols-[1fr_1.6fr] md:gap-16">
+          <div>
+            <p className="eyebrow text-primary">How we charge</p>
+            <h2 className="mt-4 text-3xl">You pay the trades. We charge for the management.</h2>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-3">
+            {[
+              ["Trades paid direct", "Builders, electricians, plumbers and landscapers invoice you themselves. No hidden markup on labour or materials."],
+              ["One management fee", "Our fee covers planning, design coordination, approvals and running the job from first survey to handover."],
+              ["We deal with everyone", "Architects, engineers, council, building control, regulators and the water company — one point of contact: us."],
+            ].map(([h, b]) => (
+              <div key={h}>
+                <h3 className="text-lg">{h}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{b}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

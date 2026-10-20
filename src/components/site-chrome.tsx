@@ -48,8 +48,8 @@ export function SiteFooter() {
         <div>
           <p className="font-display text-xl">Homes by Hines</p>
           <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-            Renovation, development and landscaping, carried out with the care
-            an old house deserves.
+            End-to-end planning and project management for renovation,
+            development and landscaping. You pay the trades directly.
           </p>
         </div>
         <div className="text-sm text-muted-foreground">

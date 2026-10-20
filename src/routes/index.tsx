@@ -11,7 +11,7 @@ import allingtonGardenBefore from "@/assets/garden-allington-before.png.asset.js
 
 const title = "Homes by Hines — Renovation, Development & Landscaping";
 const description =
-  "A British renovation, property development and landscaping company restoring period homes, delivering considered new schemes and transforming gardens.";
+  "End-to-end planning and project management for renovations, developments and gardens across Kent, Sussex and London. You pay the trades directly; we manage everything else.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -88,7 +88,7 @@ const pillars = [
     index: "02",
     label: "Development",
     heading: "Small schemes, seen through",
-    body: "Site appraisal, planning, build and handover on one- to six-unit residential schemes. One team from the first survey to the final snag, with the costs held where we said they would be.",
+    body: "Site appraisal, architects, planning, building control and delivery on one- to six-unit residential schemes. One point of contact from the first survey to the final snag.",
   },
   {
     index: "03",
@@ -131,10 +131,10 @@ function Home() {
           <Reveal delay={240}>
             <div className="mt-9 flex flex-col gap-8 border-t border-primary-foreground/20 pt-8 md:flex-row md:items-end md:justify-between">
               <p className="max-w-lg text-primary-foreground/75">
-                Homes by Hines takes on period refurbishments, extensions,
-                small residential developments and garden landscaping across Kent,
-                East Sussex and London — run directly, finished carefully, handed
-                over clean.
+                We plan and project-manage renovations, developments and gardens
+                across Kent, East Sussex and London — architects, builders,
+                council, building control and utilities, all handled. You pay the
+                trades directly; we charge a fee for running it.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
