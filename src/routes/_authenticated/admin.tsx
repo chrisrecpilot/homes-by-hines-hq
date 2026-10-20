@@ -152,7 +152,7 @@ function Chats() {
   });
   if (q.isLoading) return <p className="text-sm">Loading…</p>;
   if (!q.data?.length) return <p className="text-sm text-muted-foreground">No chats yet.</p>;
-  const active = q.data.find((c) => c.id === selected) ?? q.data[0];
+  const active = q.data.find((c) => c.id === selected) ?? q.data[0]!;
   const textOf = (m: Msg) =>
     (m.parts ?? [])
       .filter((p) => p.type === "text")

@@ -42,9 +42,9 @@ const STARTERS = ["How do you charge?", "I'm planning a kitchen", "Loft conversi
 
 function splitSuggestions(text: string): { body: string; suggestions: string[] } {
   const m = text.match(/<suggestions>([\s\S]*?)(<\/suggestions>|$)/);
-  const body = text.replace(/<suggestions>[\s\S]*$/, "").replace(/<\/?s?u?g?g?e?s?t?i?o?n?s?$/, "").trim();
+  const body = text.replace(/<suggestions>[\s\S]*$/, "").replace(/<[a-z]*$/, "").trim();
   const suggestions = m?.[2]
-    ? m[1].split("|").map((s) => s.trim()).filter(Boolean).slice(0, 4)
+    ? (m[1] ?? "").split("|").map((s) => s.trim()).filter(Boolean).slice(0, 4)
     : [];
   return { body, suggestions };
 }
