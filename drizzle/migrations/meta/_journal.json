@@ -15,6 +15,13 @@
       "when": 1792494446305,
       "tag": "0001_admin_roles_and_page_views",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792497644409,
+      "tag": "0002_tighten_enquiry_insert_policy",
+      "breakpoints": true
     }
   ]
 }
