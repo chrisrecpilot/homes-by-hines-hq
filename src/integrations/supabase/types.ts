@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_conversations: {
+        Row: {
+          created_at: string
+          enquiry_id: string | null
+          id: string
+          messages: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enquiry_id?: string | null
+          id: string
+          messages?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enquiry_id?: string | null
+          id?: string
+          messages?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       enquiries: {
         Row: {
           created_at: string
