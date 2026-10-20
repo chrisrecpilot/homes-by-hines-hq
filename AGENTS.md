@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Team chat streams via server route /api/chat (AI SDK + Lovable AI Gateway); conversations saved server-side to chat_conversations and in browser localStorage; chat-collected leads go into enquiries. Why: one lead inbox, staff can review chats.
