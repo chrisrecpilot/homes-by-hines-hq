@@ -188,7 +188,7 @@ function ChatWindow({ stored }: { stored: Stored }) {
               <p className="font-display text-xl text-foreground">How can we help?</p>
               <p className="mt-2">
                 Tell us about your house, site or garden. We plan and manage the whole job — architects,
-                builders, council, building control — and you pay the trades directly.
+                builders, council and building control, all handled.
               </p>
               <div className="mt-5">
                 <Pills items={STARTERS} onPick={send} disabled={busy} />

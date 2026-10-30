@@ -14,6 +14,7 @@ export const Route = createFileRoute("/about")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: "/about" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
@@ -25,8 +26,8 @@ export const Route = createFileRoute("/about")({
 
 const standards = [
   [
-    "You pay the trades directly",
-    "Every builder and trade invoices you themselves. You see the real cost of the work; we charge a fee for managing it.",
+    "One team, start to finish",
+    "From the first plans to the finished project, we manage the work and keep every stage coordinated.",
   ],
   [
     "We deal with everyone",
@@ -61,8 +62,8 @@ function AboutPage() {
           <p className="text-muted-foreground">
             Today we plan and project-manage renovations, developments and
             gardens end to end — from the architect and the planning application
-            to building control sign-off. You pay the trades directly and we
-            charge a fee for running the job, so the costs stay transparent.
+            to building control sign-off. Architects, builders, council and
+            utilities — all handled by us.
           </p>
         </div>
       </section>
