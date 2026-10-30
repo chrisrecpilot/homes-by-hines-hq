@@ -11,7 +11,7 @@ import allingtonGardenBefore from "@/assets/garden-allington-before.png.asset.js
 
 const title = "Homes by Hines — Renovation, Development & Landscaping";
 const description =
-  "End-to-end planning and project management for renovations, developments and gardens across Kent, Sussex and London. You pay the trades directly; we manage everything else.";
+  "We project-manage renovations, developments and gardens across Kent and London, England. Architects, builders, council and building control — all handled.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,6 +21,9 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: allingtonGardenAfter.url },
+      { name: "twitter:image", content: allingtonGardenAfter.url },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: "/" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
@@ -131,10 +134,9 @@ function Home() {
           <Reveal delay={240}>
             <div className="mt-9 flex flex-col gap-8 border-t border-primary-foreground/20 pt-8 md:flex-row md:items-end md:justify-between">
               <p className="max-w-lg text-primary-foreground/75">
-                We plan and project-manage renovations, developments and gardens
-                across Kent, East Sussex and London — architects, builders,
-                council, building control and utilities, all handled. You pay the
-                trades directly; we charge a fee for running it.
+                We project-manage renovations, developments and gardens across
+                Kent and London, England — architects, builders, council and
+                building control, all handled.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
@@ -201,7 +203,7 @@ function Home() {
             {[
               ["18 years", "Building and developing"],
               ["60+ homes", "Renovated and delivered"],
-              ["Kent, Sussex & London", "Areas covered"],
+              ["Kent & London", "Areas covered"],
             ].map(([figure, label]) => (
               <div key={label}>
                 <dt className="font-display text-4xl sm:text-5xl">{figure}</dt>

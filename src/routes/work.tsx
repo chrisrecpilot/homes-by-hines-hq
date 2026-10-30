@@ -14,7 +14,7 @@ import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json
 
 const title = "Renovation, Development & Landscaping — Homes by Hines";
 const description =
-  "End-to-end planning and project management for renovations, developments and gardens — architects, builders, council, building control and utilities, all coordinated. You pay the trades directly.";
+  "End-to-end planning and project management for renovations, developments and gardens — architects, builders, council, building control and utilities, all handled.";
 
 export const Route = createFileRoute("/work")({
   head: () => ({
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/work")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: "/work" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
@@ -70,7 +71,7 @@ const process = [
   {
     step: "03",
     heading: "Build",
-    body: "We source and schedule vetted builders and trades, run the programme and the site, and report weekly. You pay each trade directly — no markup in between.",
+    body: "We manage the builders and trades, run the programme and the site, and report weekly — keeping the whole job coordinated.",
   },
   {
     step: "04",
@@ -152,14 +153,12 @@ function WorkPage() {
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-14">
         <p className="eyebrow text-primary">Capability</p>
         <h1 className="mt-5 max-w-3xl font-display text-4xl leading-[1.1] sm:text-5xl">
-          We plan it, manage it and deal with everyone — you pay the trades
-          directly
+          We plan it, manage it and see it through
         </h1>
         <p className="mt-6 max-w-2xl text-muted-foreground">
           Homes by Hines runs your project end to end: architects, builders and
           trades, the council, building control, regulatory bodies, water and
-          utilities. The trades invoice you directly, so you see exactly what the
-          work costs. We charge a clear fee for planning and managing it.
+          utilities — all handled.
         </p>
       </section>
 
@@ -175,7 +174,7 @@ function WorkPage() {
             <div>
               <h2 className="text-2xl">Start a project</h2>
               <p className="mt-3 text-sm text-muted-foreground">
-                Tell us what you are looking at and we will reply with plain advice and a clear fee proposal.
+                Tell us what you are looking at and we will reply with plain advice and the next steps for your project.
               </p>
             </div>
             <Link
@@ -185,27 +184,6 @@ function WorkPage() {
             >
               Enquire now
             </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 pb-20">
-        <div className="grid gap-10 border-y border-border py-14 md:grid-cols-[1fr_1.6fr] md:gap-16">
-          <div>
-            <p className="eyebrow text-primary">How we charge</p>
-            <h2 className="mt-4 text-3xl">You pay the trades. We charge for the management.</h2>
-          </div>
-          <div className="grid gap-8 sm:grid-cols-3">
-            {[
-              ["Trades paid direct", "Builders, electricians, plumbers and landscapers invoice you themselves. No hidden markup on labour or materials."],
-              ["One management fee", "Our fee covers planning, design coordination, approvals and running the job from first survey to handover."],
-              ["We deal with everyone", "Architects, engineers, council, building control, regulators and the water company — one point of contact: us."],
-            ].map(([h, b]) => (
-              <div key={h}>
-                <h3 className="text-lg">{h}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{b}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>

@@ -49,7 +49,8 @@ export function SiteFooter() {
           <p className="font-display text-xl">Homes by Hines</p>
           <p className="mt-2 max-w-sm text-sm text-muted-foreground">
             End-to-end planning and project management for renovation,
-            development and landscaping. You pay the trades directly.
+            development and landscaping. Architects, builders, council and
+            building control — all handled.
           </p>
         </div>
         <div className="text-sm text-muted-foreground">
