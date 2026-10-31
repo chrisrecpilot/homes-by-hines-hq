@@ -16,8 +16,14 @@ import { Tool, ToolContent, ToolHeader, ToolOutput } from "@/components/ai-eleme
 import { Button } from "@/components/ui/button";
 import { EstimateComposer } from "@/components/estimate-composer";
 import { EstimateCard } from "@/components/estimate-card";
+import {
+  VisualChoiceCards,
+  parseChoices,
+  stripChoices,
+  type VisualChoice,
+} from "@/components/visual-choices";
 import { uploadEstimateFile } from "@/lib/estimating/uploads.functions";
-import type { EstimateResult } from "@/lib/estimating/types";
+import { gbp, type EstimateResult } from "@/lib/estimating/types";
 
 const STORAGE_KEY = "hbh-team-chat";
 type Stored = { id: string; token: string; messages: UIMessage[] };
@@ -47,7 +53,7 @@ const STARTERS = [
 ];
 function splitSuggestions(text: string) {
   const m = text.match(/<suggestions>([\s\S]*?)(<\/suggestions>|$)/);
-  const body = text
+  const body = stripChoices(text)
     .replace(/<suggestions>[\s\S]*$/, "")
     .replace(/<[a-z]*$/, "")
     .trim();
@@ -92,6 +98,66 @@ function Pills({
         </Button>
       ))}
     </div>
+  );
+}
+const PANEL_TYPE_LABELS = {
+  benchmark: "Preliminary",
+  provisional: "Provisional",
+  detailed: "Detailed",
+} as const;
+function EstimatePanel({
+  estimate,
+  stale,
+  busy,
+}: {
+  estimate: EstimateResult;
+  stale: boolean;
+  busy: boolean;
+}) {
+  const bench = estimate.estimateType === "benchmark" ? estimate.benchmarkEstimate : null;
+  const range = bench ? bench.range : estimate.total;
+  if (!range) return null;
+  const s = estimate.specification;
+  const area = s.length && s.width ? s.length * s.width * (s.storeys ?? 1) : null;
+  return (
+    <details className="group shrink-0 border-b border-border bg-card text-card-foreground">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-1 py-2.5 text-xs [&::-webkit-details-marker]:hidden">
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="size-1.5 shrink-0 rounded-full bg-primary" />
+          <span className="truncate font-medium">
+            {area ? `${area}m² ` : ""}
+            {s.category.replaceAll("_", " ")}
+          </span>
+          <span className="shrink-0 text-muted-foreground">
+            {PANEL_TYPE_LABELS[estimate.estimateType ?? "provisional"]} ·{" "}
+            {estimate.confidence.toLowerCase()} confidence
+          </span>
+        </span>
+        <span className="shrink-0 font-display text-sm">
+          {gbp(range.low)}–{gbp(range.high)}
+          {!estimate.vatConfirmed && <span className="text-muted-foreground"> +VAT</span>}
+        </span>
+      </summary>
+      <div className="space-y-1 px-1 pb-3 text-xs text-muted-foreground">
+        <p>
+          Expected {gbp(range.expected)}
+          {!estimate.vatConfirmed && " plus VAT (to confirm)"} ·{" "}
+          {estimate.estimateType === "benchmark"
+            ? "based on South East regional construction costs"
+            : estimate.estimateType === "detailed"
+              ? "fully verified cost-based estimate"
+              : "cost-based estimate using approved provisional allowances"}
+          .
+        </p>
+        <p className={stale || busy ? "text-foreground" : undefined}>
+          {busy
+            ? "Updating your estimate…"
+            : stale
+              ? "Your latest changes may not be priced yet — we'll recalculate as we go."
+              : "This figure reflects everything you've told us so far."}
+        </p>
+      </div>
+    </details>
   );
 }
 export function TeamChat({ inline = false }: { inline?: boolean }) {
@@ -233,15 +299,37 @@ function ChatWindow({
     }
   }
   const last = messages.at(-1);
+  const lastText =
+    last?.role === "assistant"
+      ? last.parts
+          .filter((p) => p.type === "text")
+          .map((p) => p.text)
+          .join("\n")
+      : "";
   const lastSuggestions =
-    !busy && last?.role === "assistant"
-      ? splitSuggestions(
-          last.parts
-            .filter((p) => p.type === "text")
-            .map((p) => p.text)
-            .join("\n"),
-        ).suggestions
-      : [];
+    !busy && last?.role === "assistant" ? splitSuggestions(lastText).suggestions : [];
+  const lastChoices = !busy && last?.role === "assistant" ? parseChoices(lastText) : null;
+  const [picked, setPicked] = useState<Record<string, string>>({});
+  const latestEstimate = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const m = messages[i];
+      if (m?.role !== "assistant") continue;
+      for (const p of m.parts) {
+        if (
+          p.type === "tool-calculate_estimate" &&
+          (p as { state?: string }).state === "output-available" &&
+          (p as { output?: unknown }).output &&
+          typeof (p as { output?: unknown }).output === "object" &&
+          "specification" in ((p as { output?: object }).output as object)
+        )
+          return { estimate: (p as { output: EstimateResult }).output, index: i };
+      }
+    }
+    return null;
+  }, [messages]);
+  const estimateStale = latestEstimate
+    ? messages.slice(latestEstimate.index + 1).some((m) => m.role === "user")
+    : false;
   return (
     <div
       data-chat-active={active}
@@ -281,6 +369,9 @@ function ChatWindow({
                 <RotateCcw />
               </Button>
             </div>
+          )}
+          {latestEstimate && (
+            <EstimatePanel estimate={latestEstimate.estimate} stale={estimateStale} busy={busy} />
           )}
           <Conversation className="min-h-0 flex-1">
             <ConversationContent
@@ -378,6 +469,17 @@ function ChatWindow({
                   </MessageContent>
                 </Message>
               ))}
+              {lastChoices && (
+                <VisualChoiceCards
+                  setId={lastChoices}
+                  selected={last ? (picked[last.id] ?? null) : null}
+                  disabled={busy}
+                  onPick={(choice: VisualChoice) => {
+                    if (last) setPicked((p) => ({ ...p, [last.id]: choice.value }));
+                    void send(choice.message);
+                  }}
+                />
+              )}
               {!!lastSuggestions.length && (
                 <Pills items={lastSuggestions} onPick={(t) => void send(t)} disabled={busy} />
               )}
