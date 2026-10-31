@@ -1,6 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { MessageCircle, RotateCcw, X, ArrowUpRight, FileText } from "lucide-react";
+import { MessageCircle, RotateCcw, X, ArrowUpRight, FileText, Plus } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -72,7 +72,7 @@ function Pills({
   hero?: boolean;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className={hero ? "grid grid-cols-2 gap-2" : "flex flex-wrap gap-2"}>
       {items.map((s) => (
         <Button
           key={s}
@@ -83,12 +83,12 @@ function Pills({
           onClick={() => onPick(s)}
           className={
             hero
-              ? "border-primary-foreground/35 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-foreground"
+              ? "h-11 min-w-0 justify-between whitespace-normal border-border bg-transparent px-3 text-left text-xs text-foreground shadow-none hover:border-primary hover:bg-secondary hover:text-foreground [&:last-child]:col-span-2"
               : ""
           }
         >
           {s}
-          {hero && <ArrowUpRight />}
+           {hero && <Plus className="shrink-0 text-primary" />}
         </Button>
       ))}
     </div>
@@ -111,11 +111,11 @@ export function TeamChat({ inline = false }: { inline?: boolean }) {
   }
   if (inline)
     return (
-      <div className="w-full">
+      <div className="h-full min-h-0 w-full">
         {stored ? (
           <ChatWindow key={stored.id} stored={stored} inline onReset={reset} />
         ) : (
-          <div className="h-36 bg-background" />
+          <div className="h-full animate-pulse bg-background" />
         )}
       </div>
     );
@@ -179,7 +179,6 @@ function ChatWindow({
 }) {
   const upload = useServerFn(uploadEstimateFile);
   const [uploading, setUploading] = useState(false);
-  const initialCount = useRef(stored.messages.length);
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -204,15 +203,6 @@ function ChatWindow({
       /* Continue without browser persistence when storage is unavailable. */
     }
   }, [stored, messages]);
-  useEffect(() => {
-    if (inline && messages.length > initialCount.current && messages.length === 1)
-      panel.current?.scrollIntoView({
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "instant"
-          : "smooth",
-        block: "center",
-      });
-  }, [inline, messages.length]);
   async function send(text: string) {
     if (!text.trim() || busy || uploading) return;
     await sendMessage({ text });
@@ -253,19 +243,19 @@ function ChatWindow({
         ).suggestions
       : [];
   return (
-    <>
-      {(!inline || active) && (
+    <div data-chat-active={active} className={inline ? "flex h-full min-h-0 flex-col px-5 lg:px-10 xl:px-12" : "flex min-h-0 flex-1 flex-col"}>
+      {(
         <div
           ref={panel}
           className={
             inline
-              ? "mb-4 flex h-[min(650px,70dvh)] min-h-80 flex-col border border-border bg-background text-foreground"
+              ? "flex min-h-0 flex-1 flex-col bg-background text-foreground"
               : "flex min-h-0 flex-1 flex-col"
           }
         >
           {inline && (
-            <div className="flex items-center justify-between border-b border-border px-5 py-3">
-              <p className="font-display text-lg">Your project, with Homes by Hines</p>
+            <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-3 lg:py-5">
+              <div className="min-w-0"><p className="flex items-center gap-2 text-xs font-semibold uppercase"><span className="size-1.5 shrink-0 rounded-full bg-primary" />Project estimate</p><p className="mt-1 hidden text-xs text-muted-foreground lg:block">Homes by Hines · No obligation</p></div>
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -277,14 +267,14 @@ function ChatWindow({
               </Button>
             </div>
           )}
-          <Conversation className="min-h-0 flex-1">
-            <ConversationContent className="gap-5 px-4 py-5 sm:px-5">
+           <Conversation className="min-h-0 flex-1">
+            <ConversationContent className={inline ? "gap-5 px-0 py-4 lg:py-6" : "gap-5 px-4 py-5 sm:px-5"}>
               {!active && (
                 <div className="text-sm text-muted-foreground">
-                  <p className="font-display text-xl text-foreground">What are you planning?</p>
-                  <p className="mt-2">Tell us about your house, site or garden.</p>
-                  <div className="mt-5">
-                    <Pills items={STARTERS} onPick={(t) => void send(t)} disabled={busy} />
+                  <p className="font-display text-2xl text-foreground lg:text-3xl">What are you planning?</p>
+                  <p className="mt-2 text-sm">{inline ? "A house, a room, or something outdoors." : "Tell us about your house, site or garden."}</p>
+                  <div className="mt-4 lg:mt-6">
+                    <Pills items={STARTERS} onPick={(t) => void send(inline ? `I'd like an estimate for a ${t.toLowerCase()}.` : t)} disabled={busy} hero={inline} />
                   </div>
                 </div>
               )}
@@ -369,7 +359,7 @@ function ChatWindow({
           </Conversation>
         </div>
       )}
-      <div className={inline ? "" : "border-t border-border p-3"}>
+      <div className={inline ? "shrink-0 pb-4 pt-2 lg:pb-6" : "shrink-0 border-t border-border p-3"}>
         <EstimateComposer
           onSend={submit}
           status={status}
@@ -378,16 +368,8 @@ function ChatWindow({
           uploading={uploading}
         />
       </div>
-      {inline && !active && (
-        <div className="mt-4">
-          <Pills
-            items={STARTERS}
-            onPick={(t) => void send(`I'd like an estimate for a ${t.toLowerCase()}.`)}
-            disabled={busy}
-            hero
-          />
-        </div>
-      )}
-    </>
+      {inline && <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">Indicative costs, not a fixed quotation. Unconfirmed pricing needs a team review.</p>}
+      </div>
+    </div>
   );
 }

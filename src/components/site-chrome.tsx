@@ -9,14 +9,14 @@ const nav = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-5">
-        <Link to="/" className="group flex items-baseline gap-3">
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 lg:flex lg:h-20 lg:justify-between lg:px-8">
+        <Link to="/" className="group flex min-w-0 items-baseline gap-3">
           <span className="block h-6 w-[3px] bg-primary" aria-hidden="true" />
-          <span className="font-display text-lg leading-none tracking-tight">
+          <span className="truncate font-display text-lg leading-none">
             Homes by Hines
           </span>
         </Link>
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {nav.map((item) => (
             <Link
               key={item.to}
@@ -32,7 +32,7 @@ export function SiteHeader() {
         <Link
           to="/about"
           hash="enquire"
-          className="border border-foreground px-4 py-2 text-xs uppercase tracking-[0.18em] transition-colors hover:bg-foreground hover:text-background"
+          className="shrink-0 border border-foreground px-4 py-2 text-xs uppercase transition-colors hover:bg-foreground hover:text-background"
         >
           Enquire
         </Link>
