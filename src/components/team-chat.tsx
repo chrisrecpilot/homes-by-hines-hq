@@ -115,7 +115,7 @@ function EstimatePanel({
   busy: boolean;
 }) {
   const bench = estimate.estimateType === "benchmark" ? estimate.benchmarkEstimate : null;
-  const range = bench && !estimate.total ? bench.range : estimate.total;
+  const range = bench ?? estimate.total;
   if (!range) return null;
   const s = estimate.specification;
   const area = s.length && s.width ? s.length * s.width * (s.storeys ?? 1) : null;

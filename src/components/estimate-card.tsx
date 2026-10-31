@@ -17,7 +17,7 @@ export function EstimateCard({
 }) {
   const s = estimate.specification;
   const bench = estimate.benchmarkEstimate;
-  const isBenchmark = estimate.estimateType === "benchmark" && bench && !estimate.total;
+  const isBenchmark = estimate.estimateType === "benchmark" && bench;
   const shownRange = isBenchmark ? bench.range : estimate.total;
   function download() {
     const text = [

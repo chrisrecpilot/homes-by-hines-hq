@@ -363,13 +363,18 @@ export function calculateEstimate(
   }
   const verifiedCount = lines.filter((l) => l.verified).length;
   const provisionalCount = lines.length - verifiedCount;
-  const estimateType: EstimateType | null = !hasCostBase
-    ? benchmarkEstimate
-      ? "benchmark"
-      : null
-    : missing.length === 0 && verifiedCount === lines.length
-      ? "detailed"
-      : "provisional";
+  // While essential cost lines are unpriced, an approved regional benchmark is the
+  // headline figure — a partial cost build-up must never pose as the project budget.
+  const estimateType: EstimateType | null =
+    !hasCostBase || unpricedCount > 0
+      ? benchmarkEstimate
+        ? "benchmark"
+        : hasCostBase
+          ? "provisional"
+          : null
+      : missing.length === 0 && verifiedCount === lines.length
+        ? "detailed"
+        : "provisional";
   return {
     specification: spec,
     lines,
