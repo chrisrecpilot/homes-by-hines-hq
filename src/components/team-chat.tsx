@@ -16,8 +16,14 @@ import { Tool, ToolContent, ToolHeader, ToolOutput } from "@/components/ai-eleme
 import { Button } from "@/components/ui/button";
 import { EstimateComposer } from "@/components/estimate-composer";
 import { EstimateCard } from "@/components/estimate-card";
+import {
+  VisualChoiceCards,
+  parseChoices,
+  stripChoices,
+  type VisualChoice,
+} from "@/components/visual-choices";
 import { uploadEstimateFile } from "@/lib/estimating/uploads.functions";
-import type { EstimateResult } from "@/lib/estimating/types";
+import { gbp, type EstimateResult } from "@/lib/estimating/types";
 
 const STORAGE_KEY = "hbh-team-chat";
 type Stored = { id: string; token: string; messages: UIMessage[] };
@@ -47,7 +53,7 @@ const STARTERS = [
 ];
 function splitSuggestions(text: string) {
   const m = text.match(/<suggestions>([\s\S]*?)(<\/suggestions>|$)/);
-  const body = text
+  const body = stripChoices(text)
     .replace(/<suggestions>[\s\S]*$/, "")
     .replace(/<[a-z]*$/, "")
     .trim();
