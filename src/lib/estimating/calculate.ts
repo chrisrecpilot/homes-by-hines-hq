@@ -124,6 +124,7 @@ export function calculateEstimate(
   const warnings: string[] = [];
   const lines: EstimateLine[] = [];
   const used = new Set<string>();
+  let unpricedCount = 0;
   if (!template || !tasks.length)
     missing.push("An approved project template is needed for this scope.");
   if (template?.data["approved"] !== true)
@@ -147,6 +148,7 @@ export function calculateEstimate(
     const q = quantity(spec, task.basis);
     if (q === null) {
       missing.push(`${task.name}: confirmed measurements/specification needed (${task.basis}).`);
+      unpricedCount++;
       continue;
     }
     if (q === 0) continue;
