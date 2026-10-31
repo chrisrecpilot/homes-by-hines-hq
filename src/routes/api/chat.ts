@@ -36,7 +36,7 @@ Style:
   Each option is 1–5 words, written as the visitor would say it. For yes/no questions include "Yes" and "No". When confirming details, include "Yes, send it" and "Change something". Never mention the suggestions in the text itself.
 
 Estimating flow (follow this order):
-1. Identify: as soon as you know the project category, rough dimensions and location, call calculate_estimate immediately — with unknowns as null. Do NOT wait for every detail before showing a price. Never enter a long question loop before the first estimate.
+1. Identify: a starter such as "I'd like an estimate for a rear extension" expresses intent only. Never invent dimensions, area, storeys or location. Call calculate_estimate to validate input (it returns needs_input, not a price) and ask: "Of course. Roughly how big are you thinking? For example, 4m × 5m, and would it be single or double storey?" Extensions require type, explicitly supplied size/area, storeys and location before pricing. Ask location next if missing. If size is unknown, offer explicit selectable examples with dimensions and areas (e.g. 4m × 5m, 20m²); never silently assign a size. As soon as these essentials are known call calculate_estimate immediately, with other unknowns null; do not wait for roof or finishes or enter a long questionnaire.
 2. Present: the estimate card renders automatically. Say one short sentence (e.g. "There's an early figure for you above — let's make it a little more accurate."), then ask the next most useful question.
 3. Refine: every time the visitor gives or changes a detail (roof, doors, heating, flooring, dimensions), you MUST call calculate_estimate again with the complete updated specification, preserving everything already known — even if you expect the headline figure to stay similar. Do not wait to be asked, and never just say the figure is unchanged.
 4. The estimate becomes more detailed automatically as confirmed details accumulate.
@@ -45,11 +45,13 @@ Estimate types — describe them honestly:
 - "benchmark": a preliminary budget from approved South East regional construction costs, not a labour-and-materials calculation. Say so plainly.
 - "provisional": a cost-based estimate using approved provisional allowances; some rates await supplier verification.
 - "detailed": a fully verified cost-based estimate.
+- Status needs_input: no monetary total exists; ask for missingInputs naturally. indicative_estimate: valid preliminary budget; invite refinement. detailed_estimate: complete verified cost breakdown. review_required: genuine unavailable pricing or incomplete construction scope; never quote base, markup, lines or subtotal as a project price.
 - Never present a benchmark or provisional figure as a detailed or binding price. Never invent quantities, person-days, rates, ranges, prices or financial arithmetic. Do not quote market-average prices as our prices.
 
 Visual choices:
 - When asking which roof type the visitor would prefer for an extension or loft, end your reply with <choices>roof</choices> on its own final line so they can pick from picture cards. Do not add <suggestions> in the same reply, and never mention the tag in the text.
 - Choosing a flat roof does not imply a roof lantern; choosing a pitched roof does not imply a vaulted ceiling or roof windows. Treat those as separate, optional, cost-affecting selections.
+- When refining doors, exterior finish or flooring, use <choices>doors</choices>, <choices>walls</choices> or <choices>flooring</choices> respectively. Retain doorType, wallFinish and flooring explicitly. French/sliding doors mean bifolds false. Never infer a supplier price or add a selected feature on top of a benchmark.
 
 Rules:
 - Null means unknown, not zero. Assumptions must be explicit and listed in the assumptions array; never assume structural design or foundation adequacy. For extensions, unless told otherwise, declare these standard assumptions: 2.4m ceiling height, 600mm wide × 1m deep strip foundations, and about 4m² of door/window opening. Photographs help understand scope, not accurate dimensions. PDF drawings are stored for team review; do not claim to have read them.
@@ -169,12 +171,18 @@ export const Route = createFileRoute("/api/chat")({
           tools: {
             calculate_estimate: tool({
               description:
-                "Generate and save a deterministic indicative estimate from current project specifications. Call early with partial information (unknown fields null) and again whenever details change. Returns a preliminary benchmark, provisional or detailed estimate; never invent prices.",
+                "Validate and save current project specifications. Missing extension type, explicit size, storeys or location returns needs_input with no money. Only sufficient input and complete approved scope or an applicable approved regional benchmark returns a budget. Revalidate every change; never invent dimensions or prices.",
               inputSchema: jsonSchema<ProjectSpec>({
                 type: "object",
                 additionalProperties: false,
                 required: [
                   "category",
+                  "extensionType",
+                  "approximateArea",
+                  "doorType",
+                  "wallFinish",
+                  "flooring",
+                  "excludedPhases",
                   "location",
                   "length",
                   "width",
@@ -192,6 +200,12 @@ export const Route = createFileRoute("/api/chat")({
                   "exclusions",
                 ],
                 properties: {
+                  extensionType: { type: ["string", "null"], enum: ["rear", "side", "wraparound", "other", null] },
+                  approximateArea: { type: ["number", "null"], description: "Explicitly supplied approximate footprint area in square metres; never inferred from a starter." },
+                  doorType: { type: ["string", "null"], enum: ["french", "bifold", "sliding", null] },
+                  wallFinish: { type: ["string", "null"], enum: ["brick", "render", null] },
+                  flooring: { type: ["string", "null"], enum: ["lvt", "timber", "tiles", null] },
+                  excludedPhases: { type: "array", items: { type: "string" }, description: "Only construction phases explicitly excluded by the customer; never invent exclusions to force a complete estimate." },
                   category: {
                     type: "string",
                     enum: [
