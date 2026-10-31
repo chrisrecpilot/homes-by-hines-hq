@@ -14,6 +14,12 @@ import { type CatalogEntry, type ProjectSpec } from "./types";
 
 const spec = (category: ProjectSpec["category"], length = 5, width = 4): ProjectSpec => ({
   category,
+  extensionType: category === "extension" ? "rear" : null,
+  approximateArea: null,
+  doorType: null,
+  wallFinish: null,
+  flooring: null,
+  excludedPhases: [],
   length,
   width,
   height: 2.4,
@@ -222,9 +228,9 @@ describe("Approved estimating rules", () => {
     expect(r.provisionalCount).toBe(1);
     expect(r.verifiedCount).toBe(0);
     expect(r.total?.expected).toBe(16800);
-    expect(r.status).toBe("estimated");
+    expect(r.status).toBe("indicative_estimate");
   });
-  it("flags an unapproved material without suppressing the whole estimate", () => {
+  it("retains partial lines but suppresses a price when a required material is missing", () => {
     const e: CatalogEntry[] = [
       ...entries,
       {
@@ -236,7 +242,11 @@ describe("Approved estimating rules", () => {
       },
     ];
     e[0] = {
-      ...e[0]!,
+      ...entries[0],
+      id: "template_repair",
+      kind: "template",
+      name: "Repair",
+      updated_at: "2026-10-31",
       data: {
         approved: true,
         tasks: [
@@ -257,10 +267,10 @@ describe("Approved estimating rules", () => {
       sales_vat_percent: 20,
       tax_confirmed: true,
     });
-    expect(r.total?.expected).toBe(16800);
+    expect(r.total).toBeNull();
     expect(r.unpricedCount).toBe(1);
     expect(r.missing.some((m) => m.includes("Repair materials"))).toBe(true);
-    expect(r.status).toBe("estimated");
+    expect(r.status).toBe("review_required");
   });
   it("falls back to an approved benchmark when no cost lines can be priced", () => {
     const bench: CatalogEntry = {
@@ -296,7 +306,7 @@ describe("Approved estimating rules", () => {
     });
     expect(r.benchmarkEstimate?.quantity).toBe(20);
     expect(r.markup.expected).toBe(0);
-    expect(r.status).toBe("estimated");
+    expect(r.status).toBe("indicative_estimate");
   });
   it("never applies business markup to a benchmark that includes a builder margin", () => {
     const bench: CatalogEntry = {
@@ -335,7 +345,7 @@ describe("Approved estimating rules", () => {
     expect(r.vatConfirmed).toBe(false);
     expect(r.total?.expected).toBe(16800);
     expect(r.warnings.some((w) => w.includes("VAT"))).toBe(true);
-    expect(r.status).toBe("estimated");
+    expect(r.status).toBe("indicative_estimate");
   });
   it("marks a fully verified complete calculation as detailed", () => {
     const e = entries.map((r) => ({
@@ -384,6 +394,6 @@ describe("Approved estimating rules", () => {
       tax_confirmed: true,
     });
     expect(r.base.expected).toBe(10000);
-    expect(r.total?.expected).toBe(11200);
+    expect(r.total).toBeNull();
   });
 });
