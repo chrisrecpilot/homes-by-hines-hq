@@ -12,8 +12,9 @@ describe("Category minimum information", () => {
     expect(minimumInputs(spec, [scopedBenchmark])).toEqual(["renovationScope", "specificationLevel"]);
     expect(headlineRange(calculateEstimate(spec, [], settings))).toBeNull();
   });
-  it("requires bathroom size and retained layout/fittings even for full refurbishment", () => {
-    expect(minimumInputs({ ...emptyProject("bathroom", "Full refurbishment"), renovationScope: "full" })).toEqual(["size", "layoutRetained", "fittingsRetained"]);
+  it("bathrooms need only scope and size (scope implies layout changes)", () => {
+    expect(minimumInputs({ ...emptyProject("bathroom", "Full refurbishment"), renovationScope: "full" })).toEqual(["size"]);
+    expect(minimumInputs({ ...emptyProject("bathroom", "Full refurbishment"), renovationScope: "full", roomSize: "standard" })).toEqual([]);
   });
   it("requires loft conversion type, area and roof information", () => {
     expect(minimumInputs(emptyProject("loft", "Loft conversion"))).toEqual(["loftType", "size", "existingRoof"]);

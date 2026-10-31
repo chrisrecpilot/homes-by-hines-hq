@@ -41,7 +41,7 @@ export type Database = {
       enquiries: {
         Row: {
           created_at: string
-          email: string
+          email: string | null
           enquiry_type: string
           id: string
           message: string
@@ -50,7 +50,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          email: string
+          email?: string | null
           enquiry_type?: string
           id?: string
           message: string
@@ -59,7 +59,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          email?: string
+          email?: string | null
           enquiry_type?: string
           id?: string
           message?: string

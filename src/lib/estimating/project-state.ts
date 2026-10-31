@@ -41,6 +41,8 @@ export function choicePatch(set: string, value: string): ProjectPatch | null {
     bathroom_scope: { refresh: { renovationScope: "refresh" }, replacement: { renovationScope: "replacement" }, full: { renovationScope: "full" } },
     specification: { standard: { specificationLevel: "standard" }, premium: { specificationLevel: "premium" }, bespoke: { specificationLevel: "bespoke" } },
     room_size: { small: { roomSize: "small" }, standard: { roomSize: "standard" }, large: { roomSize: "large" } },
+    kitchen_size: { small: { roomSize: "small" }, standard: { roomSize: "standard" }, large: { roomSize: "large" } },
+    bathroom_size: { small: { roomSize: "small" }, standard: { roomSize: "standard" }, large: { roomSize: "large" } },
     bathroom_layout: { retained: { layoutRetained: true }, changed: { layoutRetained: false } },
     bathroom_fittings: { retained: { fittingsRetained: true }, replaced: { fittingsRetained: false } },
   };
@@ -50,7 +52,7 @@ export function nextProjectQuestion(spec: ProjectSpec, missingFields?: string[])
   const missing = missingFields ?? minimumInputs(spec);
   const field = missing[0];
   if (field === "renovationScope") return `What sort of ${spec.category} work are you planning?\n<choices>${spec.category}_scope</choices>`;
-  if (field === "size") return spec.category === "extension" ? "Roughly how big are you thinking?\n<choices>sizes</choices>" : ["bathroom", "kitchen"].includes(spec.category) ? "Roughly how big is the room? You can give dimensions or choose a size.\n<choices>room_size</choices>" : "What is the approximate area or length? You can give rough measurements.";
+  if (field === "size") return spec.category === "extension" ? "Roughly how big are you thinking?\n<choices>sizes</choices>" : ["bathroom", "kitchen"].includes(spec.category) ? `Roughly how big is the room? Pick a size or tell us the measurements.\n<choices>${spec.category}_size</choices>` : "What is the approximate area or length? You can give rough measurements.";
   if (field === "storeys") return "Single or double storey?\n<choices>storeys</choices>";
   if (field === "specificationLevel") return "What level of finish are you thinking?\n<choices>specification</choices>";
   if (field === "layoutRetained") return "Will the plumbing and fittings stay in their current positions?\n<choices>bathroom_layout</choices>";
@@ -60,7 +62,7 @@ export function nextProjectQuestion(spec: ProjectSpec, missingFields?: string[])
   if (field === "workType") return "What work would you like us to carry out?";
   if (field === "finish") return "What material or finish are you thinking?";
   if (field) return "Could you tell us a little more about the work and its size?";
-  return "What would you like to refine?\n<choices>refine</choices>";
+  return spec.category === "extension" ? "Want to make that a little more accurate?\n<choices>refine</choices>" : "Want to add photos so we can refine it, or arrange a visit?\n<choices>refine_room</choices>";
 }
 /** Never send internal cost diagnostics or incomplete line items to a visitor or model. */
 export function customerEstimate(result: EstimateResult): EstimateResult {

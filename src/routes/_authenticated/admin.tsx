@@ -125,8 +125,8 @@ function Enquiries() {
             <span className="text-xs text-muted-foreground">{fmt(e.created_at)}</span>
           </div>
           <p className="mt-1 text-sm">
-            <a href={`mailto:${e.email}`} className="text-primary">{e.email}</a>
-            {e.phone && <> · <a href={`tel:${e.phone}`}>{e.phone}</a></>}
+            {e.phone && <a href={`tel:${e.phone}`} className="text-primary">{e.phone}</a>}
+            {e.email && <> · <a href={`mailto:${e.email}`}>{e.email}</a></>}
             <span className="eyebrow ml-3 text-muted-foreground">{e.enquiry_type}</span>
           </p>
           <p className="mt-4 whitespace-pre-wrap text-sm text-muted-foreground">{e.message}</p>

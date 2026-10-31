@@ -29,8 +29,8 @@ export const selectProjectChoice = createServerFn({ method: "POST" })
     } else {
       const patch = choicePatch(data.set, data.value);
       if (patch) state = await updateProjectState(data.sessionId, patch, data.revision);
-      else if (data.set === "refine") {
-        const replies: Record<string, string> = { roof: "Which roof would you prefer?\n<choices>roof</choices>", doors: "Which doors would you prefer?\n<choices>doors</choices>", finishes: "What exterior finish are you thinking?\n<choices>walls</choices>", photos: "You can attach photos or plans below. PDFs will be securely stored for the team to review.", survey: "What postcode or town is the project in?" };
+      else if (data.set === "refine" || data.set === "refine_room") {
+        const replies: Record<string, string> = { roof: "Which roof would you prefer?\n<choices>roof</choices>", doors: "Which doors would you prefer?\n<choices>doors</choices>", finishes: "What exterior finish are you thinking?\n<choices>walls</choices>", photos: "You can attach photos or plans below. PDFs will be securely stored for the team to review.", survey: "Of course. What's your name?" };
         response = replies[data.value] ?? "What would you like to explore next?";
       } else if (data.set === "sizes") response = "What dimensions do you have in mind? An approximate length and width is enough.";
       else throw new Error("Choose an available option.");
@@ -38,7 +38,7 @@ export const selectProjectChoice = createServerFn({ method: "POST" })
     if (!response && state) {
       response = state.pricingStatus === "needs_input" ? nextProjectQuestion(state.specification, state.estimate?.missingInputs)
         : state.estimate && headlineRange(state.estimate) && state.estimateRevision === state.revision ? nextProjectQuestion(state.specification)
-        : "This project needs a more tailored estimate. We can work through the details or arrange a visit.";
+        : "This one is best priced properly on site, as the scope varies too much for a reliable guide figure. We can arrange a free visit; just tap below or tell us more.\n<choices>refine_room</choices>";
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: conversation } = await supabaseAdmin.from("chat_conversations").select("messages").eq("id", data.sessionId).maybeSingle();

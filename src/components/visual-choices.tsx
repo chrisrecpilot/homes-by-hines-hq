@@ -38,9 +38,21 @@ const SETS: Record<string, VisualChoiceSet> = {
     { value: "bespoke", label: "Bespoke", description: "", message: "Bespoke specification." },
   ] },
   room_size: { id: "room_size", options: [
-    { value: "small", label: "Small", description: "", message: "A small room." },
-    { value: "standard", label: "Standard", description: "", message: "A standard-sized room." },
-    { value: "large", label: "Large", description: "", message: "A large room." },
+    { value: "small", label: "Compact room", description: "", message: "A compact room." },
+    { value: "standard", label: "Average room", description: "", message: "An average-sized room." },
+    { value: "large", label: "Large room", description: "", message: "A large room." },
+  ] },
+  kitchen_size: { id: "kitchen_size", options: [
+    { value: "small", label: "Compact · up to 10m²", description: "", message: "A compact kitchen, up to about 10m²." },
+    { value: "standard", label: "Average · 10–20m²", description: "", message: "An average kitchen, about 10–20m²." },
+    { value: "large", label: "Large · over 20m²", description: "", message: "A large kitchen, over 20m²." },
+    { value: "custom", label: "Enter my own", description: "", message: "I'll give you the measurements." },
+  ] },
+  bathroom_size: { id: "bathroom_size", options: [
+    { value: "small", label: "Compact · up to 4m²", description: "", message: "A compact bathroom, up to about 4m²." },
+    { value: "standard", label: "Average · 4–7m²", description: "", message: "An average bathroom, about 4–7m²." },
+    { value: "large", label: "Large · over 7m²", description: "", message: "A large bathroom, over 7m²." },
+    { value: "custom", label: "Enter my own", description: "", message: "I'll give you the measurements." },
   ] },
   bathroom_layout: { id: "bathroom_layout", options: [
     { value: "retained", label: "Keep positions", description: "", message: "Keep the plumbing layout." },
@@ -67,7 +79,11 @@ const SETS: Record<string, VisualChoiceSet> = {
     { value: "doors", label: "Choose doors", description: "French, bifold or sliding.", message: "Let me choose the doors." },
     { value: "finishes", label: "Choose finishes", description: "Exterior walls and flooring.", message: "Let me choose the exterior finish and flooring." },
     { value: "photos", label: "Upload photos or plans", description: "Helps us understand your space.", message: "I'd like to upload photos or plans." },
-    { value: "survey", label: "Arrange a survey", description: "A visit to confirm everything properly.", message: "I'd like to arrange a survey." },
+    { value: "survey", label: "Arrange a site visit", description: "A free visit to price it properly.", message: "I'd like to arrange a site visit." },
+  ] },
+  refine_room: { id: "refine_room", options: [
+    { value: "photos", label: "Upload photos or plans", description: "", message: "I'd like to upload photos or plans." },
+    { value: "survey", label: "Arrange a site visit", description: "", message: "I'd like to arrange a site visit." },
   ] },
   doors: { id: "doors", options: [
     { value: "french", label: "French doors", description: "Two hinged glazed doors.", image: frenchDoors, message: "I'd like French doors." },

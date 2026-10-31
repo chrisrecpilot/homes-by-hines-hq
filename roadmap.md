@@ -1,11 +1,19 @@
 # Current tasks
 
+## Full AI estimator upgrade (lean scope)
+- [x] Expert UK-builder prompt with security rules; single update_project tool for multi-detail changes; ft/ft² conversion.
+- [x] Sourced kitchen/bathroom market-guidance benchmarks (Checkatrade 2026, Fixatrader 2025), editable in admin.
+- [x] Phone-first follow-up (name → phone → optional email); phone required/email optional in DB and form.
+- [x] Measured kitchen/bathroom size cards, extension sizes/roof cards, site-visit refinement, lighter choice echoes, wider estimator, cleaner card.
+- [x] 70 tests pass; kitchen, extension (natural language + revision + advice + injection), bathroom mobile and site-visit journeys verified.
+- [ ] Chat rate limiting: no standard backend primitive yet. Needs your OK for an ad-hoc limit.
+- [ ] Your own job data to replace national kitchen/bathroom guidance; loft/landscaping benchmarks still unsourced.
+
 ## Estimating experience improvement brief
 - [x] P0: category-specific inputs, safe customer summaries/exports, scoped benchmark eligibility and regression tests; no invented category rates.
 - [x] P1: capability-owned versioned project state, direct editable choices, deterministic progression and price continuity.
 - [x] P1: compact mobile estimate, attachment previews/recovery and actionable admin diagnostics.
 - [x] Verified natural extension/kitchen/bathroom journeys, editable roof choices, reload continuity, non-pricing discussion, safe download and private PDF upload; 57 tests pass, no browser errors or mobile overflow.
-- [ ] Approved kitchen/bathroom/loft/landscaping prices — requires sourced, approved regional benchmark records.
 - [ ] Automatic PDF interpretation — configured model advertises text/image only; requires supported document extraction infrastructure and measurement-confirmation flow.
 - [ ] Staff editing/actuals end-to-end verification — no confirmed team account exists; session minting reports no auth users.
 

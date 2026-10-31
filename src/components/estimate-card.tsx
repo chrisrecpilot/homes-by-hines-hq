@@ -54,7 +54,7 @@ export function EstimateCard({
     <article className="my-3 w-full min-w-0 border border-border bg-card text-card-foreground">
       <div className="border-b border-border p-5">
         <p className="eyebrow text-primary">
-          Homes by Hines · {estimate.estimateType ? TYPE_LABELS[estimate.estimateType] : "Estimate"}
+          {isBenchmark && bench.unit === "job" ? "UK market guidance · not a quotation" : estimate.estimateType ? TYPE_LABELS[estimate.estimateType] : "Estimate"}
         </p>
         <h3 className="mt-3 text-2xl capitalize">{s.category.replaceAll("_", " ")}</h3>
         <p className="mt-2 text-sm text-muted-foreground">{s.description}</p>
@@ -93,11 +93,17 @@ export function EstimateCard({
               <span className="text-muted-foreground"> · {vatDisclosure}</span>
             </p>
             {isBenchmark ? (
-              <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
+              <details className="group mt-5 border-t border-border pt-4 text-sm">
+                <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-[0.14em] text-primary">
+                  What's included and how it's priced
+                </summary>
+                <div className="mt-3 space-y-2">
                 <p className="text-muted-foreground">
-                  Based on {gbp(bench.perUnit.low)}–{gbp(bench.perUnit.high)} per {bench.unit} for a{" "}
+                  {bench.unit === "job"
+                    ? <>Published market guidance for: {bench.specLevel ?? "this scope"}. Source: {bench.source}, reviewed{" "}</>
+                    : <>Based on {gbp(bench.perUnit.low)}–{gbp(bench.perUnit.high)} per {bench.unit} for a{" "}
                   {bench.specLevel ?? "standard specification"} ({bench.quantity}
-                  {bench.unit}), from {bench.source}, dated{" "}
+                  {bench.unit}), from {bench.source}, dated{" "}</>}
                   {new Date(bench.sourceDate).toLocaleDateString("en-GB")}.
                 </p>
                 {bench.marginIncluded && (
@@ -126,7 +132,8 @@ export function EstimateCard({
                     </ul>
                   </div>
                 )}
-              </div>
+                </div>
+              </details>
             ) : (
               <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
                 {(
@@ -173,9 +180,9 @@ export function EstimateCard({
           </>
         ) : (
           <>
-            <h4 className="text-xl">Ready for a pricing review</h4>
+            <h4 className="text-xl">Best priced on site</h4>
             <p className="mt-2 text-sm text-muted-foreground">
-              This project needs a more tailored estimate. We can help you work through the details or arrange a visit.
+              The scope varies too much for a reliable guide figure. A free visit lets us price it properly.
             </p>
           </>
         )}
@@ -224,10 +231,10 @@ export function EstimateCard({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => onAction("I'd like the team to email my estimate.")}
+                onClick={() => onAction("I'd like to upload plans or photos.")}
               >
                 <Mail />
-                Email estimate
+                Upload plans
               </Button>
               <Button
                 size="sm"

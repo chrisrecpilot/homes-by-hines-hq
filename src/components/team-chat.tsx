@@ -284,7 +284,7 @@ function ChatWindow({
       const result = await selectChoice({ data: { sessionId: stored.id, token: stored.token, revision: project?.revision ?? 0,
         set, value: choice.value, message: choice.message, category } });
       setProject(result.state);
-      const next: UIMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: choice.message }] },
+      const next: UIMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", metadata: { choice: true }, parts: [{ type: "text", text: choice.message }] },
         { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: result.response }] }];
       setMessages(next);
       setPicked((p) => ({ ...p, [set]: choice.value }));
@@ -377,7 +377,7 @@ function ChatWindow({
     const values: Record<string, string | null> = { roof: spec.roof, doors: spec.doorType, walls: spec.wallFinish, flooring: spec.flooring,
       storeys: spec.storeys ? String(spec.storeys) : null, sizes: spec.length && spec.width ? `${spec.length}x${spec.width}` : null,
       kitchen_scope: spec.renovationScope, bathroom_scope: spec.renovationScope, specification: spec.specificationLevel,
-      room_size: spec.roomSize, bathroom_layout: spec.layoutRetained === null ? null : spec.layoutRetained ? "retained" : "changed",
+      room_size: spec.roomSize, kitchen_size: spec.roomSize, bathroom_size: spec.roomSize, bathroom_layout: spec.layoutRetained === null ? null : spec.layoutRetained ? "retained" : "changed",
       bathroom_fittings: spec.fittingsRetained === null ? null : spec.fittingsRetained ? "retained" : "replaced" };
     return values[set] ?? picked[set] ?? null;
   }
@@ -452,12 +452,17 @@ function ChatWindow({
                   </div>
                 </div>
               )}
-              {messages.map((message) => (
+              {messages.map((message) => (message.metadata as { choice?: boolean } | undefined)?.choice ? (
+                <p key={message.id} className="self-end text-xs text-muted-foreground">
+                  <span className="mr-1.5 inline-block size-1.5 rounded-full bg-primary align-middle" />
+                  {message.parts.map((p) => (p.type === "text" ? p.text : "")).join("")}
+                </p>
+              ) : (
                 <Message key={message.id} from={message.role}>
                   <MessageContent
                     className={
                       message.role === "user"
-                        ? "group-[.is-user]:rounded-none group-[.is-user]:bg-foreground group-[.is-user]:text-background"
+                        ? "group-[.is-user]:rounded-none group-[.is-user]:bg-secondary group-[.is-user]:text-foreground"
                         : "min-w-0 w-full bg-transparent p-0"
                     }
                   >
@@ -507,7 +512,7 @@ function ChatWindow({
                     {message.role === "assistant" && message.id !== last?.id && (() => {
                       const set = parseChoices(message.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n"));
                       const repeated = set && messages.slice(messages.indexOf(message) + 1).some((later) => later.role === "assistant" && parseChoices(later.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n")) === set);
-                      return set && !repeated && !["refine"].includes(set) ? <VisualChoiceCards setId={set} selected={selectedValue(set)} disabled={busy}
+                      return set && !repeated && !["refine", "refine_room"].includes(set) ? <VisualChoiceCards setId={set} selected={selectedValue(set)} disabled={busy}
                         onPick={(choice) => choicePatch(set, choice.value) ? void pick(set, choice) : void send(choice.message)} /> : null;
                     })()}
                   </MessageContent>
@@ -520,7 +525,7 @@ function ChatWindow({
                   selected={selectedValue(lastChoices)}
                   disabled={busy}
                   onPick={(choice: VisualChoice) => {
-                    if (choicePatch(lastChoices, choice.value) || ["refine", "sizes"].includes(lastChoices)) void pick(lastChoices, choice);
+                    if (choicePatch(lastChoices, choice.value) || ["refine", "refine_room", "sizes"].includes(lastChoices)) void pick(lastChoices, choice);
                     else void send(choice.message);
                   }}
                 />
@@ -549,7 +554,7 @@ function ChatWindow({
         />
         {inline && (
           <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-            Indicative costs, not a fixed quotation. Unconfirmed pricing needs a team review.
+            Indicative costs, not a fixed quotation.
           </p>
         )}
       </div>
