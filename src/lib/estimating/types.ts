@@ -8,6 +8,7 @@ export const projectSchema = z
       "bathroom",
       "kitchen",
       "garden_wall",
+      "landscaping",
       "plastering",
       "knock_through",
       "repair",

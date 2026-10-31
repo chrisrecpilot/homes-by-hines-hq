@@ -70,7 +70,7 @@ export function EstimatingAdmin() {
         ))}
       </div>
       {section === "benchmark" && <div className="mt-5 flex flex-wrap gap-3 border-b border-border pb-4 text-xs">
-        {["extension", "kitchen", "bathroom", "loft", "garden_wall"].map((category) => {
+        {["extension", "kitchen", "bathroom", "loft", "garden_wall", "landscaping"].map((category) => {
           const approved = (catalog.data ?? []).filter((row) => row.kind === "benchmark" && row.data["category"] === category && row.data["approved"] === true);
           return <span key={category} className="capitalize">{category.replaceAll("_", " ")}: {approved.length ? `${approved.length} approved benchmark(s)` : "Needs sourced benchmark"}</span>;
         })}

@@ -50,7 +50,7 @@ export function nextProjectQuestion(spec: ProjectSpec): string {
   const missing = minimumInputs(spec);
   const field = missing[0];
   if (field === "renovationScope") return `What sort of ${spec.category} work are you planning?\n<choices>${spec.category}_scope</choices>`;
-  if (field === "size") return spec.category === "extension" ? "Roughly how big are you thinking?\n<choices>sizes</choices>" : `Roughly how big is the ${spec.category === "bathroom" || spec.category === "kitchen" ? "room" : "space"}? You can give dimensions or choose a size.\n<choices>room_size</choices>`;
+  if (field === "size") return spec.category === "extension" ? "Roughly how big are you thinking?\n<choices>sizes</choices>" : ["bathroom", "kitchen"].includes(spec.category) ? "Roughly how big is the room? You can give dimensions or choose a size.\n<choices>room_size</choices>" : "What is the approximate area or length? You can give rough measurements.";
   if (field === "storeys") return "Single or double storey?\n<choices>storeys</choices>";
   if (field === "specificationLevel") return "What level of finish are you thinking?\n<choices>specification</choices>";
   if (field === "layoutRetained") return "Will the plumbing and fittings stay in their current positions?\n<choices>bathroom_layout</choices>";

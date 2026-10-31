@@ -50,6 +50,7 @@ const STARTERS = [
   "Kitchen renovation",
   "Bathroom refurbishment",
   "Loft conversion",
+  "Landscaping",
   "General building work",
 ];
 function splitSuggestions(text: string) {
@@ -276,7 +277,7 @@ function ChatWindow({
     catch { /* Existing conversation remains usable if recovery temporarily fails. */ }
   }
   useEffect(() => { void refreshProject(); }, [stored.id]);
-  async function pick(set: string, choice: VisualChoice, category?: "extension" | "kitchen" | "bathroom" | "loft" | "general") {
+  async function pick(set: string, choice: VisualChoice, category?: "extension" | "kitchen" | "bathroom" | "loft" | "landscaping" | "general") {
     if (busy || uploading) return;
     setSelecting(true); setChoiceError(false);
     try {
@@ -439,7 +440,7 @@ function ChatWindow({
                     <Pills
                       items={STARTERS}
                       onPick={(t) => {
-                        const categories = { "Rear extension": "extension", "Kitchen renovation": "kitchen", "Bathroom refurbishment": "bathroom", "Loft conversion": "loft", "General building work": "general" } as const;
+                        const categories = { "Rear extension": "extension", "Kitchen renovation": "kitchen", "Bathroom refurbishment": "bathroom", "Loft conversion": "loft", "Landscaping": "landscaping", "General building work": "general" } as const;
                         const category = categories[t as keyof typeof categories];
                         if (category) void pick("starter", { value: category, label: t, description: "", message: `I'd like an estimate for a ${t.toLowerCase()}.` }, category);
                       }}

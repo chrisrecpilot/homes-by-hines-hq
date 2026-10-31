@@ -229,6 +229,7 @@ The following server-owned project state is authoritative; preserve its fields u
                       "bathroom",
                       "kitchen",
                       "garden_wall",
+                      "landscaping",
                       "plastering",
                       "knock_through",
                       "repair",

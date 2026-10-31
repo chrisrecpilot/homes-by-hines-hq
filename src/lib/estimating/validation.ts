@@ -25,6 +25,11 @@ export function minimumInputs(spec: ProjectSpec): string[] {
       if (!size) missing.push("size");
       if (!spec.existingRoof) missing.push("existingRoof");
     },
+    landscaping: () => {
+      if (!spec.workType) missing.push("workType");
+      if (!size && !spec.length) missing.push("size");
+      if (!spec.finish) missing.push("finish");
+    },
     garden_wall: () => {
       if (!spec.workType) missing.push("workType");
       if (!spec.length && !spec.approximateArea) missing.push("size");
@@ -85,7 +90,7 @@ export function benchmarkApplies(spec: ProjectSpec, data: Record<string, unknown
   } else if (spec.category !== "extension") {
     if (!data["region"]) return false;
     if (spec.category === "loft" && data["loftType"] !== spec.loftType) return false;
-    if (spec.category === "garden_wall" && (data["workType"] !== spec.workType || data["finish"] !== spec.finish)) return false;
+    if (["garden_wall", "landscaping"].includes(spec.category) && (data["workType"] !== spec.workType || data["finish"] !== spec.finish)) return false;
   }
   const supportedStoreys = data["storeys"] ?? (/single.storey/i.test(String(data["specLevel"])) ? 1 : null);
   if (spec.category === "extension" && spec.storeys !== supportedStoreys) return false;
