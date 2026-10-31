@@ -62,7 +62,7 @@ export function nextProjectQuestion(spec: ProjectSpec, missingFields?: string[])
   if (field === "workType") return "What work would you like us to carry out?";
   if (field === "finish") return "What material or finish are you thinking?";
   if (field) return "Could you tell us a little more about the work and its size?";
-  return "What would you like to refine?\n<choices>refine</choices>";
+  return spec.category === "extension" ? "Want to make that a little more accurate?\n<choices>refine</choices>" : "Want to add photos so we can refine it, or arrange a visit?\n<choices>refine_room</choices>";
 }
 /** Never send internal cost diagnostics or incomplete line items to a visitor or model. */
 export function customerEstimate(result: EstimateResult): EstimateResult {

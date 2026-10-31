@@ -79,7 +79,11 @@ const SETS: Record<string, VisualChoiceSet> = {
     { value: "doors", label: "Choose doors", description: "French, bifold or sliding.", message: "Let me choose the doors." },
     { value: "finishes", label: "Choose finishes", description: "Exterior walls and flooring.", message: "Let me choose the exterior finish and flooring." },
     { value: "photos", label: "Upload photos or plans", description: "Helps us understand your space.", message: "I'd like to upload photos or plans." },
-    { value: "survey", label: "Arrange a survey", description: "A visit to confirm everything properly.", message: "I'd like to arrange a survey." },
+    { value: "survey", label: "Arrange a site visit", description: "A free visit to price it properly.", message: "I'd like to arrange a site visit." },
+  ] },
+  refine_room: { id: "refine_room", options: [
+    { value: "photos", label: "Upload photos or plans", description: "", message: "I'd like to upload photos or plans." },
+    { value: "survey", label: "Arrange a site visit", description: "", message: "I'd like to arrange a site visit." },
   ] },
   doors: { id: "doors", options: [
     { value: "french", label: "French doors", description: "Two hinged glazed doors.", image: frenchDoors, message: "I'd like French doors." },

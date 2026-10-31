@@ -507,7 +507,7 @@ function ChatWindow({
                     {message.role === "assistant" && message.id !== last?.id && (() => {
                       const set = parseChoices(message.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n"));
                       const repeated = set && messages.slice(messages.indexOf(message) + 1).some((later) => later.role === "assistant" && parseChoices(later.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n")) === set);
-                      return set && !repeated && !["refine"].includes(set) ? <VisualChoiceCards setId={set} selected={selectedValue(set)} disabled={busy}
+                      return set && !repeated && !["refine", "refine_room"].includes(set) ? <VisualChoiceCards setId={set} selected={selectedValue(set)} disabled={busy}
                         onPick={(choice) => choicePatch(set, choice.value) ? void pick(set, choice) : void send(choice.message)} /> : null;
                     })()}
                   </MessageContent>
@@ -520,7 +520,7 @@ function ChatWindow({
                   selected={selectedValue(lastChoices)}
                   disabled={busy}
                   onPick={(choice: VisualChoice) => {
-                    if (choicePatch(lastChoices, choice.value) || ["refine", "sizes"].includes(lastChoices)) void pick(lastChoices, choice);
+                    if (choicePatch(lastChoices, choice.value) || ["refine", "refine_room", "sizes"].includes(lastChoices)) void pick(lastChoices, choice);
                     else void send(choice.message);
                   }}
                 />
