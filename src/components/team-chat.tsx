@@ -129,7 +129,7 @@ function EstimatePanel({
             {area ? `${area}m² ` : ""}
             {s.category.replaceAll("_", " ")}
           </span>
-          <span className="shrink-0 text-muted-foreground">
+          <span className="hidden shrink-0 text-muted-foreground sm:inline">
             {PANEL_TYPE_LABELS[estimate.estimateType ?? "provisional"]} ·{" "}
             {estimate.confidence.toLowerCase()} confidence
           </span>

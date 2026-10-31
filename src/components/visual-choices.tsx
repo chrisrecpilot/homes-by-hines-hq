@@ -108,7 +108,7 @@ export function VisualChoiceCards({
             aria-pressed={isSelected}
             className={cn(
               "group h-auto min-w-0 flex-col items-stretch gap-0 overflow-hidden rounded-none border border-border bg-card p-0 text-left whitespace-normal transition-colors",
-              "hover:border-primary focus-visible:outline-2 focus-visible:outline-primary",
+              "hover:border-primary hover:bg-card hover:text-card-foreground focus-visible:outline-2 focus-visible:outline-primary",
               "disabled:cursor-default",
               isSelected && "border-primary ring-1 ring-primary",
               selected !== null && !isSelected && "opacity-50",
