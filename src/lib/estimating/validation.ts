@@ -1,6 +1,6 @@
-import type { ProjectSpec, Task } from "./types";
+import type { CatalogEntry, ProjectSpec, Task } from "./types";
 
-export function minimumInputs(spec: ProjectSpec): string[] {
+export function minimumInputs(spec: ProjectSpec, catalog: CatalogEntry[] = []): string[] {
   const missing: string[] = [];
   const size = Boolean((spec.length && spec.width) || spec.approximateArea);
   const policies: Record<ProjectSpec["category"], () => void> = {
@@ -12,7 +12,7 @@ export function minimumInputs(spec: ProjectSpec): string[] {
     kitchen: () => {
       if (!spec.renovationScope) missing.push("renovationScope");
       if (!size && !spec.roomSize) missing.push("size");
-      if (!spec.specificationLevel) missing.push("specificationLevel");
+      if (!spec.specificationLevel && catalog.some((row) => row.kind === "benchmark" && row.data["approved"] === true && row.data["category"] === "kitchen" && row.data["specificationLevel"])) missing.push("specificationLevel");
     },
     bathroom: () => {
       if (!spec.renovationScope) missing.push("renovationScope");

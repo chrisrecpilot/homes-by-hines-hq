@@ -116,7 +116,7 @@ export function calculateEstimate(
   settings: PricingSettings,
 ): EstimateResult {
   const spec = projectSchema.parse(input);
-  const missingInputs = minimumInputs(spec);
+  const missingInputs = minimumInputs(spec, catalog);
   if (missingInputs.length) return {
     specification: spec, lines: [], missing: [],
     missingInputs, scopeComplete: false, assumptions: spec.assumptions, exclusions: spec.exclusions,

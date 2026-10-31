@@ -46,8 +46,8 @@ export function choicePatch(set: string, value: string): ProjectPatch | null {
   };
   return map[set]?.[value] ?? null;
 }
-export function nextProjectQuestion(spec: ProjectSpec): string {
-  const missing = minimumInputs(spec);
+export function nextProjectQuestion(spec: ProjectSpec, missingFields?: string[]): string {
+  const missing = missingFields ?? minimumInputs(spec);
   const field = missing[0];
   if (field === "renovationScope") return `What sort of ${spec.category} work are you planning?\n<choices>${spec.category}_scope</choices>`;
   if (field === "size") return spec.category === "extension" ? "Roughly how big are you thinking?\n<choices>sizes</choices>" : ["bathroom", "kitchen"].includes(spec.category) ? "Roughly how big is the room? You can give dimensions or choose a size.\n<choices>room_size</choices>" : "What is the approximate area or length? You can give rough measurements.";

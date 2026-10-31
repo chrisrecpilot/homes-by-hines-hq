@@ -36,7 +36,7 @@ export const selectProjectChoice = createServerFn({ method: "POST" })
       else throw new Error("Choose an available option.");
     }
     if (!response && state) {
-      response = state.pricingStatus === "needs_input" ? nextProjectQuestion(state.specification)
+      response = state.pricingStatus === "needs_input" ? nextProjectQuestion(state.specification, state.estimate?.missingInputs)
         : state.estimate && headlineRange(state.estimate) && state.estimateRevision === state.revision ? nextProjectQuestion(state.specification)
         : "This project needs a more tailored estimate. We can work through the details or arrange a visit.";
     }

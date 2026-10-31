@@ -5,9 +5,11 @@ import { calculateEstimate } from "./calculate";
 import { headlineRange, type CatalogEntry } from "./types";
 const settings = { markup_percent: 12, vat_registered: null, sales_vat_percent: 20, tax_confirmed: false };
 describe("Category minimum information", () => {
-  it("requires kitchen scope and specification for a 36m² kitchen", () => {
+  it("requires kitchen scope for a 36m² kitchen, and finish only when an approved benchmark requires it", () => {
     const spec = { ...emptyProject("kitchen", "Renovate my kitchen"), length: 6, width: 6 };
-    expect(minimumInputs(spec)).toEqual(["renovationScope", "specificationLevel"]);
+    expect(minimumInputs(spec)).toEqual(["renovationScope"]);
+    const scopedBenchmark: CatalogEntry = { id: "fixture", kind: "benchmark", name: "Fixture", updated_at: "2026-10-31", data: { approved: true, category: "kitchen", specificationLevel: "standard" } };
+    expect(minimumInputs(spec, [scopedBenchmark])).toEqual(["renovationScope", "specificationLevel"]);
     expect(headlineRange(calculateEstimate(spec, [], settings))).toBeNull();
   });
   it("requires bathroom size and retained layout/fittings even for full refurbishment", () => {
