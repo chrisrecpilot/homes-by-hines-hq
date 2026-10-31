@@ -554,7 +554,7 @@ function ChatWindow({
         />
         {inline && (
           <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-            Indicative costs, not a fixed quotation. Unconfirmed pricing needs a team review.
+            Indicative costs, not a fixed quotation.
           </p>
         )}
       </div>
