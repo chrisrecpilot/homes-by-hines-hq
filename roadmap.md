@@ -1,5 +1,11 @@
 # Current tasks
 
+## Estimating experience improvement brief
+- [ ] P0: category-specific inputs, safe customer summaries/exports, appropriate approved benchmarks and regression tests.
+- [ ] P1: capability-owned versioned project state, direct editable choices, deterministic progression and price continuity.
+- [ ] P1: compact mobile estimate, attachment previews/recovery and actionable admin diagnostics.
+- [ ] Verify customer journeys and record approved-data/drawing-processing limitations.
+
 ## P0 — simplify the estimating experience
 - [x] Hide all internal tool-execution cards from customers; only the current estimate card and genuine errors render.
 - [x] Remove acknowledgement language ("noted/saved/updated"); selections silently update state and progress to the next question.
