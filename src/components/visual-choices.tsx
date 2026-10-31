@@ -144,7 +144,7 @@ export function VisualChoiceCards({
   const set = getChoiceSet(setId);
   if (!set) return null;
   return (
-    <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3" role="group" aria-label="Options">
+    <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3" role="group" aria-label={`${setId.replaceAll("_", " ")} options`}>
       {set.options.map((option) => {
         const isSelected = selected === option.value;
         return (

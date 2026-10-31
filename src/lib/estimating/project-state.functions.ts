@@ -40,5 +40,12 @@ export const selectProjectChoice = createServerFn({ method: "POST" })
         : state.estimate && headlineRange(state.estimate) && state.estimateRevision === state.revision ? nextProjectQuestion(state.specification)
         : "This project needs a more tailored estimate. We can work through the details or arrange a visit.";
     }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: conversation } = await supabaseAdmin.from("chat_conversations").select("messages").eq("id", data.sessionId).maybeSingle();
+    const messages = Array.isArray(conversation?.messages) ? conversation.messages : [];
+    const { error: saveError } = await supabaseAdmin.from("chat_conversations").upsert({ id: data.sessionId,
+      messages: [...messages, { id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: data.message }] },
+        { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: response }] }], updated_at: new Date().toISOString() });
+    if (saveError) console.error("Choice conversation save failed", saveError);
     return { state: state ? customerState(state) : null, response };
   });

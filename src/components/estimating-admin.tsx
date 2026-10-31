@@ -536,6 +536,21 @@ function Reviews() {
                 createdAt: row.created_at,
               }}
             />
+            <section className="my-5 border-y border-border py-4">
+              <h3 className="text-lg">Pricing review</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Status: {(row.result as unknown as EstimateResult).status?.replaceAll("_", " ") ?? "Legacy estimate"}
+              </p>
+              <h4 className="mt-3 text-sm font-medium">Customer details to collect</h4>
+              <p className="text-xs text-muted-foreground">{(row.result as unknown as EstimateResult).missingInputs?.join(", ") || "Minimum details supplied"}</p>
+              <h4 className="mt-3 text-sm font-medium">Internal pricing gaps — resolve in the catalogue</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-muted-foreground">
+                {(row.result as unknown as EstimateResult).missing.map((issue, index) => <li key={index}>{issue}</li>)}
+              </ul>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Confirm missing prices and productivity, approve scope coverage, or maintain a sourced category benchmark. Changes affect new versions only.
+              </p>
+            </section>
             <div className="my-4 flex flex-wrap gap-2">
               {q.data?.uploads
                 .filter((u) => u.session_id === row.session_id)
