@@ -38,9 +38,21 @@ const SETS: Record<string, VisualChoiceSet> = {
     { value: "bespoke", label: "Bespoke", description: "", message: "Bespoke specification." },
   ] },
   room_size: { id: "room_size", options: [
-    { value: "small", label: "Small", description: "", message: "A small room." },
-    { value: "standard", label: "Standard", description: "", message: "A standard-sized room." },
-    { value: "large", label: "Large", description: "", message: "A large room." },
+    { value: "small", label: "Compact room", description: "", message: "A compact room." },
+    { value: "standard", label: "Average room", description: "", message: "An average-sized room." },
+    { value: "large", label: "Large room", description: "", message: "A large room." },
+  ] },
+  kitchen_size: { id: "kitchen_size", options: [
+    { value: "small", label: "Compact · up to 10m²", description: "", message: "A compact kitchen, up to about 10m²." },
+    { value: "standard", label: "Average · 10–20m²", description: "", message: "An average kitchen, about 10–20m²." },
+    { value: "large", label: "Large · over 20m²", description: "", message: "A large kitchen, over 20m²." },
+    { value: "custom", label: "Enter my own", description: "", message: "I'll give you the measurements." },
+  ] },
+  bathroom_size: { id: "bathroom_size", options: [
+    { value: "small", label: "Compact · up to 4m²", description: "", message: "A compact bathroom, up to about 4m²." },
+    { value: "standard", label: "Average · 4–7m²", description: "", message: "An average bathroom, about 4–7m²." },
+    { value: "large", label: "Large · over 7m²", description: "", message: "A large bathroom, over 7m²." },
+    { value: "custom", label: "Enter my own", description: "", message: "I'll give you the measurements." },
   ] },
   bathroom_layout: { id: "bathroom_layout", options: [
     { value: "retained", label: "Keep positions", description: "", message: "Keep the plumbing layout." },
