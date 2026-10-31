@@ -13,6 +13,12 @@ export const projectSchema = z
       "repair",
       "general",
     ]),
+    extensionType: z.enum(["rear", "side", "wraparound", "other"]).nullable().default(null),
+    approximateArea: z.number().positive().max(10000).nullable().default(null),
+    doorType: z.enum(["french", "bifold", "sliding"]).nullable().default(null),
+    wallFinish: z.enum(["brick", "render"]).nullable().default(null),
+    flooring: z.enum(["lvt", "timber", "tiles"]).nullable().default(null),
+    excludedPhases: z.array(z.string().max(80)).max(20).default([]),
     location: z.string().max(150).nullable(),
     length: z.number().positive().max(100).nullable(),
     width: z.number().positive().max(100).nullable(),
@@ -57,6 +63,7 @@ export type Task = {
   expense?: string;
   condition?: string;
   workers?: number;
+  phase?: string;
 };
 export type EstimateLine = {
   id: string;
@@ -107,8 +114,17 @@ export type EstimateResult = {
   unpricedCount: number;
   vatConfirmed: boolean;
   confidence: "Higher" | "Moderate" | "Lower";
-  status: "estimated" | "review_required";
+  status: "needs_input" | "indicative_estimate" | "detailed_estimate" | "review_required";
+  missingInputs: string[];
+  scopeComplete: boolean;
 };
+/** The only monetary headline allowed in cards and compact summaries, including old snapshots. */
+export function headlineRange(estimate: EstimateResult): Range | null {
+  if (estimate.status === "needs_input") return null;
+  if (estimate.estimateType === "benchmark") return estimate.benchmarkEstimate?.range ?? null;
+  if (estimate.status === "review_required" || estimate.scopeComplete !== true) return null;
+  return estimate.total;
+}
 export const gbp = (pence: number) =>
   new Intl.NumberFormat("en-GB", {
     style: "currency",

@@ -1,6 +1,6 @@
 import { Download, Mail, MapPin, Pencil, Ruler, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { gbp, type EstimateResult } from "@/lib/estimating/types";
+import { gbp, headlineRange, type EstimateResult } from "@/lib/estimating/types";
 
 const TYPE_LABELS = {
   benchmark: "Preliminary estimate · South East regional construction costs",
@@ -18,7 +18,11 @@ export function EstimateCard({
   const s = estimate.specification;
   const bench = estimate.benchmarkEstimate;
   const isBenchmark = estimate.estimateType === "benchmark" && bench;
-  const shownRange = isBenchmark ? bench.range : estimate.total;
+  const shownRange = headlineRange(estimate);
+  if (estimate.status === "needs_input") return null;
+  const vatDisclosure = isBenchmark
+    ? bench.vatBasis === "inclusive" ? "VAT included" : bench.vatBasis === "not_applicable" ? "VAT not applicable" : "plus VAT (to confirm)"
+    : estimate.vatConfirmed ? (estimate.vat?.expected ? "VAT included" : "VAT not applicable") : "plus VAT (to confirm)";
   function download() {
     const text = [
       "Homes by Hines — Indicative estimate",
@@ -28,6 +32,8 @@ export function EstimateCard({
         ? `${gbp(shownRange.low)}–${gbp(shownRange.high)} | Expected: ${gbp(shownRange.expected)}`
         : "Manual pricing review required — no complete budget available",
       estimate.estimateType ? `Estimate type: ${TYPE_LABELS[estimate.estimateType]}` : "",
+      vatDisclosure,
+      "Any cost lines below are a separate build-up, not additions to a benchmark or a complete project subtotal.",
       ...estimate.lines.map(
         (l) =>
           `${l.name}: ${l.quantity.expected.toFixed(2)} ${l.unit} × ${gbp(l.rates.expected)} = ${gbp(l.cost.expected)}`,
@@ -84,16 +90,14 @@ export function EstimateCard({
             </p>
             <p className="mt-2 text-sm">
               Expected cost: <strong>{gbp(shownRange.expected)}</strong>
-              {!estimate.vatConfirmed && (
-                <span className="text-muted-foreground"> · plus VAT (to confirm)</span>
-              )}
+              <span className="text-muted-foreground"> · {vatDisclosure}</span>
             </p>
             {isBenchmark ? (
               <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
                 <p className="text-muted-foreground">
                   Based on {gbp(bench.perUnit.low)}–{gbp(bench.perUnit.high)} per {bench.unit} for a{" "}
                   {bench.specLevel ?? "standard specification"} ({bench.quantity}
-                  {bench.unit}), from {bench.source}, checked{" "}
+                  {bench.unit}), from {bench.source}, dated{" "}
                   {new Date(bench.sourceDate).toLocaleDateString("en-GB")}.
                 </p>
                 {bench.marginIncluded && (
@@ -162,7 +166,7 @@ export function EstimateCard({
             {estimate.missing.length > 0 && (
               <p className="mt-3 text-xs text-muted-foreground">
                 {estimate.unpricedCount > 0
-                  ? `${estimate.unpricedCount} item${estimate.unpricedCount === 1 ? "" : "s"} still need confirmed pricing and are not yet included above.`
+                  ? isBenchmark ? "The separate cost breakdown is incomplete; the whole-project benchmark remains the preliminary budget." : `${estimate.unpricedCount} items need confirmed pricing.`
                   : "Some details still need team confirmation."}
               </p>
             )}
@@ -191,6 +195,7 @@ export function EstimateCard({
             Scope, calculations & assumptions
           </summary>
           <div className="mt-3 space-y-3">
+            {!estimate.scopeComplete && <p>Partial cost lines for review only — not a whole-project price and not additions to the benchmark.</p>}
             {estimate.lines.map((l) => (
               <p key={l.id}>
                 <strong>{l.name}</strong>

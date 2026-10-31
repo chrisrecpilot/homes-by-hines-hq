@@ -23,7 +23,7 @@ import {
   type VisualChoice,
 } from "@/components/visual-choices";
 import { uploadEstimateFile } from "@/lib/estimating/uploads.functions";
-import { gbp, type EstimateResult } from "@/lib/estimating/types";
+import { gbp, headlineRange, type EstimateResult } from "@/lib/estimating/types";
 
 const STORAGE_KEY = "hbh-team-chat";
 type Stored = { id: string; token: string; messages: UIMessage[] };
@@ -115,10 +115,11 @@ function EstimatePanel({
   busy: boolean;
 }) {
   const bench = estimate.estimateType === "benchmark" ? estimate.benchmarkEstimate : null;
-  const range = bench ? bench.range : estimate.total;
+  const range = headlineRange(estimate);
+  if (stale || busy) return <p className="shrink-0 border-b border-border py-3 text-xs text-muted-foreground">Updating your project budget — previous figures are no longer current.</p>;
   if (!range) return null;
   const s = estimate.specification;
-  const area = s.length && s.width ? s.length * s.width * (s.storeys ?? 1) : null;
+  const area = (s.length && s.width ? s.length * s.width : s.approximateArea ?? 0) * (s.storeys ?? 1);
   return (
     <details className="group shrink-0 border-b border-border bg-card text-card-foreground">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-1 py-2.5 text-xs [&::-webkit-details-marker]:hidden">
@@ -128,20 +129,20 @@ function EstimatePanel({
             {area ? `${area}m² ` : ""}
             {s.category.replaceAll("_", " ")}
           </span>
-          <span className="shrink-0 text-muted-foreground">
+          <span className="hidden shrink-0 text-muted-foreground sm:inline">
             {PANEL_TYPE_LABELS[estimate.estimateType ?? "provisional"]} ·{" "}
             {estimate.confidence.toLowerCase()} confidence
           </span>
         </span>
         <span className="shrink-0 font-display text-sm">
           {gbp(range.low)}–{gbp(range.high)}
-          {!estimate.vatConfirmed && <span className="text-muted-foreground"> +VAT</span>}
+          {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && <span className="text-muted-foreground"> +VAT</span>}
         </span>
       </summary>
       <div className="space-y-1 px-1 pb-3 text-xs text-muted-foreground">
         <p>
           Expected {gbp(range.expected)}
-          {!estimate.vatConfirmed && " plus VAT (to confirm)"} ·{" "}
+          {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && " plus VAT (to confirm)"} ·{" "}
           {estimate.estimateType === "benchmark"
             ? "based on South East regional construction costs"
             : estimate.estimateType === "detailed"
@@ -314,7 +315,7 @@ function ChatWindow({
     for (let i = messages.length - 1; i >= 0; i--) {
       const m = messages[i];
       if (m?.role !== "assistant") continue;
-      for (const p of m.parts) {
+      for (const p of [...m.parts].reverse()) {
         if (
           p.type === "tool-calculate_estimate" &&
           (p as { state?: string }).state === "output-available" &&
@@ -441,7 +442,7 @@ function ChatWindow({
                             : null;
                         return (
                           <div key={i}>
-                            {estimate && (
+                            {estimate && latestEstimate?.estimate === estimate && !estimateStale && !busy && (
                               <EstimateCard estimate={estimate} onAction={(t) => void send(t)} />
                             )}
                             <Tool defaultOpen={false}>

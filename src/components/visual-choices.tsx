@@ -2,6 +2,15 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import roofFlat from "@/assets/roof-flat.jpg";
 import roofPitched from "@/assets/roof-pitched.jpg";
+import frenchDoors from "@/assets/doors-0.jpg";
+import bifoldDoors from "@/assets/doors-1.jpg";
+import slidingDoors from "@/assets/doors-2.jpg";
+import brickWall from "@/assets/walls-0.jpg";
+import renderWall from "@/assets/walls-1.jpg";
+import lvtFloor from "@/assets/flooring-0.jpg";
+import timberFloor from "@/assets/flooring-1.jpg";
+import tileFloor from "@/assets/flooring-2.jpg";
+import { Button } from "@/components/ui/button";
 
 export type VisualChoice = {
   value: string;
@@ -13,6 +22,20 @@ export type VisualChoice = {
 export type VisualChoiceSet = { id: string; options: VisualChoice[] };
 
 const SETS: Record<string, VisualChoiceSet> = {
+  doors: { id: "doors", options: [
+    { value: "french", label: "French doors", description: "Two hinged glazed doors.", image: frenchDoors, message: "I'd like French doors." },
+    { value: "bifold", label: "Bifold doors", description: "Folding glazed panels.", image: bifoldDoors, message: "I'd like bifold doors." },
+    { value: "sliding", label: "Sliding doors", description: "Large sliding glazed panels.", image: slidingDoors, message: "I'd like sliding doors." },
+  ] },
+  walls: { id: "walls", options: [
+    { value: "brick", label: "Brickwork", description: "Exposed facing brick.", image: brickWall, message: "I'd like exposed brickwork outside." },
+    { value: "render", label: "Render", description: "A smooth rendered exterior.", image: renderWall, message: "I'd like a rendered exterior." },
+  ] },
+  flooring: { id: "flooring", options: [
+    { value: "lvt", label: "LVT flooring", description: "Wood-effect luxury vinyl.", image: lvtFloor, message: "I'd like LVT flooring." },
+    { value: "timber", label: "Timber flooring", description: "Natural timber boards.", image: timberFloor, message: "I'd like timber flooring." },
+    { value: "tiles", label: "Floor tiles", description: "Large-format porcelain tiles.", image: tileFloor, message: "I'd like tiled flooring." },
+  ] },
   roof: {
     id: "roof",
     options: [
@@ -76,15 +99,16 @@ export function VisualChoiceCards({
       {set.options.map((option) => {
         const isSelected = selected === option.value;
         return (
-          <button
+          <Button
             key={option.value}
             type="button"
+            variant="outline"
             disabled={disabled || selected !== null}
             onClick={() => onPick(option)}
             aria-pressed={isSelected}
             className={cn(
-              "group flex min-w-0 flex-col border border-border bg-card text-left transition-colors",
-              "hover:border-primary focus-visible:outline-2 focus-visible:outline-primary",
+              "group h-auto min-w-0 flex-col items-stretch gap-0 overflow-hidden rounded-none border border-border bg-card p-0 text-left whitespace-normal transition-colors",
+              "hover:border-primary hover:bg-card hover:text-card-foreground focus-visible:outline-2 focus-visible:outline-primary",
               "disabled:cursor-default",
               isSelected && "border-primary ring-1 ring-primary",
               selected !== null && !isSelected && "opacity-50",
@@ -120,7 +144,7 @@ export function VisualChoiceCards({
                 {option.description}
               </span>
             </span>
-          </button>
+          </Button>
         );
       })}
     </div>
