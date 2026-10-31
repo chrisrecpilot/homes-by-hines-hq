@@ -9,12 +9,16 @@
 
 ## P0 upgrade — fix estimate generation, visual choices, live pricing
 
-- [ ] Replace all-or-nothing pricing gate with tiered statuses (verified / approved provisional / missing) so provisional allowances still produce indicative ranges.
-- [ ] Seed approved provisional South East/Kent baselines for single-storey extension phases plus an approved regional £/m² benchmark (source, date, inclusions, VAT basis recorded).
-- [ ] Progressive pricing in chat: preliminary benchmark/provisional price early, refine automatically as details arrive, detailed cost-based estimate when data allows.
-- [ ] Distinguish preliminary benchmark vs provisional vs detailed estimates in the estimate card.
-- [ ] Visual roof selector (flat/pitched/not sure) with selectable image cards in chat.
-- [ ] Persistent compact estimate panel that updates as the specification changes and flags stale prices.
-- [ ] Re-test the 36m² Maidstone conversation end-to-end and report the displayed price, method and assumptions.
+- [x] Replace all-or-nothing pricing gate with tiered statuses (verified / approved provisional / missing) so provisional allowances still produce indicative ranges.
+- [x] Seed approved provisional South East/Kent baselines for single-storey extension phases plus an approved regional £/m² benchmark (source, date, inclusions, VAT basis recorded).
+- [x] Progressive pricing in chat: preliminary benchmark/provisional price early, refine automatically as details arrive, detailed cost-based estimate when data allows.
+- [x] Distinguish preliminary benchmark vs provisional vs detailed estimates in the estimate card.
+- [x] Visual roof selector (flat/pitched/not sure) with selectable image cards in chat.
+- [x] Persistent compact estimate panel that updates as the specification changes and flags stale prices.
+- [x] Re-test the 36m² Maidstone conversation end-to-end: £64,800–£90,000 + VAT benchmark headline, recalculation on roof choice and dimension change verified on desktop and mobile.
+- [ ] Make visual choice images manageable from the admin area (currently a code registry in visual-choices.tsx).
+- [ ] Expand the visual selection library (doors, finishes, flooring, kitchen/bathroom levels) — P2.
+- [ ] Improve architectural drawing/PDF interpretation — uploads preserved; PDFs currently stored for team review without content analysis.
+- [ ] Seed approved provisional baselines for non-extension categories (kitchen, bathroom, loft, garden) so they price like extensions.
 - [ ] Verify admin editing and actual-cost review end-to-end — requires a confirmed team account; session minting reports no auth users.
 - [ ] Extend completed-job calibration to task-level quantities and productivity recommendations — requires actual job records for meaningful validation.
