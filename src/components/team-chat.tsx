@@ -468,6 +468,17 @@ function ChatWindow({
                   </MessageContent>
                 </Message>
               ))}
+              {lastChoices && (
+                <VisualChoiceCards
+                  setId={lastChoices}
+                  selected={last ? (picked[last.id] ?? null) : null}
+                  disabled={busy}
+                  onPick={(choice: VisualChoice) => {
+                    if (last) setPicked((p) => ({ ...p, [last.id]: choice.value }));
+                    void send(choice.message);
+                  }}
+                />
+              )}
               {!!lastSuggestions.length && (
                 <Pills items={lastSuggestions} onPick={(t) => void send(t)} disabled={busy} />
               )}
