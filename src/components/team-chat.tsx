@@ -159,7 +159,6 @@ function EstimatePanel({
               ? "Your latest changes may not be priced yet — we'll recalculate as we go."
               : "Indicative · Based on current specification."}
         </p>
-        <EstimateCard estimate={estimate} />
       </div>
     </details>
   );
@@ -326,6 +325,8 @@ function ChatWindow({
         uploadCache.current.set(f.url, saved);
         uploaded.push(saved);
       }
+      setUploading(false);
+      setUploadProgress(null);
       await sendMessage({
         text: text.trim() || "I've attached a photo or drawing for this project.",
         files: uploaded,
