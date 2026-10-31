@@ -306,7 +306,8 @@ function ChatWindow({
           .map((p) => p.text)
           .join("\n")
       : "";
-  const lastSuggestions = !busy && last?.role === "assistant" ? splitSuggestions(lastText).suggestions : [];
+  const lastSuggestions =
+    !busy && last?.role === "assistant" ? splitSuggestions(lastText).suggestions : [];
   const lastChoices = !busy && last?.role === "assistant" ? parseChoices(lastText) : null;
   const [picked, setPicked] = useState<Record<string, string>>({});
   const latestEstimate = useMemo(() => {

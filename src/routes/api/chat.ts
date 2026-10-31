@@ -169,7 +169,7 @@ export const Route = createFileRoute("/api/chat")({
           tools: {
             calculate_estimate: tool({
               description:
-                "Generate and save a deterministic cost-based indicative estimate from current project specifications. Unknown fields must be null. Never invent prices; missing approved pricing returns review_required.",
+                "Generate and save a deterministic indicative estimate from current project specifications. Call early with partial information (unknown fields null) and again whenever details change. Returns a preliminary benchmark, provisional or detailed estimate; never invent prices.",
               inputSchema: jsonSchema<ProjectSpec>({
                 type: "object",
                 additionalProperties: false,

@@ -343,7 +343,8 @@ export function calculateEstimate(
         source: String(benchmark.data["source"]),
         sourceDate: String(benchmark.data["sourceDate"]),
         vatBasis: String(benchmark.data["vatBasis"] ?? "unknown"),
-        specLevel: typeof benchmark.data["specLevel"] === "string" ? benchmark.data["specLevel"] : null,
+        specLevel:
+          typeof benchmark.data["specLevel"] === "string" ? benchmark.data["specLevel"] : null,
         inclusions: strings(benchmark.data["inclusions"]),
         exclusions: strings(benchmark.data["exclusions"]),
         // Benchmarks that already include a builder's margin must never receive our markup.
