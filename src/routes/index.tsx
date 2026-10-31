@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 import { TeamChat } from "@/components/team-chat";
 import { Reveal } from "@/components/reveal";
@@ -9,6 +10,8 @@ import kitchenAfter from "@/assets/kitchen-maidstone-image-3.jpg.asset.json";
 import kitchenBefore from "@/assets/kitchen-maidstone-image-2.jpg.asset.json";
 import allingtonGardenAfter from "@/assets/garden-allington-after.png.asset.json";
 import allingtonGardenBefore from "@/assets/garden-allington-before.png.asset.json";
+import maidstoneExtensionBuild from "@/assets/maidstone-extension-build.jpg.asset.json";
+import maidstoneScaffold from "@/assets/maidstone-scaffold.jpg.asset.json";
 
 const title = "Homes by Hines — Renovation, Development & Landscaping";
 const description =
