@@ -1,6 +1,6 @@
 # Current tasks
 
-- [ ] Upgrade homepage estimating UX: first-screen mobile experience, desktop split layout, and contained conversation scrolling; verify both sizes.
+- [x] Upgrade homepage estimating UX: first-screen mobile experience, desktop split layout, and contained conversation scrolling; verified mobile/desktop, live estimate, conversation restoration/reset and attachment controls.
 
 - [x] Replace direct-trade-payment and separate-management-fee language across site copy, metadata and chat instructions with end-to-end delivery and full-job pricing.
 - [x] Verify the updated pages and chat in the running site.
