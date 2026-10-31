@@ -118,7 +118,7 @@ export function calculateEstimate(
   const spec = projectSchema.parse(input);
   const missingInputs = minimumInputs(spec);
   if (missingInputs.length) return {
-    specification: spec, lines: [], missing: missingInputs.map((field) => `Please confirm ${field === "size" ? "approximate dimensions or floor area" : field === "extensionType" ? "extension type" : field === "storeys" ? "number of storeys" : "project location"}.`),
+    specification: spec, lines: [], missing: [],
     missingInputs, scopeComplete: false, assumptions: spec.assumptions, exclusions: spec.exclusions,
     warnings: [], base: range(0), markup: range(0), vat: null, total: null, subtotal: null,
     markupPercent: settings.markup_percent, estimateType: null, benchmarkEstimate: null,
@@ -151,7 +151,8 @@ export function calculateEstimate(
     missing.push("Project scope template needs team approval.");
   const uncoveredPhases = spec.category === "extension"
     ? EXTENSION_PHASES.filter((phase) => !spec.excludedPhases.includes(phase) && !tasks.some((task) => taskPhase(task) === phase))
-    : [];
+    : ["kitchen", "bathroom", "loft", "general", "garden_wall"].includes(spec.category) && template?.data["wholeProjectScope"] !== true
+      ? ["approved whole-project scope"] : [];
   for (const phase of uncoveredPhases) missing.push(`Essential construction phase missing: ${phase}.`);
   for (const phase of spec.excludedPhases) assumptions.push(`Explicitly excluded construction phase: ${phase}.`);
   if (!spec.location) missing.push("Project location is needed to confirm regional pricing.");
@@ -363,7 +364,7 @@ export function calculateEstimate(
   const benchmarkRange = benchmark ? readRange(benchmark.data, "pricePence") : null;
   let benchmarkEstimate: BenchmarkEstimate | null = null;
   if (benchmark && benchmarkRange) {
-    const unitQ = benchmark.data["unit"] === "m²" ? quantity(spec, "floor") : 1;
+    const unitQ = benchmark.data["unit"] === "m²" ? quantity(spec, "floor") : benchmark.data["unit"] === "m" ? spec.length : benchmark.data["unit"] === "job" ? 1 : null;
     if (unitQ) {
       const strings = (v: unknown) =>
         Array.isArray(v) ? v.filter((s): s is string => typeof s === "string") : [];
@@ -414,6 +415,7 @@ export function calculateEstimate(
         ? "detailed"
         : "provisional";
   return {
+    customerNotes: estimateType === "benchmark" ? ["This is a preliminary regional budget, not a product-specific quotation. Selected roof, doors and finishes still need confirmation; no extra product allowances have been added."] : [],
     specification: spec,
     lines,
     missing: [...new Set(missing)],
