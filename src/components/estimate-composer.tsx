@@ -88,7 +88,7 @@ export function EstimateComposer({
           status={status}
           onStop={onStop}
           disabled={uploading}
-          size="icon-lg"
+          size="icon-sm"
           className="size-11 shrink-0 rounded-md"
           aria-label={status === "streaming" ? "Stop reply" : "Send project description"}
         >
