@@ -12,6 +12,7 @@ export const Route = createFileRoute("/auth")({
       { property: "og:title", content: "Team sign in — Homes by Hines" },
       { property: "og:description", content: "Sign in to the Homes by Hines team area." },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

@@ -102,7 +102,7 @@ export function calculateEstimate(input: ProjectSpec, catalog: CatalogEntry[], s
         const grossRates = rates;
         rates = Object.fromEntries(keys.map(k => [k, multiplyMoney(grossRates[k], 1 / (1 + tax / 100))])) as Range;
       }
-      let qty = range(q);
+      let qty = range(category === "other" && d["unit"] === "job" ? 1 : q);
       let days: Range | undefined;
       const workers = task.workers ?? 1;
       if (category === "labour") {
