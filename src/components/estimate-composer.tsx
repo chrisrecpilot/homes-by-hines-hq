@@ -66,17 +66,17 @@ export function EstimateComposer({
       maxFiles={4}
       multiple
       onError={(e) => toast.error(e.message)}
-      className="w-full text-foreground [&_[data-slot=input-group]]:rounded-lg [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card [&_[data-slot=input-group]]:shadow-none"
+      className="w-full text-foreground [&_[data-slot=input-group]]:rounded-lg [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card [&_[data-slot=input-group]]:shadow-none focus-within:[&_[data-slot=input-group]]:border-primary" + (hero ? " [&_[data-slot=input-group]]:border-foreground/40" : "")
     >
       <PromptInputTextarea
         aria-label={hero ? "Describe your building project" : "Message the team"}
         placeholder={
           hero
-            ? "Describe your project… e.g. I want a 5m × 4m rear extension."
+            ? "Describe your project… e.g. a 5m × 4m rear extension with bifolds in Maidstone"
             : "Add details or ask about your project…"
         }
         className={
-          hero ? "min-h-20 max-h-32 p-4 text-base lg:min-h-28" : "min-h-16 max-h-28 p-4 text-base"
+          hero ? "min-h-24 max-h-36 p-4 text-base lg:min-h-32 lg:text-lg" : "min-h-16 max-h-28 p-4 text-base"
         }
         maxLength={5000}
       />
@@ -84,7 +84,7 @@ export function EstimateComposer({
         <div className="flex min-w-0 items-center gap-1">
           <Attachments />
           <p className="text-[11px] text-muted-foreground">
-            {uploading ? uploadProgress ?? "Uploading securely…" : "Photos & drawings"}
+            {uploading ? uploadProgress ?? "Uploading securely…" : "Add photos or drawings"}
           </p>
         </div>
         <PromptInputSubmit

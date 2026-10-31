@@ -193,18 +193,18 @@ const pillars = [
 function Home() {
   return (
     <>
-      <section className="estimate-home grid overflow-hidden lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="estimate-home grid overflow-hidden lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <div className="estimate-intro relative min-w-0 overflow-hidden bg-ink">
           <HeroSlideshow />
-          <div className="relative flex h-full flex-col justify-center px-6 py-6 lg:px-12 lg:py-12 xl:px-16">
+          <div className="relative flex h-full flex-col justify-center px-6 py-4 lg:px-12 lg:py-12 xl:px-16">
             <div className="max-w-lg">
               <p className="text-xs text-primary-foreground/80">
                 Homes by Hines · Kent &amp; London
               </p>
-              <h1 className="mt-3 font-display text-3xl leading-tight text-primary-foreground lg:mt-6 lg:text-5xl xl:text-6xl">
+              <h1 className="mt-2 font-display text-2xl sm:text-3xl leading-tight text-primary-foreground lg:mt-6 lg:text-5xl xl:text-6xl">
                 Tell us what you're building.
               </h1>
-              <p className="mt-3 max-w-sm text-sm text-primary-foreground/85 lg:mt-6 lg:text-lg">
+              <p className="mt-3 hidden max-w-sm text-sm text-primary-foreground/85 sm:block lg:mt-6 lg:text-lg">
                 Your next project starts here. An AI-assisted estimate, backed by our team.
               </p>
               <p className="mt-8 hidden border-t border-primary-foreground/25 pt-5 text-sm text-primary-foreground/80 lg:block">
