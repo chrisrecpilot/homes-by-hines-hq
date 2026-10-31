@@ -104,7 +104,7 @@ export function TeamChat({ inline = false }: { inline?: boolean }) {
     const next = fresh();
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {}
+    } catch { /* Continue without browser persistence when storage is unavailable. */ }
     setStored(next);
   }
   if (inline)
@@ -198,7 +198,7 @@ function ChatWindow({
   useEffect(() => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...stored, messages }));
-    } catch {}
+    } catch { /* Continue without browser persistence when storage is unavailable. */ }
   }, [stored, messages]);
   useEffect(() => {
     if (inline && messages.length > initialCount.current && messages.length === 1)

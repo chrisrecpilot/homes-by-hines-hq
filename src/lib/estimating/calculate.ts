@@ -179,6 +179,10 @@ export function calculateEstimate(
         missing.push(`${record.name}: purchase VAT treatment needs confirmation.`);
         continue;
       }
+      if (!["net", "not_applicable", "inclusive_nonrecoverable", "inclusive_recoverable"].includes(String(d["vatTreatment"]))) {
+        missing.push(`${record.name}: invalid purchase VAT treatment.`);
+        continue;
+      }
       if (d["vatTreatment"] === "inclusive_recoverable" && settings.vat_registered !== true) {
         missing.push(`${record.name}: recoverable VAT requires registered status.`);
         continue;
@@ -197,6 +201,10 @@ export function calculateEstimate(
       let qty = range(category === "other" && d["unit"] === "job" ? 1 : q);
       let days: Range | undefined;
       const workers = task.workers ?? 1;
+      if (!Number.isInteger(workers) || workers < 1 || workers > 100) {
+        missing.push(`${task.name}: worker count must be a positive whole number.`);
+        continue;
+      }
       if (category === "labour") {
         const productivity = catalog.find((r) => r.id === task.productivity);
         const output = productivity ? readRange(productivity.data, "unitsPerPersonDay") : null;
@@ -206,6 +214,10 @@ export function calculateEstimate(
         }
         const prep = numeric(productivity.data, "setupPersonDays");
         const min = numeric(productivity.data, "minimumPersonDays");
+        if (prep < 0 || min < 0) {
+          missing.push(`${task.name}: setup and attendance cannot be negative.`);
+          continue;
+        }
         qty = {
           low: Math.max(min, q / output.high + prep),
           expected: Math.max(min, q / output.expected + prep),
@@ -218,6 +230,10 @@ export function calculateEstimate(
         };
       } else if (category === "materials") {
         const waste = numeric(d, "wastagePercent");
+        if (waste < 0 || waste > 100) {
+          missing.push(`${record.name}: confirm a valid wastage allowance.`);
+          continue;
+        }
         const coverage = numeric(d, "coverage", 1);
         if (coverage <= 0) {
           missing.push(`${record.name}: product coverage must be positive.`);
