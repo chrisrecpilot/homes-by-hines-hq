@@ -1,10 +1,13 @@
 # Current tasks
 
 ## Estimating experience improvement brief
-- [ ] P0: category-specific inputs, safe customer summaries/exports, appropriate approved benchmarks and regression tests.
-- [ ] P1: capability-owned versioned project state, direct editable choices, deterministic progression and price continuity.
-- [ ] P1: compact mobile estimate, attachment previews/recovery and actionable admin diagnostics.
-- [ ] Verify customer journeys and record approved-data/drawing-processing limitations.
+- [x] P0: category-specific inputs, safe customer summaries/exports, scoped benchmark eligibility and regression tests; no invented category rates.
+- [x] P1: capability-owned versioned project state, direct editable choices, deterministic progression and price continuity.
+- [x] P1: compact mobile estimate, attachment previews/recovery and actionable admin diagnostics.
+- [x] Verified natural extension/kitchen/bathroom journeys, editable roof choices, reload continuity, non-pricing discussion, safe download and private PDF upload; 57 tests pass, no browser errors or mobile overflow.
+- [ ] Approved kitchen/bathroom/loft/landscaping prices — requires sourced, approved regional benchmark records.
+- [ ] Automatic PDF interpretation — configured model advertises text/image only; requires supported document extraction infrastructure and measurement-confirmation flow.
+- [ ] Staff editing/actuals end-to-end verification — no confirmed team account exists; session minting reports no auth users.
 
 ## P0 — simplify the estimating experience
 - [x] Hide all internal tool-execution cards from customers; only the current estimate card and genuine errors render.

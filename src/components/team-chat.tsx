@@ -159,6 +159,7 @@ function EstimatePanel({
               ? "Your latest changes may not be priced yet — we'll recalculate as we go."
               : "Indicative · Based on current specification."}
         </p>
+        <EstimateCard estimate={estimate} />
       </div>
     </details>
   );
