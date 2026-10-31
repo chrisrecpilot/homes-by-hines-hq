@@ -9,10 +9,16 @@ describe("Responsible whole-project pricing", () => {
   it("returns needs_input and no money for a rear-extension starter", () => {
     const result = calculateEstimate({ ...input, length: null, width: null, location: null, storeys: null }, [benchmark], settings);
     expect(result.status).toBe("needs_input");
-    expect(result.missingInputs).toEqual(["size", "storeys", "location"]);
+    expect(result.missingInputs).toEqual(["size", "storeys"]);
     expect(result.total).toBeNull();
     expect(headlineRange(result)).toBeNull();
     expect(result.lines).toEqual([]);
+  });
+  it("prices early on the Kent baseline when location is not yet known", () => {
+    const result = calculateEstimate({ ...input, location: null }, [benchmark], settings);
+    expect(result.status).toBe("indicative_estimate");
+    expect(headlineRange(result)).toEqual({ low: 6480000, expected: 7740000, high: 9000000 });
+    expect(result.assumptions.some((a) => a.includes("baseline"))).toBe(true);
   });
   it("requires extension type when it is not supplied", () => {
     expect(calculateEstimate({ ...input, extensionType: null, description: "An extension" }, [benchmark], settings).missingInputs).toContain("extensionType");
