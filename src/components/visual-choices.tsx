@@ -22,6 +22,26 @@ export type VisualChoice = {
 export type VisualChoiceSet = { id: string; options: VisualChoice[] };
 
 const SETS: Record<string, VisualChoiceSet> = {
+  sizes: { id: "sizes", options: [
+    { value: "3x4", label: "3m × 4m", description: "About 12m² — a compact single room.", message: "About 3m × 4m (12m²)." },
+    { value: "4x5", label: "4m × 5m", description: "About 20m² — a comfortable kitchen-diner.", message: "About 4m × 5m (20m²)." },
+    { value: "5x6", label: "5m × 6m", description: "About 30m² — a generous open-plan space.", message: "About 5m × 6m (30m²)." },
+    { value: "6x6", label: "6m × 6m", description: "About 36m² — a large open-plan space.", message: "About 6m × 6m (36m²)." },
+    { value: "custom", label: "Enter my own", description: "Type the dimensions you have in mind.", message: "I'd like to give you my own dimensions." },
+    { value: "not_sure", label: "Not sure", description: "We'll help you work out a sensible size.", message: "I'm not sure about the size yet — can you help me work it out?" },
+  ] },
+  storeys: { id: "storeys", options: [
+    { value: "1", label: "Single storey", description: "Ground floor only.", message: "Single storey." },
+    { value: "2", label: "Double storey", description: "Ground floor with a floor above.", message: "Double storey." },
+  ] },
+  refine: { id: "refine", options: [
+    { value: "roof", label: "Choose a roof style", description: "Flat or pitched, with pictures.", message: "Let me choose the roof style." },
+    { value: "doors", label: "Choose doors", description: "French, bifold or sliding.", message: "Let me choose the doors." },
+    { value: "finishes", label: "Choose finishes", description: "Exterior walls and flooring.", message: "Let me choose the exterior finish and flooring." },
+    { value: "photos", label: "Upload photos or plans", description: "Helps us understand your space.", message: "I'd like to upload photos or plans." },
+    { value: "survey", label: "Arrange a survey", description: "A visit to confirm everything properly.", message: "I'd like to arrange a survey." },
+    { value: "skip", label: "That's fine for now", description: "Leave the estimate as it is.", message: "That's fine for now, thanks." },
+  ] },
   doors: { id: "doors", options: [
     { value: "french", label: "French doors", description: "Two hinged glazed doors.", image: frenchDoors, message: "I'd like French doors." },
     { value: "bifold", label: "Bifold doors", description: "Folding glazed panels.", image: bifoldDoors, message: "I'd like bifold doors." },
