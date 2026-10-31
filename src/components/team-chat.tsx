@@ -299,15 +299,36 @@ function ChatWindow({
     }
   }
   const last = messages.at(-1);
-  const lastSuggestions =
-    !busy && last?.role === "assistant"
-      ? splitSuggestions(
-          last.parts
-            .filter((p) => p.type === "text")
-            .map((p) => p.text)
-            .join("\n"),
-        ).suggestions
-      : [];
+  const lastText =
+    last?.role === "assistant"
+      ? last.parts
+          .filter((p) => p.type === "text")
+          .map((p) => p.text)
+          .join("\n")
+      : "";
+  const lastSuggestions = !busy && last?.role === "assistant" ? splitSuggestions(lastText).suggestions : [];
+  const lastChoices = !busy && last?.role === "assistant" ? parseChoices(lastText) : null;
+  const [picked, setPicked] = useState<Record<string, string>>({});
+  const latestEstimate = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const m = messages[i];
+      if (m?.role !== "assistant") continue;
+      for (const p of m.parts) {
+        if (
+          p.type === "tool-calculate_estimate" &&
+          (p as { state?: string }).state === "output-available" &&
+          (p as { output?: unknown }).output &&
+          typeof (p as { output?: unknown }).output === "object" &&
+          "specification" in ((p as { output?: object }).output as object)
+        )
+          return { estimate: (p as { output: EstimateResult }).output, index: i };
+      }
+    }
+    return null;
+  }, [messages]);
+  const estimateStale = latestEstimate
+    ? messages.slice(latestEstimate.index + 1).some((m) => m.role === "user")
+    : false;
   return (
     <div
       data-chat-active={active}
@@ -347,6 +368,9 @@ function ChatWindow({
                 <RotateCcw />
               </Button>
             </div>
+          )}
+          {latestEstimate && (
+            <EstimatePanel estimate={latestEstimate.estimate} stale={estimateStale} busy={busy} />
           )}
           <Conversation className="min-h-0 flex-1">
             <ConversationContent
