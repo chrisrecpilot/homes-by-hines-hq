@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { supabase } from "@/integrations/supabase/client";
+import { EstimatingAdmin } from "@/components/estimating-admin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -13,13 +14,14 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { property: "og:title", content: "Team dashboard — Homes by Hines" },
       { property: "og:description", content: "Enquiries, chats and visitor activity." },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: AdminPage,
 });
 
-type Tab = "visitors" | "enquiries" | "chats";
+type Tab = "visitors" | "enquiries" | "chats" | "estimating";
 
 function fmt(d: string) {
   return new Date(d).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
@@ -77,7 +79,7 @@ function AdminPage() {
         </div>
       </div>
       <div className="mt-6 flex gap-6 border-b border-border">
-        {(["enquiries", "chats", "visitors"] as Tab[]).map((t) => (
+        {(["enquiries", "chats", "visitors", "estimating"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -93,6 +95,7 @@ function AdminPage() {
         {tab === "enquiries" && <Enquiries />}
         {tab === "chats" && <Chats />}
         {tab === "visitors" && <Visitors />}
+        {tab === "estimating" && <EstimatingAdmin />}
       </div>
     </section>
   );
@@ -152,7 +155,8 @@ function Chats() {
   });
   if (q.isLoading) return <p className="text-sm">Loading…</p>;
   if (!q.data?.length) return <p className="text-sm text-muted-foreground">No chats yet.</p>;
-  const active = q.data.find((c) => c.id === selected) ?? q.data[0]!;
+  const active = q.data.find((c) => c.id === selected) ?? q.data[0];
+  if (!active) return null;
   const textOf = (m: Msg) =>
     (m.parts ?? [])
       .filter((p) => p.type === "text")
