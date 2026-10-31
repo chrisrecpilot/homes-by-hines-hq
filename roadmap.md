@@ -1,5 +1,14 @@
 # Current tasks
 
+## P0 — simplify the estimating experience
+- [x] Hide all internal tool-execution cards from customers; only the current estimate card and genuine errors render.
+- [x] Remove acknowledgement language ("noted/saved/updated"); selections silently update state and progress to the next question.
+- [x] One-tap choice sets for size (3×4–6×6m, custom, not sure), storeys, roof/doors/walls/flooring and post-estimate refinement actions.
+- [x] Price early: type + size + storeys trigger an immediate estimate on the approved Kent & South East baseline; location no longer blocks the first price and is asked naturally afterwards.
+- [x] Seed approved double-storey Kent benchmark (£1,500–£2,200/m² total floor area); 6×6m double-storey prices 72m² at £108,000–£158,400.
+- [x] Normalise UK postcodes and "near …" locations server-side (ME160PP → ME16 0PP).
+- [x] Tested full journey A–G on desktop and mobile: no tool cards, no ack language, correct prices, no overflow, no console errors; 45 engine tests pass.
+
 ## Incomplete-estimate safeguards
 - [x] Add minimum information and scope-completeness validation with distinct input, indicative, detailed and review statuses; 40 calculation tests passed.
 - [x] Make chat collect size/storeys/location and preserve progressive benchmark estimates and selected specifications; starter returned needs_input without money; 36m² Maidstone returned indicative_estimate £64,800–£90,000, expected £77,400, plus VAT to confirm.

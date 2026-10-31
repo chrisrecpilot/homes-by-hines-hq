@@ -1,6 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { calculateEstimate } from "./calculate";
+import { normalizeLocation } from "./validation";
 import { headlineRange, projectSchema, type CatalogEntry } from "./types";
+
+describe("Location normalisation", () => {
+  it("normalises UK postcodes regardless of spacing or case", () => {
+    expect(normalizeLocation("ME160PP")).toBe("ME16 0PP");
+    expect(normalizeLocation("me160pp")).toBe("ME16 0PP");
+    expect(normalizeLocation("ME16 0PP")).toBe("ME16 0PP");
+    expect(normalizeLocation(" ec1a1bb ")).toBe("EC1A 1BB");
+  });
+  it("strips 'near' hedging and keeps town names as given", () => {
+    expect(normalizeLocation("Near Maidstone")).toBe("Maidstone");
+    expect(normalizeLocation("Maidstone")).toBe("Maidstone");
+    expect(normalizeLocation("  Maidstone  ")).toBe("Maidstone");
+  });
+  it("returns null for empty locations", () => {
+    expect(normalizeLocation(null)).toBeNull();
+    expect(normalizeLocation("   ")).toBeNull();
+  });
+});
 
 const settings = { markup_percent: 12, vat_registered: null, sales_vat_percent: 20, tax_confirmed: false };
 const input = projectSchema.parse({ category: "extension", extensionType: "rear", location: "Maidstone", length: 6, width: 6, storeys: 1, height: 2.4, openingArea: 4, foundationDepth: 1, foundationWidth: 0.6, roof: null, bifolds: false, underfloorHeating: null, structuralOpening: null, description: "Single storey rear extension", assumptions: [], exclusions: [] });
@@ -9,10 +28,16 @@ describe("Responsible whole-project pricing", () => {
   it("returns needs_input and no money for a rear-extension starter", () => {
     const result = calculateEstimate({ ...input, length: null, width: null, location: null, storeys: null }, [benchmark], settings);
     expect(result.status).toBe("needs_input");
-    expect(result.missingInputs).toEqual(["size", "storeys", "location"]);
+    expect(result.missingInputs).toEqual(["size", "storeys"]);
     expect(result.total).toBeNull();
     expect(headlineRange(result)).toBeNull();
     expect(result.lines).toEqual([]);
+  });
+  it("prices early on the Kent baseline when location is not yet known", () => {
+    const result = calculateEstimate({ ...input, location: null }, [benchmark], settings);
+    expect(result.status).toBe("indicative_estimate");
+    expect(headlineRange(result)).toEqual({ low: 6480000, expected: 7740000, high: 9000000 });
+    expect(result.assumptions.some((a) => a.includes("baseline"))).toBe(true);
   });
   it("requires extension type when it is not supplied", () => {
     expect(calculateEstimate({ ...input, extensionType: null, description: "An extension" }, [benchmark], settings).missingInputs).toContain("extensionType");
@@ -33,6 +58,13 @@ describe("Responsible whole-project pricing", () => {
   it("does not apply a single-storey Kent benchmark to two storeys or Manchester", () => {
     expect(headlineRange(calculateEstimate({ ...input, storeys: 2 }, [benchmark], settings))).toBeNull();
     expect(headlineRange(calculateEstimate({ ...input, location: "Manchester" }, [benchmark], settings))).toBeNull();
+  });
+  it("prices a double-storey 6×6m extension on 72m² total floor area", () => {
+    const doubleBenchmark: CatalogEntry = { id: "benchmark_extension_double", kind: "benchmark", name: "Kent double-storey benchmark", updated_at: "2026-10-31", data: { category: "extension", approved: true, storeys: 2, region: "Kent & South East England", specLevel: "Standard double-storey extension", unit: "m²", pricePence: { low: 150000, expected: 185000, high: 220000 }, source: "Approved test benchmark", sourceDate: "2026-10-31", vatBasis: "exclusive", marginIncluded: true } };
+    const result = calculateEstimate({ ...input, storeys: 2, location: null }, [benchmark, doubleBenchmark], settings);
+    expect(result.status).toBe("indicative_estimate");
+    expect(result.benchmarkEstimate?.quantity).toBe(72);
+    expect(headlineRange(result)).toEqual({ low: 10800000, expected: 13320000, high: 15840000 });
   });
   it("does not mistake a priced floor for all major construction phases", () => {
     const catalog: CatalogEntry[] = [
