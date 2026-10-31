@@ -12,7 +12,6 @@ import {
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
-import { Tool, ToolContent, ToolHeader, ToolOutput } from "@/components/ai-elements/tool";
 import { Button } from "@/components/ui/button";
 import { EstimateComposer } from "@/components/estimate-composer";
 import { EstimateCard } from "@/components/estimate-card";
@@ -440,28 +439,20 @@ function ChatWindow({
                           "specification" in t.output
                             ? (t.output as EstimateResult)
                             : null;
+                        // Internal tool execution is never shown to customers; only the
+                        // current estimate card and genuine errors surface in the chat.
+                        if (t.state === "output-error")
+                          return (
+                            <p key={i} className="text-xs text-muted-foreground">
+                              Something didn't go through — please try that again.
+                            </p>
+                          );
+                        if (!estimate) return null;
                         return (
                           <div key={i}>
-                            {estimate && latestEstimate?.estimate === estimate && !estimateStale && !busy && (
+                            {latestEstimate?.estimate === estimate && !estimateStale && !busy && (
                               <EstimateCard estimate={estimate} onAction={(t) => void send(t)} />
                             )}
-                            <Tool defaultOpen={false}>
-                              <ToolHeader
-                                type={t.type}
-                                state={t.state}
-                                title={
-                                  t.type === "tool-calculate_estimate"
-                                    ? "Project calculation"
-                                    : t.state === "output-available" &&
-                                        (t.output as { ok?: boolean })?.ok
-                                      ? "Enquiry sent to the team"
-                                      : "Send enquiry"
-                                }
-                              />
-                              <ToolContent>
-                                <ToolOutput output={t.output} errorText={t.errorText} />
-                              </ToolContent>
-                            </Tool>
                           </div>
                         );
                       }
