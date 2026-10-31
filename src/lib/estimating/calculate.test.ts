@@ -259,7 +259,7 @@ describe("Approved estimating rules", () => {
     });
     expect(r.total?.expected).toBe(16800);
     expect(r.unpricedCount).toBe(1);
-    expect(r.missing.some((m) => m.includes("not approved"))).toBe(true);
+    expect(r.missing.some((m) => m.includes("Repair materials"))).toBe(true);
     expect(r.status).toBe("estimated");
   });
   it("falls back to an approved benchmark when no cost lines can be priced", () => {
