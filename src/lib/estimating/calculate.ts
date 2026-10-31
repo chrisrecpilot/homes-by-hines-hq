@@ -10,6 +10,7 @@ import {
   type BenchmarkEstimate,
   type EstimateType,
 } from "./types";
+import { benchmarkApplies, EXTENSION_PHASES, minimumInputs, taskPhase } from "./validation";
 
 const range = (n: number): Range => ({ low: n, expected: n, high: n });
 const keys = ["low", "expected", "high"] as const;
@@ -76,7 +77,7 @@ function readRange(data: Record<string, unknown>, field: string): Range | null {
 }
 function quantity(spec: ProjectSpec, basis: string): number | null {
   const { length: l, width: w, height: h, storeys } = spec;
-  const area = l && w ? floorArea(l, w) : null;
+  const area = l && w ? floorArea(l, w) : spec.approximateArea;
   const perimeter = l && w ? (spec.category === "extension" ? 2 * l + w : 2 * (l + w)) : null;
   switch (basis) {
     case "count":
@@ -115,6 +116,15 @@ export function calculateEstimate(
   settings: PricingSettings,
 ): EstimateResult {
   const spec = projectSchema.parse(input);
+  const missingInputs = minimumInputs(spec);
+  if (missingInputs.length) return {
+    specification: spec, lines: [], missing: missingInputs.map((field) => `Please confirm ${field === "size" ? "approximate dimensions or floor area" : field === "extensionType" ? "extension type" : field === "storeys" ? "number of storeys" : "project location"}.`),
+    missingInputs, scopeComplete: false, assumptions: spec.assumptions, exclusions: spec.exclusions,
+    warnings: [], base: range(0), markup: range(0), vat: null, total: null, subtotal: null,
+    markupPercent: settings.markup_percent, estimateType: null, benchmarkEstimate: null,
+    provisionalCount: 0, verifiedCount: 0, unpricedCount: 0, vatConfirmed: false,
+    confidence: "Lower", status: "needs_input",
+  };
   const template = catalog.find(
     (r) => r.kind === "template" && r.id === `template_${spec.category}`,
   );
@@ -129,6 +139,11 @@ export function calculateEstimate(
     missing.push("An approved project template is needed for this scope.");
   if (template?.data["approved"] !== true)
     missing.push("Project scope template needs team approval.");
+  const uncoveredPhases = spec.category === "extension"
+    ? EXTENSION_PHASES.filter((phase) => !spec.excludedPhases.includes(phase) && !tasks.some((task) => taskPhase(task) === phase))
+    : [];
+  for (const phase of uncoveredPhases) missing.push(`Essential construction phase missing: ${phase}.`);
+  for (const phase of spec.excludedPhases) assumptions.push(`Explicitly excluded construction phase: ${phase}.`);
   if (!spec.location) missing.push("Project location is needed to confirm regional pricing.");
   if (["extension", "loft", "knock_through", "garden_wall"].includes(spec.category))
     warnings.push(
@@ -137,6 +152,13 @@ export function calculateEstimate(
   for (const task of tasks) {
     if (used.has(task.id)) throw new Error(`Duplicate task: ${task.id}`);
     used.add(task.id);
+    const phase = taskPhase(task);
+    if (phase && spec.excludedPhases.includes(phase)) continue;
+    if (!task.trade && !task.material && !task.expense) {
+      missing.push(`${task.name}: no applicable cost records.`);
+      unpricedCount++;
+      continue;
+    }
     if (task.condition) {
       const value = spec[task.condition as keyof ProjectSpec];
       if (value === false) continue;
@@ -324,7 +346,9 @@ export function calculateEstimate(
       r.data["category"] === spec.category &&
       r.data["approved"] === true &&
       r.data["source"] &&
-      r.data["sourceDate"],
+       r.data["sourceDate"] &&
+       ["exclusive", "inclusive", "not_applicable"].includes(String(r.data["vatBasis"])) &&
+       benchmarkApplies(spec, r.data),
   );
   const benchmarkRange = benchmark ? readRange(benchmark.data, "pricePence") : null;
   let benchmarkEstimate: BenchmarkEstimate | null = null;
@@ -363,15 +387,15 @@ export function calculateEstimate(
   }
   const verifiedCount = lines.filter((l) => l.verified).length;
   const provisionalCount = lines.length - verifiedCount;
+  const scopeComplete = hasCostBase && unpricedCount === 0 && uncoveredPhases.length === 0 &&
+    template?.data["approved"] === true && Boolean(spec.location?.trim());
   // While essential cost lines are unpriced, an approved regional benchmark is the
   // headline figure — a partial cost build-up must never pose as the project budget.
   const estimateType: EstimateType | null =
-    !hasCostBase || unpricedCount > 0
+    !scopeComplete
       ? benchmarkEstimate
         ? "benchmark"
-        : hasCostBase
-          ? "provisional"
-          : null
+        : null
       : missing.length === 0 && verifiedCount === lines.length
         ? "detailed"
         : "provisional";
@@ -385,8 +409,8 @@ export function calculateEstimate(
     base,
     markup,
     vat,
-    total,
-    subtotal,
+    total: scopeComplete ? total : null,
+    subtotal: scopeComplete ? subtotal : null,
     markupPercent: settings.markup_percent,
     estimateType,
     benchmarkEstimate,
@@ -400,6 +424,8 @@ export function calculateEstimate(
         : estimateType === "benchmark" || warnings.length > 0
           ? "Lower"
           : "Moderate",
-    status: total || benchmarkEstimate ? "estimated" : "review_required",
+    missingInputs,
+    scopeComplete,
+    status: estimateType === "detailed" ? "detailed_estimate" : estimateType ? "indicative_estimate" : "review_required",
   };
 }
