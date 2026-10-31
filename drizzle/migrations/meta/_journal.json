@@ -29,6 +29,13 @@
       "when": 1793444908019,
       "tag": "0003_cost_based_estimating",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793466697560,
+      "tag": "0004_persist_estimating_project_state",
+      "breakpoints": true
     }
   ]
 }
