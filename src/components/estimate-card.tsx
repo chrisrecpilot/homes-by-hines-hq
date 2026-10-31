@@ -34,11 +34,11 @@ export function EstimateCard({
       estimate.estimateType ? `Estimate type: ${TYPE_LABELS[estimate.estimateType]}` : "",
       vatDisclosure,
       "Any cost lines below are a separate build-up, not additions to a benchmark or a complete project subtotal.",
-      ...estimate.lines.map(
+      ...(estimate.scopeComplete && !isBenchmark ? estimate.lines : []).map(
         (l) =>
           `${l.name}: ${l.quantity.expected.toFixed(2)} ${l.unit} × ${gbp(l.rates.expected)} = ${gbp(l.cost.expected)}`,
       ),
-      ...estimate.missing,
+      ...estimate.customerNotes ?? [],
       ...estimate.assumptions,
       ...estimate.exclusions,
       "Initial estimate only. Final pricing depends on site survey, confirmed specifications and necessary technical assessments.",
@@ -83,7 +83,7 @@ export function EstimateCard({
         {shownRange ? (
           <>
             <p className="text-sm text-muted-foreground">
-              Your estimated building budget · {estimate.confidence.toLowerCase()} confidence
+              Your estimated project budget · {estimate.confidence.toLowerCase()} confidence
             </p>
             <p className="mt-2 font-display text-3xl">
               {gbp(shownRange.low)}–{gbp(shownRange.high)}
@@ -175,28 +175,17 @@ export function EstimateCard({
           <>
             <h4 className="text-xl">Ready for a pricing review</h4>
             <p className="mt-2 text-sm text-muted-foreground">
-              We've recorded your scope. A reliable total needs confirmed pricing and the details
-              below.
+              This project needs a more tailored estimate. We can help you work through the details or arrange a visit.
             </p>
-            <ul className="mt-4 list-disc space-y-1 pl-4 text-xs text-muted-foreground">
-              {estimate.missing.slice(0, 5).map((m) => (
-                <li key={m}>{m}</li>
-              ))}
-            </ul>
-            {estimate.missing.length > 5 && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                {estimate.missing.length - 5} further items flagged for the team.
-              </p>
-            )}
           </>
         )}
         <details className="mt-5 border-t border-border pt-3 text-xs">
           <summary className="cursor-pointer font-medium">
-            Scope, calculations & assumptions
+            Scope & assumptions
           </summary>
           <div className="mt-3 space-y-3">
-            {!estimate.scopeComplete && <p>Partial cost lines for review only — not a whole-project price and not additions to the benchmark.</p>}
-            {estimate.lines.map((l) => (
+            {estimate.customerNotes?.map((note) => <p key={note}>{note}</p>)}
+            {(estimate.scopeComplete && !isBenchmark ? estimate.lines : []).map((l) => (
               <p key={l.id}>
                 <strong>{l.name}</strong>
                 <br />
