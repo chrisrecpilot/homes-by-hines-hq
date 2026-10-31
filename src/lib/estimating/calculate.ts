@@ -63,14 +63,14 @@ function quantity(spec: ProjectSpec, basis: string): number | null {
 export function calculateEstimate(input: ProjectSpec, catalog: CatalogEntry[], settings: PricingSettings): EstimateResult {
   const spec = projectSchema.parse(input);
   const template = catalog.find(r => r.kind === "template" && r.id === `template_${spec.category}`);
-  const tasks = (template?.data.tasks ?? []) as Task[];
+  const tasks = (template?.data["tasks"] ?? []) as Task[];
   const missing: string[] = [];
   const assumptions = [...spec.assumptions];
   const warnings: string[] = [];
   const lines: EstimateLine[] = [];
   const used = new Set<string>();
   if (!template || !tasks.length) missing.push("An approved project template is needed for this scope.");
-  if (template?.data.approved !== true) missing.push("Project scope template needs team approval.");
+  if (template?.data["approved"] !== true) missing.push("Project scope template needs team approval.");
   if (!spec.location) missing.push("Project location is needed to confirm regional pricing.");
   if (["extension", "loft", "knock_through", "garden_wall"].includes(spec.category)) warnings.push("Structural design, ground conditions and statutory approvals require qualified professional confirmation; photographs are not proof of dimensions or structural adequacy.");
   for (const task of tasks) {
@@ -92,14 +92,15 @@ export function calculateEstimate(input: ProjectSpec, catalog: CatalogEntry[], s
       const d = record.data;
       let rates = readRange(d, "pricePence");
       if (!rates) { missing.push(`${task.name}: ${record.name} price needs an approved rate or allowance.`); continue; }
-      if (d.approved !== true) { missing.push(`${task.name}: ${record.name} is not approved for estimating.`); continue; }
-      if (category !== "labour" && !d.source) { missing.push(`${record.name}: price source is required.`); continue; }
-      if (!d.vatTreatment || d.vatTreatment === "unknown") { missing.push(`${record.name}: purchase VAT treatment needs confirmation.`); continue; }
-      if (d.vatTreatment === "inclusive_recoverable" && settings.vat_registered !== true) { missing.push(`${record.name}: recoverable VAT requires registered status.`); continue; }
-      if (d.vatTreatment === "inclusive_recoverable") {
+      if (d["approved"] !== true) { missing.push(`${task.name}: ${record.name} is not approved for estimating.`); continue; }
+      if (category !== "labour" && !d["source"]) { missing.push(`${record.name}: price source is required.`); continue; }
+      if (!d["vatTreatment"] || d["vatTreatment"] === "unknown") { missing.push(`${record.name}: purchase VAT treatment needs confirmation.`); continue; }
+      if (d["vatTreatment"] === "inclusive_recoverable" && settings.vat_registered !== true) { missing.push(`${record.name}: recoverable VAT requires registered status.`); continue; }
+      if (d["vatTreatment"] === "inclusive_recoverable") {
         const tax = numeric(d, "purchaseVatPercent", -1);
         if (tax < 0 || tax > 20) { missing.push(`${record.name}: confirm purchase VAT rate.`); continue; }
-        rates = Object.fromEntries(keys.map(k => [k, multiplyMoney(rates[k], 1 / (1 + tax / 100))])) as Range;
+        const grossRates = rates;
+        rates = Object.fromEntries(keys.map(k => [k, multiplyMoney(grossRates[k], 1 / (1 + tax / 100))])) as Range;
       }
       let qty = range(q);
       let days: Range | undefined;
@@ -107,7 +108,7 @@ export function calculateEstimate(input: ProjectSpec, catalog: CatalogEntry[], s
       if (category === "labour") {
         const productivity = catalog.find(r => r.id === task.productivity);
         const output = productivity ? readRange(productivity.data, "unitsPerPersonDay") : null;
-        if (!output || output.low <= 0 || productivity?.data.approved !== true) { missing.push(`${task.name}: approved person-day productivity is required.`); continue; }
+        if (!output || output.low <= 0 || productivity?.data["approved"] !== true) { missing.push(`${task.name}: approved person-day productivity is required.`); continue; }
         const prep = numeric(productivity.data, "setupPersonDays");
         const min = numeric(productivity.data, "minimumPersonDays");
         qty = { low: Math.max(min, q / output.high + prep), expected: Math.max(min, q / output.expected + prep), high: Math.max(min, q / output.low + prep) };
@@ -118,13 +119,13 @@ export function calculateEstimate(input: ProjectSpec, catalog: CatalogEntry[], s
         if (coverage <= 0) { missing.push(`${record.name}: product coverage must be positive.`); continue; }
         const factor = readRange(d, "quantityFactor") ?? range(1);
         qty = Object.fromEntries(keys.map(k => [k, q * factor[k] * (1 + waste / 100) / coverage])) as Range;
-        if (d.roundWhole === true) qty = Object.fromEntries(keys.map(k => [k, Math.ceil(qty[k])])) as Range;
-        assumptions.push(`${record.name}: ${waste}% wastage; ${coverage} ${task.basis} per ${String(d.unit ?? "unit")}.`);
+        if (d["roundWhole"] === true) qty = Object.fromEntries(keys.map(k => [k, Math.ceil(qty[k])])) as Range;
+        assumptions.push(`${record.name}: ${waste}% wastage; ${coverage} ${task.basis} per ${String(d["unit"] ?? "unit")}.`);
       }
       const minimum = numeric(d, "minimumPence");
       const delivery = numeric(d, "deliveryPence");
       const costs = Object.fromEntries(keys.map(k => [k, Math.max(minimum, multiplyMoney(rates[k], qty[k])) + delivery])) as Range;
-      lines.push({ id: `${task.id}_${category}`, name: `${task.name} — ${record.name}`, category, quantity: qty, unit: category === "labour" ? "person-days" : String(d.unit ?? task.basis), rates, cost: costs, source: `${record.id} · ${String(d.source ?? "Owner-provided planning rate")} · ${record.updated_at}`, verified: d.verified === true, ...(category === "labour" ? { workers, days } : {}) });
+      lines.push({ id: `${task.id}_${category}`, name: `${task.name} — ${record.name}`, category, quantity: qty, unit: category === "labour" ? "person-days" : String(d["unit"] ?? task.basis), rates, cost: costs, source: `${record.id} · ${String(d["source"] ?? "Owner-provided planning rate")} · ${record.updated_at}`, verified: d["verified"] === true, ...(category === "labour" && days ? { workers, days } : {}) });
     }
   }
   const base = Object.fromEntries(keys.map(k => [k, lines.reduce((sum, line) => sum + line.cost[k], 0)])) as Range;
@@ -136,10 +137,10 @@ export function calculateEstimate(input: ProjectSpec, catalog: CatalogEntry[], s
   const subtotal = allComplete ? Object.fromEntries(keys.map((k, i) => [k, amounts[i]?.subtotal ?? 0])) as Range : null;
   const vat = allComplete && vatRate !== null ? Object.fromEntries(keys.map((k, i) => [k, amounts[i]?.vat ?? 0])) as Range : null;
   const total = allComplete ? Object.fromEntries(keys.map((k, i) => [k, amounts[i]?.total ?? 0])) as Range : null;
-  const benchmark = catalog.find(r => r.kind === "benchmark" && r.data.category === spec.category && r.data.approved === true && r.data.source && r.data.sourceDate);
+  const benchmark = catalog.find(r => r.kind === "benchmark" && r.data["category"] === spec.category && r.data["approved"] === true && r.data["source"] && r.data["sourceDate"]);
   const benchmarkRange = benchmark ? readRange(benchmark.data, "pricePence") : null;
   if (total && benchmarkRange) {
-    const unitQ = benchmark?.data.unit === "m²" ? quantity(spec, "floor") : 1;
+    const unitQ = benchmark?.data["unit"] === "m²" ? quantity(spec, "floor") : 1;
     if (unitQ && (total.expected < benchmarkRange.low * unitQ || total.expected > benchmarkRange.high * unitQ)) warnings.push("Outside the sourced market benchmark; review scope for omissions. No price has been increased to match market averages.");
   }
   return { specification: spec, lines, missing: [...new Set(missing)], assumptions: [...new Set(assumptions)], exclusions: spec.exclusions, warnings, base, markup, vat, total, subtotal, markupPercent: settings.markup_percent, confidence: missing.length || warnings.length ? "Lower" : lines.every(l => l.verified) && !assumptions.length ? "Higher" : "Moderate", status: allComplete ? "estimated" : "review_required" };

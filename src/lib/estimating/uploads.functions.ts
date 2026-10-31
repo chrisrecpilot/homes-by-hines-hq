@@ -36,5 +36,5 @@ export const getAdminUpload = createServerFn({ method: "POST" }).middleware([req
     if (!allowed) throw new Error("Access denied");
     const { data: signed, error } = await context.supabase.storage.from("estimate-uploads").createSignedUrl(data.path, 60);
     if (error || !signed) throw new Error("File is unavailable");
-    return { url: signed.signedUrl.replace(process.env["SUPABASE_URL"] ?? "", process.env["VITE_SUPABASE_URL"] ?? import.meta.env.VITE_SUPABASE_URL) };
+    return { url: signed.signedUrl.replace(process.env["SUPABASE_URL"] ?? "", process.env["VITE_SUPABASE_URL"] ?? import.meta.env["VITE_SUPABASE_URL"]) };
   });

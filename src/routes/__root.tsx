@@ -154,7 +154,7 @@ function RootComponent() {
         </main>
         <SiteFooter />
       </div>
-      {!staffArea && <TeamChat />}
+      {!staffArea && path !== "/" && <TeamChat />}
       <PageTracker />
       <Toaster />
     </QueryClientProvider>
