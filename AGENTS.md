@@ -15,3 +15,4 @@
 - Estimating uses deterministic quantity/person-day calculations with whole-penny money, editable admin-only catalogue data and immutable estimate snapshots; AI orchestrates tools but never supplies prices. Why: traceable costs and reliable revisions.
 - Visitor estimate/chat ownership uses a random browser capability token stored only as a SHA-256 hash server-side; private uploads are checked against that session on every use. Why: a conversation UUID alone is not authorization.
 - Homepage embeds the existing AI Elements conversation and composer; other public pages retain the floating chat. Why: the project description remains in one continuous estimating conversation.
+- Homepage estimating uses a viewport-bounded grid with the composer outside the scrollable conversation and a desktop image/introduction column. Why: messages and estimates must not push the input off the first screen.

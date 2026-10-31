@@ -203,6 +203,31 @@
   animation: slow-zoom 18s ease-in-out infinite alternate;
 }
 
+.estimate-home {
+  height: calc(100svh - 88px);
+  min-height: 620px;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+@media (max-width: 1023px) and (max-height: 740px) {
+  .estimate-home {
+    min-height: 550px;
+  }
+  .estimate-intro > .relative {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .estimate-home {
+    height: calc(100svh - 104px);
+    min-height: 620px;
+    max-height: 960px;
+    grid-template-rows: minmax(0, 1fr);
+  }
+}
+
 @keyframes slow-zoom {
   from {
     transform: scale(1);
