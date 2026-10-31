@@ -415,7 +415,9 @@ export function calculateEstimate(
         ? "detailed"
         : "provisional";
   return {
-    customerNotes: estimateType === "benchmark" ? ["This is a preliminary regional budget, not a product-specific quotation. Selected roof, doors and finishes still need confirmation; no extra product allowances have been added."] : [],
+    customerNotes: estimateType === "benchmark" ? [spec.category === "extension"
+      ? "This is a preliminary regional budget, not a product-specific quotation. Selected roof, doors and finishes still need confirmation; no extra product allowances have been added."
+      : `This is published UK market guidance for this scope of ${spec.category} work, not our own detailed costing. Units, fittings, layout and finishes are confirmed at survey.`] : [],
     specification: spec,
     lines,
     missing: [...new Set(missing)],

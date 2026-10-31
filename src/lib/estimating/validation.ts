@@ -15,10 +15,9 @@ export function minimumInputs(spec: ProjectSpec, catalog: CatalogEntry[] = []): 
       if (!spec.specificationLevel && catalog.some((row) => row.kind === "benchmark" && row.data["approved"] === true && row.data["category"] === "kitchen" && row.data["specificationLevel"])) missing.push("specificationLevel");
     },
     bathroom: () => {
+      // Scope already implies whether layout/fittings change; extra questions don't improve the market range.
       if (!spec.renovationScope) missing.push("renovationScope");
       if (!size && !spec.roomSize) missing.push("size");
-      if (spec.layoutRetained === null) missing.push("layoutRetained");
-      if (spec.fittingsRetained === null) missing.push("fittingsRetained");
     },
     loft: () => {
       if (!spec.loftType) missing.push("loftType");
