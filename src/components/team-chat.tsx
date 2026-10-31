@@ -22,6 +22,8 @@ import {
   type VisualChoice,
 } from "@/components/visual-choices";
 import { uploadEstimateFile } from "@/lib/estimating/uploads.functions";
+import { getProjectState, selectProjectChoice } from "@/lib/estimating/project-state.functions";
+import { choicePatch, type ProjectState } from "@/lib/estimating/project-state";
 import { gbp, headlineRange, type EstimateResult } from "@/lib/estimating/types";
 
 const STORAGE_KEY = "hbh-team-chat";
@@ -115,10 +117,10 @@ function EstimatePanel({
 }) {
   const bench = estimate.estimateType === "benchmark" ? estimate.benchmarkEstimate : null;
   const range = headlineRange(estimate);
-  if (stale || busy) return <p className="shrink-0 border-b border-border py-3 text-xs text-muted-foreground">Updating your project budget — previous figures are no longer current.</p>;
-  if (!range) return null;
+  if (stale || busy) return <p className="shrink-0 border-b border-border py-3 text-xs text-muted-foreground">Refreshing your budget — the previous figure is based on your earlier specification.</p>;
+  if (!range) return estimate.status === "review_required" ? <p className="shrink-0 border-b border-border py-3 text-xs text-muted-foreground">This project needs a tailored estimate. We can help with the details or arrange a visit.</p> : null;
   const s = estimate.specification;
-  const area = (s.length && s.width ? s.length * s.width : s.approximateArea ?? 0) * (s.storeys ?? 1);
+  const area = (s.length && s.width ? s.length * s.width : s.approximateArea ?? 0) * (s.category === "extension" ? s.storeys ?? 1 : 1);
   return (
     <details className="group shrink-0 border-b border-border bg-card text-card-foreground">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-1 py-2.5 text-xs [&::-webkit-details-marker]:hidden">
@@ -138,7 +140,7 @@ function EstimatePanel({
           {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && <span className="text-muted-foreground"> +VAT</span>}
         </span>
       </summary>
-      <div className="space-y-1 px-1 pb-3 text-xs text-muted-foreground">
+      <div className="max-h-[45dvh] overflow-y-auto space-y-1 px-1 pb-3 text-xs text-muted-foreground">
         <p>
           Expected {gbp(range.expected)}
           {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && " plus VAT (to confirm)"} ·{" "}
@@ -154,8 +156,9 @@ function EstimatePanel({
             ? "Updating your estimate…"
             : stale
               ? "Your latest changes may not be priced yet — we'll recalculate as we go."
-              : "This figure reflects everything you've told us so far."}
+              : "Indicative · Based on current specification."}
         </p>
+        <EstimateCard estimate={estimate} />
       </div>
     </details>
   );
@@ -244,6 +247,11 @@ function ChatWindow({
   onReset?: () => void;
 }) {
   const upload = useServerFn(uploadEstimateFile);
+  const readState = useServerFn(getProjectState);
+  const selectChoice = useServerFn(selectProjectChoice);
+  const [project, setProject] = useState<ProjectState | null>(null);
+  const [selecting, setSelecting] = useState(false);
+  const [choiceError, setChoiceError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const transport = useMemo(
     () =>
@@ -253,13 +261,36 @@ function ChatWindow({
       }),
     [stored.id, stored.token],
   );
-  const { messages, sendMessage, status, stop } = useChat({
+  const { messages, setMessages, sendMessage, status, stop } = useChat({
     id: stored.id,
     messages: stored.messages,
     transport,
-    onError: (error) => toast.error(error.message || "The message could not be sent."),
+    onError: () => toast.error("We couldn't send that message just now. Your project details are still here."),
+    onFinish: () => { void refreshProject(); },
   });
-  const busy = status === "submitted" || status === "streaming";
+  const busy = status === "submitted" || status === "streaming" || selecting;
+  async function refreshProject() {
+    try { const state = await readState({ data: { sessionId: stored.id, token: stored.token } }); setProject(state); }
+    catch { /* Existing conversation remains usable if recovery temporarily fails. */ }
+  }
+  useEffect(() => { void refreshProject(); }, [stored.id]);
+  async function pick(set: string, choice: VisualChoice, category?: "extension" | "kitchen" | "bathroom" | "loft" | "general") {
+    if (busy || uploading) return;
+    setSelecting(true); setChoiceError(false);
+    try {
+      const result = await selectChoice({ data: { sessionId: stored.id, token: stored.token, revision: project?.revision ?? 0,
+        set, value: choice.value, message: choice.message, category } });
+      setProject(result.state);
+      const next: UIMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: choice.message }] },
+        { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: result.response }] }];
+      setMessages(next);
+      setPicked((p) => ({ ...p, [set]: choice.value }));
+    } catch {
+      setChoiceError(true);
+      toast.error("We couldn't update that choice just now. Please try again; your details are still here.");
+      await refreshProject();
+    } finally { setSelecting(false); }
+  }
   const active = messages.length > 0;
   const panel = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -327,9 +358,18 @@ function ChatWindow({
     }
     return null;
   }, [messages]);
-  const estimateStale = latestEstimate
-    ? messages.slice(latestEstimate.index + 1).some((m) => m.role === "user")
-    : false;
+  const currentEstimate = project?.estimate ?? latestEstimate?.estimate ?? null;
+  const estimateStale = project ? project.estimateRevision !== project.revision || project.pending : false;
+  function selectedValue(set: string): string | null {
+    const spec = project?.specification;
+    if (!spec) return picked[set] ?? null;
+    const values: Record<string, string | null> = { roof: spec.roof, doors: spec.doorType, walls: spec.wallFinish, flooring: spec.flooring,
+      storeys: spec.storeys ? String(spec.storeys) : null, sizes: spec.length && spec.width ? `${spec.length}x${spec.width}` : null,
+      kitchen_scope: spec.renovationScope, bathroom_scope: spec.renovationScope, specification: spec.specificationLevel,
+      room_size: spec.roomSize, bathroom_layout: spec.layoutRetained === null ? null : spec.layoutRetained ? "retained" : "changed",
+      bathroom_fittings: spec.fittingsRetained === null ? null : spec.fittingsRetained ? "retained" : "replaced" };
+    return values[set] ?? picked[set] ?? null;
+  }
   return (
     <div
       data-chat-active={active}
@@ -370,8 +410,8 @@ function ChatWindow({
               </Button>
             </div>
           )}
-          {latestEstimate && (
-            <EstimatePanel estimate={latestEstimate.estimate} stale={estimateStale} busy={busy} />
+          {currentEstimate && (
+            <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} />
           )}
           <Conversation className="min-h-0 flex-1">
             <ConversationContent
@@ -390,9 +430,11 @@ function ChatWindow({
                   <div className="mt-4 lg:mt-6">
                     <Pills
                       items={STARTERS}
-                      onPick={(t) =>
-                        void send(inline ? `I'd like an estimate for a ${t.toLowerCase()}.` : t)
-                      }
+                      onPick={(t) => {
+                        const categories = { "Rear extension": "extension", "Kitchen renovation": "kitchen", "Bathroom refurbishment": "bathroom", "Loft conversion": "loft", "General building work": "general" } as const;
+                        const category = categories[t as keyof typeof categories];
+                        if (category) void pick("starter", { value: category, label: t, description: "", message: `I'd like an estimate for a ${t.toLowerCase()}.` }, category);
+                      }}
                       disabled={busy}
                       hero={inline}
                     />
@@ -447,28 +489,27 @@ function ChatWindow({
                               Something didn't go through — please try that again.
                             </p>
                           );
-                        if (!estimate) return null;
-                        return (
-                          <div key={i}>
-                            {latestEstimate?.estimate === estimate && !estimateStale && !busy && (
-                              <EstimateCard estimate={estimate} onAction={(t) => void send(t)} />
-                            )}
-                          </div>
-                        );
+                        return null;
                       }
                       return null;
                     })}
+                    {message.role === "assistant" && message.id !== last?.id && (() => {
+                      const set = parseChoices(message.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n"));
+                      return set && !["refine"].includes(set) ? <VisualChoiceCards setId={set} selected={selectedValue(set)} disabled={busy}
+                        onPick={(choice) => choicePatch(set, choice.value) ? void pick(set, choice) : void send(choice.message)} /> : null;
+                    })()}
                   </MessageContent>
                 </Message>
               ))}
+              {choiceError && <p role="alert" className="text-sm text-muted-foreground">That choice couldn't be updated. Please try it again.</p>}
               {lastChoices && (
                 <VisualChoiceCards
                   setId={lastChoices}
-                  selected={last ? (picked[last.id] ?? null) : null}
+                  selected={selectedValue(lastChoices)}
                   disabled={busy}
                   onPick={(choice: VisualChoice) => {
-                    if (last) setPicked((p) => ({ ...p, [last.id]: choice.value }));
-                    void send(choice.message);
+                    if (choicePatch(lastChoices, choice.value) || ["refine", "sizes"].includes(lastChoices)) void pick(lastChoices, choice);
+                    else void send(choice.message);
                   }}
                 />
               )}
