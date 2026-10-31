@@ -9,8 +9,9 @@ import {
   type UIMessage,
 } from "ai";
 import { z } from "zod";
-import { customerEstimate } from "@/lib/estimating/project-state";
-import { projectSchema, type ProjectSpec } from "@/lib/estimating/types";
+import { applyProjectPatch, customerEstimate, emptyProject } from "@/lib/estimating/project-state";
+import { gbp, headlineRange } from "@/lib/estimating/types";
+import { buildPatch, describeSpec, UPDATE_PROJECT_SCHEMA, type UpdateProjectInput } from "@/lib/estimating/update-project";
 
 import {
   createLovableAiGatewayRunIdFetch,
