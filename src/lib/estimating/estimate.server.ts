@@ -1,10 +1,14 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { calculateEstimate } from "./calculate";
 import { projectSchema, type CatalogEntry, type ProjectSpec } from "./types";
+import { normalizeLocation } from "./validation";
 import type { Json } from "@/integrations/supabase/types";
 
 export async function generateEstimate(sessionId: string, input: ProjectSpec) {
-  const specification = projectSchema.parse(input);
+  const specification = projectSchema.parse({
+    ...input,
+    location: normalizeLocation(input.location ?? null),
+  });
   const [catalogQuery, settingsQuery] = await Promise.all([
     supabaseAdmin.from("estimating_catalog").select("*"),
     supabaseAdmin.from("estimating_settings").select("*").eq("id", 1).single(),

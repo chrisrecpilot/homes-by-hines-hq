@@ -384,6 +384,10 @@ export function calculateEstimate(
         // Benchmarks that already include a builder's margin must never receive our markup.
         marginIncluded: benchmark.data["marginIncluded"] === true,
       };
+      if (!spec.location?.trim())
+        assumptions.push(
+          `Priced on an approved ${String(benchmark.data["region"] ?? "regional")} baseline; confirm your location to refine it.`,
+        );
     }
   }
   if (total && benchmarkEstimate) {
