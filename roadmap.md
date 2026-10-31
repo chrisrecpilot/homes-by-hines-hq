@@ -1,5 +1,11 @@
 # Current tasks
 
+## Incomplete-estimate safeguards
+- [ ] Add minimum information and scope-completeness validation with distinct input, indicative, detailed and review statuses.
+- [ ] Make chat collect size/storeys/location and preserve progressive benchmark estimates and selected specifications.
+- [ ] Keep card and header consistent, suppress invalid/stale prices, and preserve uploads and homepage layout.
+- [ ] Extend selectable doors and finishes; verify both original failures and refinement on desktop/mobile.
+
 - [x] Upgrade homepage estimating UX: first-screen mobile experience, desktop split layout, and contained conversation scrolling; verified mobile/desktop, live estimate, conversation restoration/reset and attachment controls.
 - [x] Replace direct-trade-payment and separate-management-fee language across site copy, metadata and chat instructions with end-to-end delivery and full-job pricing.
 - [x] Integrate prominent homepage quotation input with the existing conversation and private attachments.
