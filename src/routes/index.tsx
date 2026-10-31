@@ -142,7 +142,7 @@ function HeroSlideshow() {
             aria-hidden={i !== active}
             width={1920}
             height={1280}
-            className={`ken-burns absolute inset-0 h-full w-full object-cover transition-opacity duration-[2500ms] ease-in-out ${
+            className={`slow-zoom absolute inset-0 h-full w-full object-cover transition-opacity duration-[2500ms] ease-in-out ${
               i === active ? "opacity-100" : "opacity-0"
             }`}
           />
