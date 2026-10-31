@@ -180,9 +180,9 @@ export function EstimateCard({
           </>
         ) : (
           <>
-            <h4 className="text-xl">Ready for a pricing review</h4>
+            <h4 className="text-xl">Best priced on site</h4>
             <p className="mt-2 text-sm text-muted-foreground">
-              This project needs a more tailored estimate. We can help you work through the details or arrange a visit.
+              The scope varies too much for a reliable guide figure. A free visit lets us price it properly.
             </p>
           </>
         )}
@@ -231,10 +231,10 @@ export function EstimateCard({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => onAction("I'd like the team to email my estimate.")}
+                onClick={() => onAction("I'd like to upload plans or photos.")}
               >
                 <Mail />
-                Email estimate
+                Upload plans
               </Button>
               <Button
                 size="sm"
