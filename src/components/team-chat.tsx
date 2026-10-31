@@ -377,7 +377,7 @@ function ChatWindow({
     const values: Record<string, string | null> = { roof: spec.roof, doors: spec.doorType, walls: spec.wallFinish, flooring: spec.flooring,
       storeys: spec.storeys ? String(spec.storeys) : null, sizes: spec.length && spec.width ? `${spec.length}x${spec.width}` : null,
       kitchen_scope: spec.renovationScope, bathroom_scope: spec.renovationScope, specification: spec.specificationLevel,
-      room_size: spec.roomSize, bathroom_layout: spec.layoutRetained === null ? null : spec.layoutRetained ? "retained" : "changed",
+      room_size: spec.roomSize, kitchen_size: spec.roomSize, bathroom_size: spec.roomSize, bathroom_layout: spec.layoutRetained === null ? null : spec.layoutRetained ? "retained" : "changed",
       bathroom_fittings: spec.fittingsRetained === null ? null : spec.fittingsRetained ? "retained" : "replaced" };
     return values[set] ?? picked[set] ?? null;
   }
