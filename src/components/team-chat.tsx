@@ -462,7 +462,7 @@ function ChatWindow({
                   <MessageContent
                     className={
                       message.role === "user"
-                        ? "group-[.is-user]:rounded-none group-[.is-user]:bg-foreground group-[.is-user]:text-background"
+                        ? "group-[.is-user]:rounded-none group-[.is-user]:bg-secondary group-[.is-user]:text-foreground"
                         : "min-w-0 w-full bg-transparent p-0"
                     }
                   >
