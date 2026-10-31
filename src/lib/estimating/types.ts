@@ -71,6 +71,20 @@ export type EstimateLine = {
   workers?: number;
   days?: Range;
 };
+export type EstimateType = "benchmark" | "provisional" | "detailed";
+export type BenchmarkEstimate = {
+  range: Range;
+  perUnit: Range;
+  unit: string;
+  quantity: number;
+  source: string;
+  sourceDate: string;
+  vatBasis: string;
+  specLevel: string | null;
+  inclusions: string[];
+  exclusions: string[];
+  marginIncluded: boolean;
+};
 export type EstimateResult = {
   id?: string;
   createdAt?: string;
@@ -86,6 +100,12 @@ export type EstimateResult = {
   total: Range | null;
   subtotal: Range | null;
   markupPercent: number;
+  estimateType: EstimateType | null;
+  benchmarkEstimate: BenchmarkEstimate | null;
+  provisionalCount: number;
+  verifiedCount: number;
+  unpricedCount: number;
+  vatConfirmed: boolean;
   confidence: "Higher" | "Moderate" | "Lower";
   status: "estimated" | "review_required";
 };
