@@ -8,16 +8,26 @@ export const projectSchema = z
       "bathroom",
       "kitchen",
       "garden_wall",
+      "landscaping",
       "plastering",
       "knock_through",
       "repair",
       "general",
     ]),
     extensionType: z.enum(["rear", "side", "wraparound", "other"]).nullable().default(null),
+    renovationScope: z.enum(["refresh", "replacement", "full"]).nullable().default(null),
+    specificationLevel: z.enum(["standard", "premium", "bespoke"]).nullable().default(null),
+    layoutRetained: z.boolean().nullable().default(null),
+    fittingsRetained: z.boolean().nullable().default(null),
+    roomSize: z.enum(["small", "standard", "large"]).nullable().default(null),
+    loftType: z.enum(["rooflight", "dormer", "hip_to_gable", "mansard"]).nullable().default(null),
+    existingRoof: z.string().max(200).nullable().default(null),
+    workType: z.string().max(200).nullable().default(null),
+    finish: z.string().max(200).nullable().default(null),
     approximateArea: z.number().positive().max(10000).nullable().default(null),
     doorType: z.enum(["french", "bifold", "sliding"]).nullable().default(null),
-    wallFinish: z.enum(["brick", "render"]).nullable().default(null),
-    flooring: z.enum(["lvt", "timber", "tiles"]).nullable().default(null),
+     wallFinish: z.enum(["brick", "render", "mixed"]).nullable().default(null),
+     flooring: z.enum(["lvt", "timber", "tiles", "other"]).nullable().default(null),
     excludedPhases: z.array(z.string().max(80)).max(20).default([]),
     location: z.string().max(150).nullable(),
     length: z.number().positive().max(100).nullable(),
@@ -93,6 +103,7 @@ export type BenchmarkEstimate = {
   marginIncluded: boolean;
 };
 export type EstimateResult = {
+  customerNotes?: string[];
   id?: string;
   createdAt?: string;
   specification: ProjectSpec;

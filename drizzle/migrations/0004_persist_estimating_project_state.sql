@@ -1,0 +1,2 @@
+ALTER TABLE public.estimating_sessions ADD COLUMN project_state jsonb, ADD COLUMN project_revision integer NOT NULL DEFAULT 0;
+COMMENT ON COLUMN public.estimating_sessions.project_state IS 'Capability-owned authoritative specification and current estimate state; immutable snapshots remain in estimate_versions.';

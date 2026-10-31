@@ -22,6 +22,34 @@ export type VisualChoice = {
 export type VisualChoiceSet = { id: string; options: VisualChoice[] };
 
 const SETS: Record<string, VisualChoiceSet> = {
+  kitchen_scope: { id: "kitchen_scope", options: [
+    { value: "refresh", label: "Cosmetic refresh", description: "", message: "A cosmetic kitchen refresh." },
+    { value: "replacement", label: "New fitted kitchen", description: "", message: "A new fitted kitchen." },
+    { value: "full", label: "Full renovation", description: "", message: "A full kitchen renovation including building work." },
+  ] },
+  bathroom_scope: { id: "bathroom_scope", options: [
+    { value: "refresh", label: "Refresh", description: "", message: "A bathroom refresh." },
+    { value: "replacement", label: "Replace fittings", description: "", message: "Replace the bathroom fittings." },
+    { value: "full", label: "Full refurbishment", description: "", message: "A complete bathroom refurbishment." },
+  ] },
+  specification: { id: "specification", options: [
+    { value: "standard", label: "Standard", description: "", message: "Standard specification." },
+    { value: "premium", label: "Premium", description: "", message: "Premium specification." },
+    { value: "bespoke", label: "Bespoke", description: "", message: "Bespoke specification." },
+  ] },
+  room_size: { id: "room_size", options: [
+    { value: "small", label: "Small", description: "", message: "A small room." },
+    { value: "standard", label: "Standard", description: "", message: "A standard-sized room." },
+    { value: "large", label: "Large", description: "", message: "A large room." },
+  ] },
+  bathroom_layout: { id: "bathroom_layout", options: [
+    { value: "retained", label: "Keep positions", description: "", message: "Keep the plumbing layout." },
+    { value: "changed", label: "Change layout", description: "", message: "Change the plumbing layout." },
+  ] },
+  bathroom_fittings: { id: "bathroom_fittings", options: [
+    { value: "retained", label: "Keep sanitaryware", description: "", message: "Keep the existing sanitaryware." },
+    { value: "replaced", label: "Replace sanitaryware", description: "", message: "Replace the sanitaryware." },
+  ] },
   sizes: { id: "sizes", options: [
     { value: "3x4", label: "3m × 4m", description: "About 12m² — a compact single room.", message: "About 3m × 4m (12m²)." },
     { value: "4x5", label: "4m × 5m", description: "About 20m² — a comfortable kitchen-diner.", message: "About 4m × 5m (20m²)." },
@@ -40,7 +68,6 @@ const SETS: Record<string, VisualChoiceSet> = {
     { value: "finishes", label: "Choose finishes", description: "Exterior walls and flooring.", message: "Let me choose the exterior finish and flooring." },
     { value: "photos", label: "Upload photos or plans", description: "Helps us understand your space.", message: "I'd like to upload photos or plans." },
     { value: "survey", label: "Arrange a survey", description: "A visit to confirm everything properly.", message: "I'd like to arrange a survey." },
-    { value: "skip", label: "That's fine for now", description: "Leave the estimate as it is.", message: "That's fine for now, thanks." },
   ] },
   doors: { id: "doors", options: [
     { value: "french", label: "French doors", description: "Two hinged glazed doors.", image: frenchDoors, message: "I'd like French doors." },
@@ -50,11 +77,13 @@ const SETS: Record<string, VisualChoiceSet> = {
   walls: { id: "walls", options: [
     { value: "brick", label: "Brickwork", description: "Exposed facing brick.", image: brickWall, message: "I'd like exposed brickwork outside." },
     { value: "render", label: "Render", description: "A smooth rendered exterior.", image: renderWall, message: "I'd like a rendered exterior." },
+    { value: "mixed", label: "Mixed finish", description: "Brick and render, subject to pricing review.", message: "A mixed brick and render finish." },
   ] },
   flooring: { id: "flooring", options: [
     { value: "lvt", label: "LVT flooring", description: "Wood-effect luxury vinyl.", image: lvtFloor, message: "I'd like LVT flooring." },
     { value: "timber", label: "Timber flooring", description: "Natural timber boards.", image: timberFloor, message: "I'd like timber flooring." },
     { value: "tiles", label: "Floor tiles", description: "Large-format porcelain tiles.", image: tileFloor, message: "I'd like tiled flooring." },
+    { value: "other", label: "Other flooring", description: "Tell us the finish you have in mind.", message: "Other flooring, to be specified." },
   ] },
   roof: {
     id: "roof",
@@ -115,7 +144,7 @@ export function VisualChoiceCards({
   const set = getChoiceSet(setId);
   if (!set) return null;
   return (
-    <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3" role="group" aria-label="Options">
+    <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3" role="group" aria-label={`${setId.replaceAll("_", " ")} options`}>
       {set.options.map((option) => {
         const isSelected = selected === option.value;
         return (
@@ -123,7 +152,7 @@ export function VisualChoiceCards({
             key={option.value}
             type="button"
             variant="outline"
-            disabled={disabled || selected !== null}
+            disabled={disabled}
             onClick={() => onPick(option)}
             aria-pressed={isSelected}
             className={cn(
@@ -131,7 +160,7 @@ export function VisualChoiceCards({
               "hover:border-primary hover:bg-card hover:text-card-foreground focus-visible:outline-2 focus-visible:outline-primary",
               "disabled:cursor-default",
               isSelected && "border-primary ring-1 ring-primary",
-              selected !== null && !isSelected && "opacity-50",
+              
             )}
           >
             {option.image ? (
@@ -151,12 +180,12 @@ export function VisualChoiceCards({
                 )}
               </span>
             ) : (
-              <span className="flex aspect-[4/3] w-full items-center justify-center bg-secondary px-3 text-center font-display text-lg text-foreground">
+              <span className="flex min-h-11 w-full items-center justify-center px-3 py-3 text-center text-sm font-medium text-foreground">
                 {option.label}
                 {isSelected && <Check size={16} className="ml-2 text-primary" aria-hidden />}
               </span>
             )}
-            <span className="block p-3">
+            <span className={option.image ? "block p-3" : "hidden"}>
               {option.image && (
                 <span className="block text-sm font-medium text-foreground">{option.label}</span>
               )}

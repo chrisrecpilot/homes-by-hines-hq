@@ -27,6 +27,7 @@ function Attachments() {
       </Button>
       {a.files.map((f) => (
         <span key={f.id} className="flex max-w-44 items-center gap-1 text-xs text-muted-foreground">
+          {f.mediaType.startsWith("image/") && <img src={f.url} alt={f.filename ?? "Attached photo"} className="size-10 shrink-0 rounded object-cover" />}
           <span className="truncate">{f.filename ?? "Photo"}</span>
           <Button
             variant="ghost"
@@ -48,12 +49,14 @@ export function EstimateComposer({
   onStop,
   hero = false,
   uploading = false,
+  uploadProgress = null,
 }: {
   onSend: (message: PromptInputMessage) => Promise<void>;
   status: ChatStatus;
   onStop: () => void;
   hero?: boolean;
   uploading?: boolean;
+  uploadProgress?: string | null;
 }) {
   return (
     <PromptInput
@@ -81,7 +84,7 @@ export function EstimateComposer({
         <div className="flex min-w-0 items-center gap-1">
           <Attachments />
           <p className="text-[11px] text-muted-foreground">
-            {uploading ? "Uploading securely…" : "Photos & drawings"}
+            {uploading ? uploadProgress ?? "Uploading securely…" : "Photos & drawings"}
           </p>
         </div>
         <PromptInputSubmit

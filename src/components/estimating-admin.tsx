@@ -69,6 +69,12 @@ export function EstimatingAdmin() {
           </Button>
         ))}
       </div>
+      {section === "benchmark" && <div className="mt-5 flex flex-wrap gap-3 border-b border-border pb-4 text-xs">
+        {["extension", "kitchen", "bathroom", "loft", "garden_wall", "landscaping"].map((category) => {
+          const approved = (catalog.data ?? []).filter((row) => row.kind === "benchmark" && row.data["category"] === category && row.data["approved"] === true);
+          return <span key={category} className="capitalize">{category.replaceAll("_", " ")}: {approved.length ? `${approved.length} approved benchmark(s)` : "Needs sourced benchmark"}</span>;
+        })}
+      </div>}
       {catalog.error && (
         <p className="mt-4 text-destructive">Pricing could not load. {catalog.error.message}</p>
       )}
@@ -184,6 +190,12 @@ function CatalogEditor({ row, onSaved }: { row: CatalogEntry; onSaved: () => voi
       if (!name.trim()) throw new Error("A name is required.");
       if (!value || typeof value !== "object" || Array.isArray(value))
         throw new Error("Settings must be an object.");
+      if (row.kind === "benchmark" && value["approved"] === true) {
+        if (!String(value["source"] ?? "").trim() || !String(value["region"] ?? "").trim() || !/^\d{4}-\d{2}-\d{2}$/.test(String(value["sourceDate"] ?? ""))) throw new Error("Approved benchmarks require a source, region and source date.");
+        if (!["job", "m²", "m"].includes(String(value["unit"])) || !["exclusive", "inclusive", "not_applicable"].includes(String(value["vatBasis"]))) throw new Error("Confirm the benchmark unit and VAT basis.");
+        if (!Array.isArray(value["inclusions"]) || !value["inclusions"].length || !Array.isArray(value["exclusions"])) throw new Error("Document benchmark inclusions and exclusions before approving.");
+        if (value["category"] === "kitchen" && value["unit"] !== "job") throw new Error("Kitchen benchmarks must be scoped whole-job budgets.");
+      }
       if (row.kind === "template") {
         const tasks = value["tasks"] as { id: string; basis: string }[];
         if (!Array.isArray(tasks) || new Set(tasks.map((t) => t.id)).size !== tasks.length)
@@ -322,6 +334,21 @@ function CatalogEditor({ row, onSaved }: { row: CatalogEntry; onSaved: () => voi
                 <>
                   {input("Project category", "category")}
                   {input("Source date", "sourceDate", "date")}
+                  {input("Scope (refresh / replacement / full)", "renovationScope")}
+                  {input("Specification (standard / premium / bespoke)", "specificationLevel")}
+                  {input("Room size (small / standard / large)", "roomSize")}
+                  {input("Minimum applicable area (m²)", "minArea", "number")}
+                  {input("Maximum applicable area (m²)", "maxArea", "number")}
+                  {input("Storeys", "storeys", "number")}
+                  <label className="text-xs text-muted-foreground">Benchmark VAT basis
+                    <select className="mt-1 w-full border border-input bg-background p-2 text-foreground" value={String(data["vatBasis"] ?? "unknown")} onChange={(e) => set("vatBasis", e.target.value)}>
+                      <option value="unknown">Confirm VAT</option><option value="exclusive">Excludes VAT</option><option value="inclusive">Includes VAT</option><option value="not_applicable">Not applicable</option>
+                    </select>
+                  </label>
+                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={data["marginIncluded"] === true} onChange={(e) => set("marginIncluded", e.target.checked)} />Contractor margin included</label>
+                  {["inclusions", "exclusions"].map((key) => <label key={key} className="text-xs capitalize text-muted-foreground">{key} (one per line)
+                    <textarea className="mt-1 min-h-20 w-full border border-input bg-background p-2 text-foreground" value={Array.isArray(data[key]) ? (data[key] as string[]).join("\n") : ""} onChange={(e) => set(key, e.target.value.split("\n").filter(Boolean))} />
+                  </label>)}
                 </>
               )}
             </>
@@ -536,6 +563,21 @@ function Reviews() {
                 createdAt: row.created_at,
               }}
             />
+            <section className="my-5 border-y border-border py-4">
+              <h3 className="text-lg">Pricing review</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Status: {(row.result as unknown as EstimateResult).status?.replaceAll("_", " ") ?? "Legacy estimate"}
+              </p>
+              <h4 className="mt-3 text-sm font-medium">Customer details to collect</h4>
+              <p className="text-xs text-muted-foreground">{(row.result as unknown as EstimateResult).missingInputs?.join(", ") || "Minimum details supplied"}</p>
+              <h4 className="mt-3 text-sm font-medium">Internal pricing gaps — resolve in the catalogue</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-muted-foreground">
+                {(row.result as unknown as EstimateResult).missing.map((issue, index) => <li key={index}>{issue}</li>)}
+              </ul>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Confirm missing prices and productivity, approve scope coverage, or maintain a sourced category benchmark. Changes affect new versions only.
+              </p>
+            </section>
             <div className="my-4 flex flex-wrap gap-2">
               {q.data?.uploads
                 .filter((u) => u.session_id === row.session_id)

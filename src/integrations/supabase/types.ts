@@ -234,16 +234,22 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          project_revision: number
+          project_state: Json | null
           token_hash: string
         }
         Insert: {
           created_at?: string
           id: string
+          project_revision?: number
+          project_state?: Json | null
           token_hash: string
         }
         Update: {
           created_at?: string
           id?: string
+          project_revision?: number
+          project_state?: Json | null
           token_hash?: string
         }
         Relationships: []

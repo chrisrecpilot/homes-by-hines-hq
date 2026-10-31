@@ -9,6 +9,7 @@ import {
   type UIMessage,
 } from "ai";
 import { z } from "zod";
+import { customerEstimate } from "@/lib/estimating/project-state";
 import { projectSchema, type ProjectSpec } from "@/lib/estimating/types";
 
 import {
@@ -155,6 +156,8 @@ export const Route = createFileRoute("/api/chat")({
           }
         }
 
+        const { readProjectState, updateProjectState } = await import("@/lib/estimating/project-state.server");
+        let projectState = await readProjectState(conversationId);
         let enquiryId: string | null = null;
 
         const runIdFetch = createLovableAiGatewayRunIdFetch(getLovableAiGatewayRunId(request));
@@ -167,7 +170,10 @@ export const Route = createFileRoute("/api/chat")({
 
         const result = streamText({
           model: provider.responses(MODEL),
-          instructions: INSTRUCTIONS,
+          instructions: INSTRUCTIONS + `
+Category-specific rules override the extension journey above. Kitchens: collect renovationScope (refresh/replacement/full), size or roomSize, and specificationLevel (standard/premium/bespoke) only when an approved benchmark requires it; use kitchen_scope, room_size, specification choices. Use the tool missingInputs to decide which question is necessary. Bathrooms: collect renovationScope, size or roomSize, layoutRetained and fittingsRetained; use bathroom_scope, room_size, bathroom_layout, bathroom_fittings. Lofts require loftType and existingRoof plus size. Garden work requires workType, size and finish. Never ask storeys for kitchens or bathrooms. Call calculate_estimate to persist collected information even when inputs are incomplete; needs_input returns no budget. No approved category benchmark means a tailored estimate, not invented prices. Never disclose internal pricing diagnostics.
+The following server-owned project state is authoritative; preserve its fields unless the customer changes them. Non-pricing questions do not require recalculation. ${JSON.stringify(projectState ? { ...projectState, estimate: projectState.estimate ? customerEstimate(projectState.estimate) : null } : null)}`,
+
           messages: await convertToModelMessages(modelMessages),
           abortSignal: request.signal,
           stopWhen: stepCountIs(4),
@@ -180,7 +186,7 @@ export const Route = createFileRoute("/api/chat")({
                 additionalProperties: false,
                 required: [
                   "category",
-                  "extensionType",
+                  "extensionType", "renovationScope", "specificationLevel", "layoutRetained", "fittingsRetained", "roomSize", "loftType", "existingRoof", "workType", "finish",
                   "approximateArea",
                   "doorType",
                   "wallFinish",
@@ -203,11 +209,17 @@ export const Route = createFileRoute("/api/chat")({
                   "exclusions",
                 ],
                 properties: {
+                  renovationScope: { type: ["string", "null"], enum: ["refresh", "replacement", "full", null] },
+                  specificationLevel: { type: ["string", "null"], enum: ["standard", "premium", "bespoke", null] },
+                  layoutRetained: { type: ["boolean", "null"] }, fittingsRetained: { type: ["boolean", "null"] },
+                  roomSize: { type: ["string", "null"], enum: ["small", "standard", "large", null] },
+                  loftType: { type: ["string", "null"], enum: ["rooflight", "dormer", "hip_to_gable", "mansard", null] },
+                  existingRoof: { type: ["string", "null"] }, workType: { type: ["string", "null"] }, finish: { type: ["string", "null"] },
                   extensionType: { type: ["string", "null"], enum: ["rear", "side", "wraparound", "other", null] },
                   approximateArea: { type: ["number", "null"], description: "Explicitly supplied approximate footprint area in square metres; never inferred from a starter." },
                   doorType: { type: ["string", "null"], enum: ["french", "bifold", "sliding", null] },
-                  wallFinish: { type: ["string", "null"], enum: ["brick", "render", null] },
-                  flooring: { type: ["string", "null"], enum: ["lvt", "timber", "tiles", null] },
+                  wallFinish: { type: ["string", "null"], enum: ["brick", "render", "mixed", null] },
+                  flooring: { type: ["string", "null"], enum: ["lvt", "timber", "tiles", "other", null] },
                   excludedPhases: { type: "array", items: { type: "string" }, description: "Only construction phases explicitly excluded by the customer; never invent exclusions to force a complete estimate." },
                   category: {
                     type: "string",
@@ -217,6 +229,7 @@ export const Route = createFileRoute("/api/chat")({
                       "bathroom",
                       "kitchen",
                       "garden_wall",
+                      "landscaping",
                       "plastering",
                       "knock_through",
                       "repair",
@@ -246,11 +259,13 @@ export const Route = createFileRoute("/api/chat")({
               execute: async (input) => {
                 try {
                   const spec = projectSchema.parse(input);
-                  const { generateEstimate } = await import("@/lib/estimating/estimate.server");
-                  return await generateEstimate(conversationId, spec);
+                  projectState = await updateProjectState(conversationId, spec, projectState?.revision ?? 0, true);
+                  return projectState.estimateRevision === projectState.revision && projectState.estimate
+                    ? customerEstimate(projectState.estimate)
+                    : { error: "We couldn't update that estimate just now. Your project details are still here." };
                 } catch (error) {
                   return {
-                    error: error instanceof Error ? error.message : "Could not calculate estimate",
+                    error: "We couldn't update that estimate just now. Your project details are still here.",
                   };
                 }
               },
@@ -327,8 +342,10 @@ export const Route = createFileRoute("/api/chat")({
         const response = result.toUIMessageStreamResponse({
           originalMessages: messages,
           sendReasoning: false,
-          onError: (error) =>
-            error instanceof Error ? error.message : "Chat could not complete this request.",
+          onError: (error) => {
+            console.error("Chat request failed", error);
+            return "We couldn't complete that reply just now. Your project details are still here.";
+          },
           onFinish: async ({ messages: finalMessages }) => {
             const admin = await getAdmin();
             const row: {
