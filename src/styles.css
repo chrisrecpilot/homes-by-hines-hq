@@ -199,6 +199,21 @@
   }
 }
 
+.hero-caption {
+  animation: hero-caption 1.2s ease-out;
+}
+
+@keyframes hero-caption {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @utility slow-zoom {
   animation: slow-zoom 18s ease-in-out infinite alternate;
 }
