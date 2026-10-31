@@ -132,7 +132,8 @@ export function EstimateCard({
                     </ul>
                   </div>
                 )}
-              </div>
+                </div>
+              </details>
             ) : (
               <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
                 {(
