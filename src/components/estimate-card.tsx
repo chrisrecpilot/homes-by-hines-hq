@@ -2,6 +2,12 @@ import { Download, Mail, MapPin, Pencil, Ruler, CalendarDays } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { gbp, type EstimateResult } from "@/lib/estimating/types";
 
+const TYPE_LABELS = {
+  benchmark: "Preliminary estimate · South East regional construction costs",
+  provisional: "Provisional cost-based estimate",
+  detailed: "Detailed cost-based estimate",
+} as const;
+
 export function EstimateCard({
   estimate,
   onAction,
@@ -10,14 +16,18 @@ export function EstimateCard({
   onAction?: (text: string) => void;
 }) {
   const s = estimate.specification;
+  const bench = estimate.benchmarkEstimate;
+  const isBenchmark = estimate.estimateType === "benchmark" && bench && !estimate.total;
+  const shownRange = isBenchmark ? bench.range : estimate.total;
   function download() {
     const text = [
       "Homes by Hines — Indicative estimate",
       s.description,
       s.location ?? "Location unconfirmed",
-      estimate.total
-        ? `${gbp(estimate.total.low)}–${gbp(estimate.total.high)} | Expected: ${gbp(estimate.total.expected)}`
+      shownRange
+        ? `${gbp(shownRange.low)}–${gbp(shownRange.high)} | Expected: ${gbp(shownRange.expected)}`
         : "Manual pricing review required — no complete budget available",
+      estimate.estimateType ? `Estimate type: ${TYPE_LABELS[estimate.estimateType]}` : "",
       ...estimate.lines.map(
         (l) =>
           `${l.name}: ${l.quantity.expected.toFixed(2)} ${l.unit} × ${gbp(l.rates.expected)} = ${gbp(l.cost.expected)}`,
@@ -37,7 +47,9 @@ export function EstimateCard({
   return (
     <article className="my-3 w-full min-w-0 border border-border bg-card text-card-foreground">
       <div className="border-b border-border p-5">
-        <p className="eyebrow text-primary">Homes by Hines · Indicative estimate</p>
+        <p className="eyebrow text-primary">
+          Homes by Hines · {estimate.estimateType ? TYPE_LABELS[estimate.estimateType] : "Estimate"}
+        </p>
         <h3 className="mt-3 text-2xl capitalize">{s.category.replaceAll("_", " ")}</h3>
         <p className="mt-2 text-sm text-muted-foreground">{s.description}</p>
         <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
@@ -62,45 +74,98 @@ export function EstimateCard({
         </div>
       </div>
       <div className="p-5">
-        {estimate.total ? (
+        {shownRange ? (
           <>
             <p className="text-sm text-muted-foreground">
-              Estimated project budget · {estimate.confidence.toLowerCase()} confidence
+              Your estimated building budget · {estimate.confidence.toLowerCase()} confidence
             </p>
             <p className="mt-2 font-display text-3xl">
-              {gbp(estimate.total.low)}–{gbp(estimate.total.high)}
+              {gbp(shownRange.low)}–{gbp(shownRange.high)}
             </p>
             <p className="mt-2 text-sm">
-              Expected cost: <strong>{gbp(estimate.total.expected)}</strong>
+              Expected cost: <strong>{gbp(shownRange.expected)}</strong>
+              {!estimate.vatConfirmed && (
+                <span className="text-muted-foreground"> · plus VAT (to confirm)</span>
+              )}
             </p>
-            <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
-              {(
-                [
-                  ["Labour", "labour"],
-                  ["Materials", "materials"],
-                  ["Equipment, waste & specialist costs", "other"],
-                ] as const
-              ).map(([name, cat]) => (
-                <div key={cat} className="flex justify-between gap-4">
-                  <dt>{name}</dt>
-                  <dd>
-                    {gbp(
-                      estimate.lines
-                        .filter((l) => l.category === cat)
-                        .reduce((n, l) => n + l.cost.expected, 0),
-                    )}
-                  </dd>
+            {isBenchmark ? (
+              <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
+                <p className="text-muted-foreground">
+                  Based on {gbp(bench.perUnit.low)}–{gbp(bench.perUnit.high)} per {bench.unit} for a{" "}
+                  {bench.specLevel ?? "standard specification"} ({bench.quantity}
+                  {bench.unit}), from {bench.source}, checked{" "}
+                  {new Date(bench.sourceDate).toLocaleDateString("en-GB")}.
+                </p>
+                {bench.marginIncluded && (
+                  <p className="text-xs text-muted-foreground">
+                    This regional benchmark already includes a builder's overhead and margin — we do
+                    not add our coordination allowance on top of it.
+                  </p>
+                )}
+                {bench.inclusions.length > 0 && (
+                  <div className="text-xs">
+                    <p className="font-medium">Includes</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-4 text-muted-foreground">
+                      {bench.inclusions.map((i) => (
+                        <li key={i}>{i}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {bench.exclusions.length > 0 && (
+                  <div className="text-xs">
+                    <p className="font-medium">Excludes</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-4 text-muted-foreground">
+                      {bench.exclusions.map((i) => (
+                        <li key={i}>{i}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
+                {(
+                  [
+                    ["Labour", "labour"],
+                    ["Materials", "materials"],
+                    ["Equipment, waste & specialist costs", "other"],
+                  ] as const
+                ).map(([name, cat]) => (
+                  <div key={cat} className="flex justify-between gap-4">
+                    <dt>{name}</dt>
+                    <dd>
+                      {gbp(
+                        estimate.lines
+                          .filter((l) => l.category === cat)
+                          .reduce((n, l) => n + l.cost.expected, 0),
+                      )}
+                    </dd>
+                  </div>
+                ))}
+                <div className="flex justify-between gap-4">
+                  <dt>Coordination & delivery ({estimate.markupPercent}%)</dt>
+                  <dd>{gbp(estimate.markup.expected)}</dd>
                 </div>
-              ))}
-              <div className="flex justify-between gap-4">
-                <dt>Coordination & delivery ({estimate.markupPercent}%)</dt>
-                <dd>{gbp(estimate.markup.expected)}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt>Applicable VAT</dt>
-                <dd>{estimate.vat ? gbp(estimate.vat.expected) : "To confirm"}</dd>
-              </div>
-            </dl>
+                <div className="flex justify-between gap-4">
+                  <dt>Applicable VAT</dt>
+                  <dd>{estimate.vat ? gbp(estimate.vat.expected) : "To confirm"}</dd>
+                </div>
+                {estimate.provisionalCount > 0 && (
+                  <p className="pt-1 text-xs text-muted-foreground">
+                    {estimate.provisionalCount} of {estimate.lines.length} cost lines use approved
+                    provisional allowances pending supplier verification.
+                  </p>
+                )}
+              </dl>
+            )}
+            {estimate.missing.length > 0 && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                {estimate.unpricedCount > 0
+                  ? `${estimate.unpricedCount} item${estimate.unpricedCount === 1 ? "" : "s"} still need confirmed pricing and are not yet included above.`
+                  : "Some details still need team confirmation."}
+              </p>
+            )}
           </>
         ) : (
           <>
