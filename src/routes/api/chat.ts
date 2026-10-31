@@ -11,6 +11,7 @@ import {
 import { z } from "zod";
 import { applyProjectPatch, customerEstimate, emptyProject } from "@/lib/estimating/project-state";
 import { gbp, headlineRange } from "@/lib/estimating/types";
+import { enquirySchema } from "@/lib/estimating/enquiry";
 import { buildPatch, describeSpec, UPDATE_PROJECT_SCHEMA, type UpdateProjectInput } from "@/lib/estimating/update-project";
 
 import {
@@ -76,14 +77,7 @@ type EnquiryInput = {
   message: string;
 };
 
-const enquirySchema = z.object({
-  name: z.string().trim().min(1).max(200),
-  phone: z.string().trim().max(50).refine((p) => { const d = p.replace(/\D/g, ""); return d.length >= 7 && d.length <= 15; }),
-  email: z.string().trim().max(200).email().nullable().or(z.literal("").transform(() => null)),
-  enquiry_type: z.enum(["renovation", "development", "landscaping", "general"]),
-  request: z.enum(["site_visit", "callback", "formal_quote", "estimate_copy"]),
-  message: z.string().trim().min(1).max(3000),
-});
+
 
 async function getAdmin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
