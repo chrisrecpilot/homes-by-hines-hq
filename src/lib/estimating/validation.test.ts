@@ -1,6 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { calculateEstimate } from "./calculate";
+import { normalizeLocation } from "./validation";
 import { headlineRange, projectSchema, type CatalogEntry } from "./types";
+
+describe("Location normalisation", () => {
+  it("normalises UK postcodes regardless of spacing or case", () => {
+    expect(normalizeLocation("ME160PP")).toBe("ME16 0PP");
+    expect(normalizeLocation("me160pp")).toBe("ME16 0PP");
+    expect(normalizeLocation("ME16 0PP")).toBe("ME16 0PP");
+    expect(normalizeLocation(" ec1a1bb ")).toBe("EC1A 1BB");
+  });
+  it("strips 'near' hedging and keeps town names as given", () => {
+    expect(normalizeLocation("Near Maidstone")).toBe("Maidstone");
+    expect(normalizeLocation("Maidstone")).toBe("Maidstone");
+    expect(normalizeLocation("  Maidstone  ")).toBe("Maidstone");
+  });
+  it("returns null for empty locations", () => {
+    expect(normalizeLocation(null)).toBeNull();
+    expect(normalizeLocation("   ")).toBeNull();
+  });
+});
 
 const settings = { markup_percent: 12, vat_registered: null, sales_vat_percent: 20, tax_confirmed: false };
 const input = projectSchema.parse({ category: "extension", extensionType: "rear", location: "Maidstone", length: 6, width: 6, storeys: 1, height: 2.4, openingArea: 4, foundationDepth: 1, foundationWidth: 0.6, roof: null, bifolds: false, underfloorHeating: null, structuralOpening: null, description: "Single storey rear extension", assumptions: [], exclusions: [] });
