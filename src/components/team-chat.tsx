@@ -1,6 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { MessageCircle, RotateCcw, X, ArrowUpRight, FileText, Plus } from "lucide-react";
+import { MessageCircle, RotateCcw, X, FileText, Plus } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -367,7 +367,6 @@ function ChatWindow({
           hero={inline && !active}
           uploading={uploading}
         />
-      </div>
       {inline && <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">Indicative costs, not a fixed quotation. Unconfirmed pricing needs a team review.</p>}
       </div>
     </div>
