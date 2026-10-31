@@ -59,4 +59,20 @@ describe("Responsible whole-project pricing", () => {
     expect(headlineRange(calculateEstimate({ ...input, length: 7, width: 5 }, [benchmark], settings))).toEqual({ low: 6300000, expected: 7525000, high: 8750000 });
     expect(headlineRange(calculateEstimate({ ...input, length: null }, [benchmark], settings))).toBeNull();
   });
+  it("allows a detailed 12%-marked-up budget only with all major phases accounted for", () => {
+    const phases = ["groundworks", "foundations", "floor", "walls", "roof", "glazing", "services", "finishes", "waste"];
+    const catalog: CatalogEntry[] = [
+      { id: "template_extension", kind: "template", name: "Complete scope", updated_at: "2026-10-31", data: { approved: true, tasks: phases.map((phase) => ({ id: phase, name: phase, phase, basis: "count", expense: `cost_${phase}` })) } },
+      ...phases.map((phase) => ({ id: `cost_${phase}`, kind: "expense", name: phase, updated_at: "2026-10-31", data: { approved: true, verified: true, unit: "job", pricePence: 100000, source: "Verified test quote", vatTreatment: "net" } })),
+    ];
+    const result = calculateEstimate(input, catalog, settings);
+    expect(result.status).toBe("detailed_estimate");
+    expect(result.scopeComplete).toBe(true);
+    expect(result.base.expected).toBe(900000);
+    expect(result.markup.expected).toBe(108000);
+    expect(headlineRange(result)?.expected).toBe(1008000);
+    const selected = calculateEstimate({ ...input, doorType: "french" }, catalog, settings);
+    expect(selected.status).toBe("review_required");
+    expect(headlineRange(selected)).toBeNull();
+  });
 });

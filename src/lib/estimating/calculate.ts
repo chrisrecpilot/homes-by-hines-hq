@@ -135,6 +135,16 @@ export function calculateEstimate(
   const lines: EstimateLine[] = [];
   const used = new Set<string>();
   let unpricedCount = 0;
+  // A generic materials allowance cannot certify a selected product specification.
+  for (const [field, value] of [["doorType", spec.doorType], ["wallFinish", spec.wallFinish], ["flooring", spec.flooring]] as const) {
+    if (value && !tasks.some((task) => {
+      const material = catalog.find((record) => record.id === task.material);
+      return material?.data["approved"] === true && material.data["specField"] === field && material.data["specValue"] === value;
+    })) {
+      missing.push(`${field}: ${value} selected; specification-specific approved pricing needs confirmation.`);
+      unpricedCount++;
+    }
+  }
   if (!template || !tasks.length)
     missing.push("An approved project template is needed for this scope.");
   if (template?.data["approved"] !== true)
