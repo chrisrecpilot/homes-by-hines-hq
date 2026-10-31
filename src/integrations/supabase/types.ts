@@ -68,6 +68,213 @@ export type Database = {
         }
         Relationships: []
       }
+      estimate_actuals: {
+        Row: {
+          actual_person_days: number
+          estimate_id: string
+          labour_pence: number
+          material_pence: number
+          notes: string
+          other_pence: number
+          specialist_pence: number
+          updated_at: string
+        }
+        Insert: {
+          actual_person_days?: number
+          estimate_id: string
+          labour_pence?: number
+          material_pence?: number
+          notes?: string
+          other_pence?: number
+          specialist_pence?: number
+          updated_at?: string
+        }
+        Update: {
+          actual_person_days?: number
+          estimate_id?: string
+          labour_pence?: number
+          material_pence?: number
+          notes?: string
+          other_pence?: number
+          specialist_pence?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estimate_actuals_estimate_id_fkey"
+            columns: ["estimate_id"]
+            isOneToOne: true
+            referencedRelation: "estimate_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estimate_uploads: {
+        Row: {
+          created_at: string
+          id: string
+          mime_type: string
+          name: string
+          session_id: string
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mime_type: string
+          name: string
+          session_id: string
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mime_type?: string
+          name?: string
+          session_id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estimate_uploads_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "estimating_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estimate_versions: {
+        Row: {
+          created_at: string
+          id: string
+          pricing_snapshot: Json
+          result: Json
+          session_id: string
+          specification: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pricing_snapshot: Json
+          result: Json
+          session_id: string
+          specification: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pricing_snapshot?: Json
+          result?: Json
+          session_id?: string
+          specification?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estimate_versions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "estimating_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estimating_audit: {
+        Row: {
+          created_at: string
+          id: string
+          next_data: Json
+          previous_data: Json | null
+          record_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          next_data: Json
+          previous_data?: Json | null
+          record_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          next_data?: Json
+          previous_data?: Json | null
+          record_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      estimating_catalog: {
+        Row: {
+          data: Json
+          id: string
+          kind: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          kind: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          kind?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      estimating_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          token_hash?: string
+        }
+        Relationships: []
+      }
+      estimating_settings: {
+        Row: {
+          id: number
+          markup_percent: number
+          sales_vat_percent: number
+          tax_confirmed: boolean
+          updated_at: string
+          vat_registered: boolean | null
+        }
+        Insert: {
+          id?: number
+          markup_percent?: number
+          sales_vat_percent?: number
+          tax_confirmed?: boolean
+          updated_at?: string
+          vat_registered?: boolean | null
+        }
+        Update: {
+          id?: number
+          markup_percent?: number
+          sales_vat_percent?: number
+          tax_confirmed?: boolean
+          updated_at?: string
+          vat_registered?: boolean | null
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           city: string | null
