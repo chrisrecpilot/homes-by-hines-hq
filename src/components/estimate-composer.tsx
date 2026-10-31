@@ -27,6 +27,7 @@ function Attachments() {
       </Button>
       {a.files.map((f) => (
         <span key={f.id} className="flex max-w-44 items-center gap-1 text-xs text-muted-foreground">
+          {f.mediaType.startsWith("image/") && <img src={f.url} alt={f.filename ?? "Attached photo"} className="size-10 shrink-0 rounded object-cover" />}
           <span className="truncate">{f.filename ?? "Photo"}</span>
           <Button
             variant="ghost"
