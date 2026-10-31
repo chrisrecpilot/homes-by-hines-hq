@@ -129,7 +129,7 @@ function HeroSlideshow() {
     return () => window.clearInterval(id);
   }, []);
 
-  const current = heroSlides[active];
+  const current = heroSlides[active] ?? heroSlides[0]!;
 
   return (
     <>
