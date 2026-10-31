@@ -142,6 +142,7 @@ export function calculateEstimate(
       if (value === false) continue;
       if (value !== true) {
         missing.push(`${task.name}: confirm whether required.`);
+        unpricedCount++;
         continue;
       }
     }
@@ -163,24 +164,29 @@ export function calculateEstimate(
       const record = catalog.find((r) => r.id === id);
       if (!record) {
         missing.push(`${task.name}: missing ${category} record.`);
+        unpricedCount++;
         continue;
       }
       const d = record.data;
       let rates = readRange(d, "pricePence");
       if (!rates) {
         missing.push(`${task.name}: ${record.name} price needs an approved rate or allowance.`);
+        unpricedCount++;
         continue;
       }
       if (d["approved"] !== true) {
         missing.push(`${task.name}: ${record.name} is not approved for estimating.`);
+        unpricedCount++;
         continue;
       }
       if (category !== "labour" && !d["source"]) {
         missing.push(`${record.name}: price source is required.`);
+        unpricedCount++;
         continue;
       }
       if (!d["vatTreatment"] || d["vatTreatment"] === "unknown") {
         missing.push(`${record.name}: purchase VAT treatment needs confirmation.`);
+        unpricedCount++;
         continue;
       }
       if (
@@ -189,16 +195,19 @@ export function calculateEstimate(
         )
       ) {
         missing.push(`${record.name}: invalid purchase VAT treatment.`);
+        unpricedCount++;
         continue;
       }
       if (d["vatTreatment"] === "inclusive_recoverable" && settings.vat_registered !== true) {
         missing.push(`${record.name}: recoverable VAT requires registered status.`);
+        unpricedCount++;
         continue;
       }
       if (d["vatTreatment"] === "inclusive_recoverable") {
         const tax = numeric(d, "purchaseVatPercent", -1);
         if (tax < 0 || tax > 20) {
           missing.push(`${record.name}: confirm purchase VAT rate.`);
+          unpricedCount++;
           continue;
         }
         const grossRates = rates;
@@ -211,6 +220,7 @@ export function calculateEstimate(
       const workers = task.workers ?? 1;
       if (!Number.isInteger(workers) || workers < 1 || workers > 100) {
         missing.push(`${task.name}: worker count must be a positive whole number.`);
+        unpricedCount++;
         continue;
       }
       if (category === "labour") {
@@ -218,12 +228,14 @@ export function calculateEstimate(
         const output = productivity ? readRange(productivity.data, "unitsPerPersonDay") : null;
         if (!output || output.low <= 0 || productivity?.data["approved"] !== true) {
           missing.push(`${task.name}: approved person-day productivity is required.`);
+          unpricedCount++;
           continue;
         }
         const prep = numeric(productivity.data, "setupPersonDays");
         const min = numeric(productivity.data, "minimumPersonDays");
         if (prep < 0 || min < 0) {
           missing.push(`${task.name}: setup and attendance cannot be negative.`);
+          unpricedCount++;
           continue;
         }
         qty = {
@@ -240,11 +252,13 @@ export function calculateEstimate(
         const waste = numeric(d, "wastagePercent");
         if (waste < 0 || waste > 100) {
           missing.push(`${record.name}: confirm a valid wastage allowance.`);
+          unpricedCount++;
           continue;
         }
         const coverage = numeric(d, "coverage", 1);
         if (coverage <= 0) {
           missing.push(`${record.name}: product coverage must be positive.`);
+          unpricedCount++;
           continue;
         }
         const factor = readRange(d, "quantityFactor") ?? range(1);
