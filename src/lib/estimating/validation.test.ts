@@ -59,6 +59,13 @@ describe("Responsible whole-project pricing", () => {
     expect(headlineRange(calculateEstimate({ ...input, storeys: 2 }, [benchmark], settings))).toBeNull();
     expect(headlineRange(calculateEstimate({ ...input, location: "Manchester" }, [benchmark], settings))).toBeNull();
   });
+  it("prices a double-storey 6×6m extension on 72m² total floor area", () => {
+    const doubleBenchmark: CatalogEntry = { id: "benchmark_extension_double", kind: "benchmark", name: "Kent double-storey benchmark", updated_at: "2026-10-31", data: { category: "extension", approved: true, storeys: 2, region: "Kent & South East England", specLevel: "Standard double-storey extension", unit: "m²", pricePence: { low: 150000, expected: 185000, high: 220000 }, source: "Approved test benchmark", sourceDate: "2026-10-31", vatBasis: "exclusive", marginIncluded: true } };
+    const result = calculateEstimate({ ...input, storeys: 2, location: null }, [benchmark, doubleBenchmark], settings);
+    expect(result.status).toBe("indicative_estimate");
+    expect(result.benchmarkEstimate?.quantity).toBe(72);
+    expect(headlineRange(result)).toEqual({ low: 10800000, expected: 13320000, high: 15840000 });
+  });
   it("does not mistake a priced floor for all major construction phases", () => {
     const catalog: CatalogEntry[] = [
       { id: "template_extension", kind: "template", name: "Incomplete scope", updated_at: "2026-10-31", data: { approved: true, tasks: [{ id: "floor", name: "Ground floor", basis: "floor", expense: "floor_cost" }] } },
