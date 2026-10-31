@@ -122,7 +122,7 @@ function EstimatePanel({
   const s = estimate.specification;
   const area = (s.length && s.width ? s.length * s.width : s.approximateArea ?? 0) * (s.category === "extension" ? s.storeys ?? 1 : 1);
   return (
-    <details className="group shrink-0 border-b border-border bg-card text-card-foreground">
+    <details className="group max-h-[40dvh] shrink-0 overflow-y-auto border-b border-border bg-card text-card-foreground">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-1 py-2.5 text-xs [&::-webkit-details-marker]:hidden">
         <span className="flex min-w-0 items-center gap-2">
           <span className="size-1.5 shrink-0 rounded-full bg-primary" />
@@ -140,7 +140,7 @@ function EstimatePanel({
           {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && <span className="text-muted-foreground"> +VAT</span>}
         </span>
       </summary>
-      <div className="max-h-[45dvh] overflow-y-auto space-y-1 px-1 pb-3 text-xs text-muted-foreground">
+      <div className="space-y-1 px-1 pb-3 text-xs text-muted-foreground">
         <p>
           Expected {gbp(range.expected)}
           {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && " plus VAT (to confirm)"} ·{" "}
