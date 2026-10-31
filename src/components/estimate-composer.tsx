@@ -66,7 +66,7 @@ export function EstimateComposer({
       maxFiles={4}
       multiple
       onError={(e) => toast.error(e.message)}
-      className="w-full text-foreground [&_[data-slot=input-group]]:rounded-lg [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card [&_[data-slot=input-group]]:shadow-none focus-within:[&_[data-slot=input-group]]:border-primary" + (hero ? " [&_[data-slot=input-group]]:border-foreground/40" : "")
+      className={"w-full text-foreground [&_[data-slot=input-group]]:rounded-lg [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card [&_[data-slot=input-group]]:shadow-none focus-within:[&_[data-slot=input-group]]:border-primary" + (hero ? " [&_[data-slot=input-group]]:border-foreground/40" : "")}
     >
       <PromptInputTextarea
         aria-label={hero ? "Describe your building project" : "Message the team"}
