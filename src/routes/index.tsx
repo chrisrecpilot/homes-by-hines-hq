@@ -119,10 +119,20 @@ function Home() {
         <div className="relative mx-auto flex min-h-[min(760px,88dvh)] w-full max-w-6xl flex-col justify-center px-6 pb-14 pt-32 sm:pb-20 sm:pt-36">
           <div className="mx-auto w-full max-w-3xl">
             <p className="eyebrow text-primary-foreground/80">Homes by Hines · Kent &amp; London</p>
-            <h1 className="mt-5 font-display text-4xl leading-tight text-primary-foreground sm:text-6xl">Tell us what you're building.</h1>
-            <p className="mt-5 max-w-xl text-base text-primary-foreground/85 sm:text-lg">Start your AI-assisted building cost estimate. No obligation. No waiting for a callback.</p>
-            <div className="mt-8"><TeamChat inline /></div>
-            <p className="mt-5 text-xs text-primary-foreground/75">Indicative costs, not a fixed quotation. Complex work and unconfirmed prices need a team review.</p>
+            <h1 className="mt-5 font-display text-4xl leading-tight text-primary-foreground sm:text-6xl">
+              Tell us what you're building.
+            </h1>
+            <p className="mt-5 max-w-xl text-base text-primary-foreground/85 sm:text-lg">
+              Start your AI-assisted building cost estimate. No obligation. No waiting for a
+              callback.
+            </p>
+            <div className="mt-8">
+              <TeamChat inline />
+            </div>
+            <p className="mt-5 text-xs text-primary-foreground/75">
+              Indicative costs, not a fixed quotation. Complex work and unconfirmed prices need a
+              team review.
+            </p>
           </div>
         </div>
       </section>
@@ -155,8 +165,7 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Recent completed projects, photographed
-                on site.
+                Drag, or use the arrows. Recent completed projects, photographed on site.
               </p>
             </div>
           </Reveal>
