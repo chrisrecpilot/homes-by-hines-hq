@@ -253,6 +253,8 @@ function ChatWindow({
   const [selecting, setSelecting] = useState(false);
   const [choiceError, setChoiceError] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const uploadCache = useRef(new Map<string, Awaited<ReturnType<typeof upload>>>());
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -310,13 +312,18 @@ function ChatWindow({
     setUploading(true);
     try {
       const uploaded = [];
-      for (const f of files) {
+      for (const [index, f] of files.entries()) {
+        setUploadProgress(`${index + 1}/${files.length} · ${f.filename ?? "Attachment"}`);
+        const cached = uploadCache.current.get(f.url);
+        if (cached) { uploaded.push(cached); continue; }
         const blob = await fetch(f.url).then((r) => r.blob());
         const form = new FormData();
         form.set("sessionId", stored.id);
         form.set("token", stored.token);
         form.set("file", new File([blob], f.filename ?? "photo", { type: f.mediaType }));
-        uploaded.push(await upload({ data: form }));
+        const saved = await upload({ data: form });
+        uploadCache.current.set(f.url, saved);
+        uploaded.push(saved);
       }
       await sendMessage({
         text: text.trim() || "I've attached a photo or drawing for this project.",
@@ -327,6 +334,7 @@ function ChatWindow({
       throw error;
     } finally {
       setUploading(false);
+      setUploadProgress(null);
     }
   }
   const last = messages.at(-1);
@@ -358,7 +366,7 @@ function ChatWindow({
     }
     return null;
   }, [messages]);
-  const currentEstimate = project?.estimate ?? latestEstimate?.estimate ?? null;
+  const currentEstimate = project ? project.estimate : latestEstimate?.estimate ?? null;
   const estimateStale = project ? project.estimateRevision !== project.revision || project.pending : false;
   function selectedValue(set: string): string | null {
     const spec = project?.specification;
@@ -495,7 +503,8 @@ function ChatWindow({
                     })}
                     {message.role === "assistant" && message.id !== last?.id && (() => {
                       const set = parseChoices(message.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n"));
-                      return set && !["refine"].includes(set) ? <VisualChoiceCards setId={set} selected={selectedValue(set)} disabled={busy}
+                      const repeated = set && messages.slice(messages.indexOf(message) + 1).some((later) => later.role === "assistant" && parseChoices(later.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n")) === set);
+                      return set && !repeated && !["refine"].includes(set) ? <VisualChoiceCards setId={set} selected={selectedValue(set)} disabled={busy}
                         onPick={(choice) => choicePatch(set, choice.value) ? void pick(set, choice) : void send(choice.message)} /> : null;
                     })()}
                   </MessageContent>
@@ -533,6 +542,7 @@ function ChatWindow({
           onStop={stop}
           hero={inline && !active}
           uploading={uploading}
+          uploadProgress={uploadProgress}
         />
         {inline && (
           <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
