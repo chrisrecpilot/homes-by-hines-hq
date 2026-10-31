@@ -84,6 +84,91 @@ const slides: WorkSlide[] = [
   },
 ];
 
+const heroSlides = [
+  {
+    image: allingtonGardenAfter.url,
+    alt: "A refurbished rear garden with composite decking, level lawn and a covered seating area",
+    place: "Allington",
+    label: "Garden refurbishment",
+  },
+  {
+    image: maidstoneExtensionBuild.url,
+    alt: "A rear extension under construction in blockwork at a Maidstone home",
+    place: "Maidstone",
+    label: "Extension, in build",
+  },
+  {
+    image: gardenAfter.url,
+    alt: "Rear garden with newly laid lawn, planting bed and timber decking",
+    place: "East London",
+    label: "Garden landscaping",
+  },
+  {
+    image: maidstoneScaffold.url,
+    alt: "Scaffolding around a Maidstone house during extension and renovation works",
+    place: "Maidstone",
+    label: "Renovation, in build",
+  },
+  {
+    image: kitchenAfter.url,
+    alt: "Grey shaker kitchen with marble-effect worktops and herringbone floor",
+    place: "Maidstone",
+    label: "Kitchen redesign",
+  },
+];
+
+function HeroSlideshow() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(
+      () => setActive((i) => (i + 1) % heroSlides.length),
+      6000,
+    );
+    return () => window.clearInterval(id);
+  }, []);
+
+  const current = heroSlides[active];
+
+  return (
+    <>
+      <div className="absolute inset-0 overflow-hidden">
+        {heroSlides.map((slide, i) => (
+          <img
+            key={slide.image}
+            src={slide.image}
+            alt={i === active ? slide.alt : ""}
+            aria-hidden={i !== active}
+            width={1920}
+            height={1280}
+            className={`ken-burns absolute inset-0 h-full w-full object-cover transition-opacity duration-[2500ms] ease-in-out ${
+              i === active ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
+      </div>
+      <div className="absolute inset-0 bg-ink/60" />
+      <HeroCaption place={current.place} label={current.label} />
+    </>
+  );
+}
+
+function HeroCaption({ place, label }: { place: string; label: string }) {
+  return (
+    <div className="absolute inset-x-12 bottom-10 hidden items-end justify-between gap-4 border-t border-primary-foreground/25 pt-4 text-xs text-primary-foreground/80 lg:flex xl:inset-x-16">
+      <span key={place + label} className="hero-caption">
+        {place}
+        <br />
+        <span className="mt-1 block text-primary-foreground">{label}</span>
+      </span>
+      <Link to="/work" className="underline underline-offset-4">
+        View our work ↗
+      </Link>
+    </div>
+  );
+}
+
 const pillars = [
   {
     index: "01",
