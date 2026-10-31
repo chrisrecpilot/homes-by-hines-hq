@@ -107,32 +107,46 @@ function Home() {
     <>
       <section className="estimate-home grid overflow-hidden lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="estimate-intro relative min-w-0 overflow-hidden bg-ink">
-        <div className="absolute inset-0 overflow-hidden">
-          <img
-            src={allingtonGardenAfter.url}
-            alt="A refurbished rear garden with composite decking, level lawn and a covered seating area"
-            width={1920}
-            height={1280}
-            className="ken-burns h-full w-full object-cover"
-          />
-        </div>
-        <div className="absolute inset-0 bg-ink/60" />
-        <div className="relative flex h-full flex-col justify-center px-6 py-6 lg:px-12 lg:py-12 xl:px-16">
-          <div className="max-w-lg">
-            <p className="text-xs text-primary-foreground/80">Homes by Hines · Kent &amp; London</p>
-            <h1 className="mt-3 font-display text-3xl leading-tight text-primary-foreground lg:mt-6 lg:text-5xl xl:text-6xl">
-              Tell us what you're building.
-            </h1>
-            <p className="mt-3 max-w-sm text-sm text-primary-foreground/85 lg:mt-6 lg:text-lg">
-              Your next project starts here. An AI-assisted estimate, backed by our team.
-            </p>
-            <p className="mt-8 hidden border-t border-primary-foreground/25 pt-5 text-sm text-primary-foreground/80 lg:block">Renovation. Development. Landscaping.<br /><span className="mt-2 block">One team, from the first idea to the final detail.</span></p>
+          <div className="absolute inset-0 overflow-hidden">
+            <img
+              src={allingtonGardenAfter.url}
+              alt="A refurbished rear garden with composite decking, level lawn and a covered seating area"
+              width={1920}
+              height={1280}
+              className="ken-burns h-full w-full object-cover"
+            />
           </div>
-          <div className="absolute inset-x-12 bottom-10 hidden items-end justify-between gap-4 border-t border-primary-foreground/25 pt-4 text-xs text-primary-foreground/80 lg:flex xl:inset-x-16">
-            <span>Allington<br /><span className="mt-1 block text-primary-foreground">Garden refurbishment</span></span>
-            <Link to="/work" className="underline underline-offset-4">View our work ↗</Link>
+          <div className="absolute inset-0 bg-ink/60" />
+          <div className="relative flex h-full flex-col justify-center px-6 py-6 lg:px-12 lg:py-12 xl:px-16">
+            <div className="max-w-lg">
+              <p className="text-xs text-primary-foreground/80">
+                Homes by Hines · Kent &amp; London
+              </p>
+              <h1 className="mt-3 font-display text-3xl leading-tight text-primary-foreground lg:mt-6 lg:text-5xl xl:text-6xl">
+                Tell us what you're building.
+              </h1>
+              <p className="mt-3 max-w-sm text-sm text-primary-foreground/85 lg:mt-6 lg:text-lg">
+                Your next project starts here. An AI-assisted estimate, backed by our team.
+              </p>
+              <p className="mt-8 hidden border-t border-primary-foreground/25 pt-5 text-sm text-primary-foreground/80 lg:block">
+                Renovation. Development. Landscaping.
+                <br />
+                <span className="mt-2 block">
+                  One team, from the first idea to the final detail.
+                </span>
+              </p>
+            </div>
+            <div className="absolute inset-x-12 bottom-10 hidden items-end justify-between gap-4 border-t border-primary-foreground/25 pt-4 text-xs text-primary-foreground/80 lg:flex xl:inset-x-16">
+              <span>
+                Allington
+                <br />
+                <span className="mt-1 block text-primary-foreground">Garden refurbishment</span>
+              </span>
+              <Link to="/work" className="underline underline-offset-4">
+                View our work ↗
+              </Link>
+            </div>
           </div>
-        </div>
         </div>
         <div className="min-h-0 min-w-0 bg-background text-foreground">
           <TeamChat inline />

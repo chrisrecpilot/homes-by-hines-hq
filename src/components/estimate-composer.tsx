@@ -72,7 +72,9 @@ export function EstimateComposer({
             ? "Describe your project… e.g. I want a 5m × 4m rear extension."
             : "Add details or ask about your project…"
         }
-        className={hero ? "min-h-20 max-h-32 p-4 text-base lg:min-h-28" : "min-h-16 max-h-28 p-4 text-base"}
+        className={
+          hero ? "min-h-20 max-h-32 p-4 text-base lg:min-h-28" : "min-h-16 max-h-28 p-4 text-base"
+        }
         maxLength={5000}
       />
       <PromptInputFooter className="items-center justify-between gap-2 px-2 pb-2">

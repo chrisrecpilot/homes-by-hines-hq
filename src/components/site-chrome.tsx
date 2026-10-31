@@ -12,9 +12,7 @@ export function SiteHeader() {
       <div className="mx-auto grid h-16 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 lg:flex lg:h-20 lg:justify-between lg:px-8">
         <Link to="/" className="group flex min-w-0 items-baseline gap-3">
           <span className="block h-6 w-[3px] bg-primary" aria-hidden="true" />
-          <span className="truncate font-display text-lg leading-none">
-            Homes by Hines
-          </span>
+          <span className="truncate font-display text-lg leading-none">Homes by Hines</span>
         </Link>
         <nav className="hidden items-center gap-8 lg:flex">
           {nav.map((item) => (
@@ -48,17 +46,14 @@ export function SiteFooter() {
         <div>
           <p className="font-display text-xl">Homes by Hines</p>
           <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-            End-to-end planning and project management for renovation,
-            development and landscaping. Architects, builders, council and
-            building control — all handled.
+            End-to-end planning and project management for renovation, development and landscaping.
+            Architects, builders, council and building control — all handled.
           </p>
         </div>
         <div className="text-sm text-muted-foreground">
           <p>hello@homesbyhines.co.uk</p>
           <p>01234 567 890</p>
-          <p className="mt-4 text-xs">
-            &copy; {new Date().getFullYear()} Homes by Hines
-          </p>
+          <p className="mt-4 text-xs">&copy; {new Date().getFullYear()} Homes by Hines</p>
         </div>
       </div>
     </footer>

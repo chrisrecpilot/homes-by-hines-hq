@@ -88,7 +88,7 @@ function Pills({
           }
         >
           {s}
-           {hero && <Plus className="shrink-0 text-primary" />}
+          {hero && <Plus className="shrink-0 text-primary" />}
         </Button>
       ))}
     </div>
@@ -243,8 +243,15 @@ function ChatWindow({
         ).suggestions
       : [];
   return (
-    <div data-chat-active={active} className={inline ? "flex h-full min-h-0 flex-col px-5 lg:px-10 xl:px-12" : "flex min-h-0 flex-1 flex-col"}>
-      {(
+    <div
+      data-chat-active={active}
+      className={
+        inline
+          ? "flex h-full min-h-0 flex-col px-5 lg:px-10 xl:px-12"
+          : "flex min-h-0 flex-1 flex-col"
+      }
+    >
+      {
         <div
           ref={panel}
           className={
@@ -255,7 +262,15 @@ function ChatWindow({
         >
           {inline && (
             <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-3 lg:py-5">
-              <div className="min-w-0"><p className="flex items-center gap-2 text-xs font-semibold uppercase"><span className="size-1.5 shrink-0 rounded-full bg-primary" />Project estimate</p><p className="mt-1 hidden text-xs text-muted-foreground lg:block">Homes by Hines · No obligation</p></div>
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase">
+                  <span className="size-1.5 shrink-0 rounded-full bg-primary" />
+                  Project estimate
+                </p>
+                <p className="mt-1 hidden text-xs text-muted-foreground lg:block">
+                  Homes by Hines · No obligation
+                </p>
+              </div>
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -267,14 +282,29 @@ function ChatWindow({
               </Button>
             </div>
           )}
-           <Conversation className="min-h-0 flex-1">
-            <ConversationContent className={inline ? "gap-5 px-0 py-4 lg:py-6" : "gap-5 px-4 py-5 sm:px-5"}>
+          <Conversation className="min-h-0 flex-1">
+            <ConversationContent
+              className={inline ? "gap-5 px-0 py-4 lg:py-6" : "gap-5 px-4 py-5 sm:px-5"}
+            >
               {!active && (
                 <div className="text-sm text-muted-foreground">
-                  <p className="font-display text-2xl text-foreground lg:text-3xl">What are you planning?</p>
-                  <p className="mt-2 text-sm">{inline ? "A house, a room, or something outdoors." : "Tell us about your house, site or garden."}</p>
+                  <p className="font-display text-2xl text-foreground lg:text-3xl">
+                    What are you planning?
+                  </p>
+                  <p className="mt-2 text-sm">
+                    {inline
+                      ? "A house, a room, or something outdoors."
+                      : "Tell us about your house, site or garden."}
+                  </p>
                   <div className="mt-4 lg:mt-6">
-                    <Pills items={STARTERS} onPick={(t) => void send(inline ? `I'd like an estimate for a ${t.toLowerCase()}.` : t)} disabled={busy} hero={inline} />
+                    <Pills
+                      items={STARTERS}
+                      onPick={(t) =>
+                        void send(inline ? `I'd like an estimate for a ${t.toLowerCase()}.` : t)
+                      }
+                      disabled={busy}
+                      hero={inline}
+                    />
                   </div>
                 </div>
               )}
@@ -358,8 +388,10 @@ function ChatWindow({
             <ConversationScrollButton />
           </Conversation>
         </div>
-      )}
-      <div className={inline ? "shrink-0 pb-4 pt-2 lg:pb-6" : "shrink-0 border-t border-border p-3"}>
+      }
+      <div
+        className={inline ? "shrink-0 pb-4 pt-2 lg:pb-6" : "shrink-0 border-t border-border p-3"}
+      >
         <EstimateComposer
           onSend={submit}
           status={status}
@@ -367,7 +399,11 @@ function ChatWindow({
           hero={inline && !active}
           uploading={uploading}
         />
-      {inline && <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">Indicative costs, not a fixed quotation. Unconfirmed pricing needs a team review.</p>}
+        {inline && (
+          <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+            Indicative costs, not a fixed quotation. Unconfirmed pricing needs a team review.
+          </p>
+        )}
       </div>
     </div>
   );
