@@ -7,6 +7,8 @@ import {
   type Task,
   type EstimateLine,
   type EstimateResult,
+  type BenchmarkEstimate,
+  type EstimateType,
 } from "./types";
 
 const range = (n: number): Range => ({ low: n, expected: n, high: n });
@@ -281,20 +283,24 @@ export function calculateEstimate(
         ? settings.sales_vat_percent
         : 0
       : null;
+  // Unconfirmed VAT never blocks a price: figures are presented ex-VAT and disclosed.
   if (vatRate === null)
-    missing.push("Business VAT registration and project tax treatment need team confirmation.");
+    warnings.push("VAT treatment is not yet confirmed — figures shown exclude VAT.");
   const amounts = keys.map((k) => totals(base[k], settings.markup_percent, vatRate));
   const markup = Object.fromEntries(keys.map((k, i) => [k, amounts[i]?.markup ?? 0])) as Range;
-  const allComplete = missing.length === 0;
-  const subtotal = allComplete
+  const hasCostBase = lines.length > 0;
+  const subtotal = hasCostBase
     ? (Object.fromEntries(keys.map((k, i) => [k, amounts[i]?.subtotal ?? 0])) as Range)
     : null;
   const vat =
-    allComplete && vatRate !== null
+    hasCostBase && vatRate !== null
       ? (Object.fromEntries(keys.map((k, i) => [k, amounts[i]?.vat ?? 0])) as Range)
       : null;
-  const total = allComplete
-    ? (Object.fromEntries(keys.map((k, i) => [k, amounts[i]?.total ?? 0])) as Range)
+  // When VAT is unconfirmed the total is the ex-VAT subtotal, disclosed via warnings/vatConfirmed.
+  const total = hasCostBase
+    ? vat
+      ? (Object.fromEntries(keys.map((k, i) => [k, amounts[i]?.total ?? 0])) as Range)
+      : subtotal
     : null;
   const benchmark = catalog.find(
     (r) =>
@@ -305,16 +311,48 @@ export function calculateEstimate(
       r.data["sourceDate"],
   );
   const benchmarkRange = benchmark ? readRange(benchmark.data, "pricePence") : null;
-  if (total && benchmarkRange) {
-    const unitQ = benchmark?.data["unit"] === "m²" ? quantity(spec, "floor") : 1;
+  let benchmarkEstimate: BenchmarkEstimate | null = null;
+  if (benchmark && benchmarkRange) {
+    const unitQ = benchmark.data["unit"] === "m²" ? quantity(spec, "floor") : 1;
+    if (unitQ) {
+      const strings = (v: unknown) =>
+        Array.isArray(v) ? v.filter((s): s is string => typeof s === "string") : [];
+      benchmarkEstimate = {
+        range: Object.fromEntries(
+          keys.map((k) => [k, multiplyMoney(benchmarkRange[k], unitQ)]),
+        ) as Range,
+        perUnit: benchmarkRange,
+        unit: String(benchmark.data["unit"] ?? "job"),
+        quantity: unitQ,
+        source: String(benchmark.data["source"]),
+        sourceDate: String(benchmark.data["sourceDate"]),
+        vatBasis: String(benchmark.data["vatBasis"] ?? "unknown"),
+        specLevel: typeof benchmark.data["specLevel"] === "string" ? benchmark.data["specLevel"] : null,
+        inclusions: strings(benchmark.data["inclusions"]),
+        exclusions: strings(benchmark.data["exclusions"]),
+        // Benchmarks that already include a builder's margin must never receive our markup.
+        marginIncluded: benchmark.data["marginIncluded"] === true,
+      };
+    }
+  }
+  if (total && benchmarkEstimate) {
     if (
-      unitQ &&
-      (total.expected < benchmarkRange.low * unitQ || total.expected > benchmarkRange.high * unitQ)
+      total.expected < benchmarkEstimate.range.low ||
+      total.expected > benchmarkEstimate.range.high
     )
       warnings.push(
         "Outside the sourced market benchmark; review scope for omissions. No price has been increased to match market averages.",
       );
   }
+  const verifiedCount = lines.filter((l) => l.verified).length;
+  const provisionalCount = lines.length - verifiedCount;
+  const estimateType: EstimateType | null = !hasCostBase
+    ? benchmarkEstimate
+      ? "benchmark"
+      : null
+    : missing.length === 0 && verifiedCount === lines.length
+      ? "detailed"
+      : "provisional";
   return {
     specification: spec,
     lines,
@@ -328,12 +366,18 @@ export function calculateEstimate(
     total,
     subtotal,
     markupPercent: settings.markup_percent,
+    estimateType,
+    benchmarkEstimate,
+    provisionalCount,
+    verifiedCount,
+    unpricedCount: 0,
+    vatConfirmed: vatRate !== null,
     confidence:
-      missing.length || warnings.length
-        ? "Lower"
-        : lines.every((l) => l.verified) && !assumptions.length
-          ? "Higher"
+      estimateType === "detailed" && !assumptions.length && !warnings.length
+        ? "Higher"
+        : estimateType === "benchmark" || warnings.length > 0
+          ? "Lower"
           : "Moderate",
-    status: allComplete ? "estimated" : "review_required",
+    status: total || benchmarkEstimate ? "estimated" : "review_required",
   };
 }
