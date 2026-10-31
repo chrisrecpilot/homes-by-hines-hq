@@ -23,14 +23,14 @@ export function EnquiryForm() {
 
     const payload = {
       name: String(data.get("name") ?? "").trim(),
-      email: String(data.get("email") ?? "").trim(),
-      phone: String(data.get("phone") ?? "").trim() || null,
+      email: String(data.get("email") ?? "").trim() || null,
+      phone: String(data.get("phone") ?? "").trim(),
       enquiry_type: String(data.get("enquiry_type") ?? "general"),
       message: String(data.get("message") ?? "").trim(),
     };
 
-    if (!payload.name || !payload.email || !payload.message) {
-      toast.error("Please add your name, email and a short message.");
+    if (!payload.name || payload.phone.replace(/\D/g, "").length < 7 || !payload.message) {
+      toast.error("Please add your name, a phone number and a short message.");
       return;
     }
 
@@ -75,18 +75,17 @@ export function EnquiryForm() {
           <input name="name" required className={fieldClass} autoComplete="name" />
         </label>
         <label className="block text-sm">
-          Email
+          Phone
+          <input name="phone" type="tel" required className={fieldClass} autoComplete="tel" />
+        </label>
+        <label className="block text-sm">
+          Email <span className="text-muted-foreground">(optional)</span>
           <input
             name="email"
             type="email"
-            required
             className={fieldClass}
             autoComplete="email"
           />
-        </label>
-        <label className="block text-sm">
-          Phone
-          <input name="phone" className={fieldClass} autoComplete="tel" />
         </label>
         <label className="block text-sm">
           Enquiry about
