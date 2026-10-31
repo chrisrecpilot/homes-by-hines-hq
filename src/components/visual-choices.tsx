@@ -113,10 +113,9 @@ export function VisualChoiceCards({
               </span>
             )}
             <span className="block p-3">
-              <span className="block text-sm font-medium text-foreground">
-                {option.image ? option.label : ""}
-                {option.image ? null : null}
-              </span>
+              {option.image && (
+                <span className="block text-sm font-medium text-foreground">{option.label}</span>
+              )}
               <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
                 {option.description}
               </span>
