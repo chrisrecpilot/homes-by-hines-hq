@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { TeamChat } from "@/components/team-chat";
 import { Reveal } from "@/components/reveal";
 import { WorkCarousel, type WorkSlide } from "@/components/work-carousel";
 import gardenAfter from "@/assets/garden-east-london-after.jpg.asset.json";
@@ -115,46 +116,24 @@ function Home() {
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/25" />
-        <div className="relative mx-auto flex min-h-[88vh] w-full max-w-6xl flex-col justify-end px-6 pb-20 pt-40">
-          <Reveal>
-            <p className="eyebrow flex items-center gap-3 text-primary-foreground/70">
-              <span className="block h-px w-10 bg-primary" aria-hidden="true" />
-              Renovation, Development &amp; Landscaping
-            </p>
-          </Reveal>
-          <Reveal delay={120}>
-            <h1 className="mt-7 max-w-4xl font-display text-[2.6rem] leading-[1.04] text-primary-foreground sm:text-6xl lg:text-7xl">
-              Old houses, put right.
-              <br />
-              New ones, built properly.
-              <br />
-              Gardens, transformed.
+        <div className="relative mx-auto flex min-h-[min(760px,88dvh)] w-full max-w-6xl flex-col justify-center px-6 pb-14 pt-32 sm:pb-20 sm:pt-36">
+          <div className="mx-auto w-full max-w-3xl">
+            <p className="eyebrow text-primary-foreground/80">Homes by Hines · Kent &amp; London</p>
+            <h1 className="mt-5 font-display text-4xl leading-tight text-primary-foreground sm:text-6xl">
+              Tell us what you're building.
             </h1>
-          </Reveal>
-          <Reveal delay={240}>
-            <div className="mt-9 flex flex-col gap-8 border-t border-primary-foreground/20 pt-8 md:flex-row md:items-end md:justify-between">
-              <p className="max-w-lg text-primary-foreground/75">
-                We project-manage renovations, developments and gardens across
-                Kent and London, England — architects, builders, council and
-                building control, all handled.
-              </p>
-              <div className="flex flex-wrap items-center gap-4">
-                <Link
-                  to="/about"
-                  hash="enquire"
-                  className="inline-block bg-primary px-8 py-4 text-xs uppercase tracking-[0.2em] text-primary-foreground transition-opacity hover:opacity-90"
-                >
-                  Discuss a project
-                </Link>
-                <Link
-                  to="/work"
-                  className="inline-block border border-primary-foreground/35 px-8 py-4 text-xs uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-primary-foreground hover:text-foreground"
-                >
-                  See the work
-                </Link>
-              </div>
+            <p className="mt-5 max-w-xl text-base text-primary-foreground/85 sm:text-lg">
+              Start your AI-assisted building cost estimate. No obligation. No waiting for a
+              callback.
+            </p>
+            <div className="mt-8">
+              <TeamChat inline />
             </div>
-          </Reveal>
+            <p className="mt-5 text-xs text-primary-foreground/75">
+              Indicative costs, not a fixed quotation. Complex work and unconfirmed prices need a
+              team review.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -186,8 +165,7 @@ function Home() {
                 </h2>
               </div>
               <p className="max-w-xs text-sm text-primary-foreground/60">
-                Drag, or use the arrows. Recent completed projects, photographed
-                on site.
+                Drag, or use the arrows. Recent completed projects, photographed on site.
               </p>
             </div>
           </Reveal>
