@@ -186,17 +186,63 @@ describe("Approved estimating rules", () => {
     ).toThrow("Duplicate");
   });
   it("never subtracts recoverable purchase VAT twice", () => {
-    const e = entries.map(r => r.id === "builder" ? { ...r, data: { ...r.data, pricePence:36000, minimumPence:0, vatTreatment:"inclusive_recoverable", purchaseVatPercent:20 } } : r);
-    const r = calculateEstimate(spec("repair"), e, { markup_percent:12, vat_registered:true, sales_vat_percent:20, tax_confirmed:true });
+    const e = entries.map((r) =>
+      r.id === "builder"
+        ? {
+            ...r,
+            data: {
+              ...r.data,
+              pricePence: 36000,
+              minimumPence: 0,
+              vatTreatment: "inclusive_recoverable",
+              purchaseVatPercent: 20,
+            },
+          }
+        : r,
+    );
+    const r = calculateEstimate(spec("repair"), e, {
+      markup_percent: 12,
+      vat_registered: true,
+      sales_vat_percent: 20,
+      tax_confirmed: true,
+    });
     expect(r.base.expected).toBe(7500);
     expect(r.markup.expected).toBe(900);
     expect(r.vat?.expected).toBe(1680);
     expect(r.total?.expected).toBe(10080);
   });
   it("does not multiply a per-job equipment allowance by floor area", () => {
-    const e = entries.map(r => r.kind === "template" ? { ...r, id:"template_extension", data:{approved:true,tasks:[{id:"floor",name:"Floor",basis:"floor",expense:"equipment"}]} } : r);
-    e.push({id:"equipment",kind:"expense",name:"Equipment",updated_at:"2026-10-31",data:{approved:true,pricePence:10000,unit:"job",source:"Test quotation",vatTreatment:"not_applicable"}});
-    const r=calculateEstimate(spec("extension",5,4),e,{markup_percent:12,vat_registered:false,sales_vat_percent:0,tax_confirmed:true});
+    const e = entries.map((r) =>
+      r.kind === "template"
+        ? {
+            ...r,
+            id: "template_extension",
+            data: {
+              approved: true,
+              tasks: [{ id: "floor", name: "Floor", basis: "floor", expense: "equipment" }],
+            },
+          }
+        : r,
+    );
+    e.push({
+      id: "equipment",
+      kind: "expense",
+      name: "Equipment",
+      updated_at: "2026-10-31",
+      data: {
+        approved: true,
+        pricePence: 10000,
+        unit: "job",
+        source: "Test quotation",
+        vatTreatment: "not_applicable",
+      },
+    });
+    const r = calculateEstimate(spec("extension", 5, 4), e, {
+      markup_percent: 12,
+      vat_registered: false,
+      sales_vat_percent: 0,
+      tax_confirmed: true,
+    });
     expect(r.base.expected).toBe(10000);
     expect(r.total?.expected).toBe(11200);
   });

@@ -179,7 +179,11 @@ export function calculateEstimate(
         missing.push(`${record.name}: purchase VAT treatment needs confirmation.`);
         continue;
       }
-      if (!["net", "not_applicable", "inclusive_nonrecoverable", "inclusive_recoverable"].includes(String(d["vatTreatment"]))) {
+      if (
+        !["net", "not_applicable", "inclusive_nonrecoverable", "inclusive_recoverable"].includes(
+          String(d["vatTreatment"]),
+        )
+      ) {
         missing.push(`${record.name}: invalid purchase VAT treatment.`);
         continue;
       }
