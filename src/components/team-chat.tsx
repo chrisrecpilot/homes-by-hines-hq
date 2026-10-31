@@ -284,7 +284,7 @@ function ChatWindow({
       const result = await selectChoice({ data: { sessionId: stored.id, token: stored.token, revision: project?.revision ?? 0,
         set, value: choice.value, message: choice.message, category } });
       setProject(result.state);
-      const next: UIMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: choice.message }] },
+      const next: UIMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", metadata: { choice: true }, parts: [{ type: "text", text: choice.message }] },
         { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: result.response }] }];
       setMessages(next);
       setPicked((p) => ({ ...p, [set]: choice.value }));
@@ -452,7 +452,12 @@ function ChatWindow({
                   </div>
                 </div>
               )}
-              {messages.map((message) => (
+              {messages.map((message) => (message.metadata as { choice?: boolean } | undefined)?.choice ? (
+                <p key={message.id} className="self-end text-xs text-muted-foreground">
+                  <span className="mr-1.5 inline-block size-1.5 rounded-full bg-primary align-middle" />
+                  {message.parts.map((p) => (p.type === "text" ? p.text : "")).join("")}
+                </p>
+              ) : (
                 <Message key={message.id} from={message.role}>
                   <MessageContent
                     className={
