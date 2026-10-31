@@ -211,6 +211,146 @@ describe("Approved estimating rules", () => {
     expect(r.vat?.expected).toBe(1680);
     expect(r.total?.expected).toBe(10080);
   });
+  it("prices an indicative estimate from approved provisional rates", () => {
+    const r = calculateEstimate(spec("repair"), entries, {
+      markup_percent: 12,
+      vat_registered: false,
+      sales_vat_percent: 20,
+      tax_confirmed: true,
+    });
+    expect(r.estimateType).toBe("provisional");
+    expect(r.provisionalCount).toBe(1);
+    expect(r.verifiedCount).toBe(0);
+    expect(r.total?.expected).toBe(16800);
+    expect(r.status).toBe("estimated");
+  });
+  it("flags an unapproved material without suppressing the whole estimate", () => {
+    const e: CatalogEntry[] = [
+      ...entries,
+      {
+        id: "mat_repair",
+        kind: "material",
+        name: "Repair materials",
+        updated_at: "2026-10-31",
+        data: { approved: false, unit: "count", vatTreatment: "unknown" },
+      },
+    ];
+    e[0] = {
+      ...e[0]!,
+      data: {
+        approved: true,
+        tasks: [
+          {
+            id: "repair",
+            name: "Repair",
+            basis: "count",
+            trade: "builder",
+            productivity: "repair_prod",
+            material: "mat_repair",
+          },
+        ],
+      },
+    };
+    const r = calculateEstimate(spec("repair"), e, {
+      markup_percent: 12,
+      vat_registered: false,
+      sales_vat_percent: 20,
+      tax_confirmed: true,
+    });
+    expect(r.total?.expected).toBe(16800);
+    expect(r.unpricedCount).toBe(1);
+    expect(r.missing.some((m) => m.includes("not approved"))).toBe(true);
+    expect(r.status).toBe("estimated");
+  });
+  it("falls back to an approved benchmark when no cost lines can be priced", () => {
+    const bench: CatalogEntry = {
+      id: "benchmark_repair",
+      kind: "benchmark",
+      name: "Repair benchmark",
+      updated_at: "2026-10-31",
+      data: {
+        approved: true,
+        category: "repair",
+        unit: "m²",
+        pricePence: { low: 180000, expected: 215000, high: 250000 },
+        source: "Published regional benchmark",
+        sourceDate: "2026-10-31",
+        vatBasis: "exclusive",
+        marginIncluded: true,
+        inclusions: ["Standard specification"],
+        exclusions: ["Design fees"],
+      },
+    };
+    const r = calculateEstimate(spec("repair", 5, 4), [bench], {
+      markup_percent: 12,
+      vat_registered: null,
+      sales_vat_percent: 20,
+      tax_confirmed: false,
+    });
+    expect(r.estimateType).toBe("benchmark");
+    expect(r.total).toBeNull();
+    expect(r.benchmarkEstimate?.range).toEqual({
+      low: 3600000,
+      expected: 4300000,
+      high: 5000000,
+    });
+    expect(r.benchmarkEstimate?.quantity).toBe(20);
+    expect(r.markup.expected).toBe(0);
+    expect(r.status).toBe("estimated");
+  });
+  it("never applies business markup to a benchmark that includes a builder margin", () => {
+    const bench: CatalogEntry = {
+      id: "benchmark_repair",
+      kind: "benchmark",
+      name: "Repair benchmark",
+      updated_at: "2026-10-31",
+      data: {
+        approved: true,
+        category: "repair",
+        unit: "m²",
+        pricePence: 200000,
+        source: "Published regional benchmark",
+        sourceDate: "2026-10-31",
+        vatBasis: "exclusive",
+        marginIncluded: true,
+      },
+    };
+    const r = calculateEstimate(spec("repair", 5, 4), [bench], {
+      markup_percent: 12,
+      vat_registered: null,
+      sales_vat_percent: 20,
+      tax_confirmed: false,
+    });
+    expect(r.benchmarkEstimate?.range.expected).toBe(4000000);
+    expect(r.benchmarkEstimate?.marginIncluded).toBe(true);
+  });
+  it("shows an ex-VAT total with disclosure when VAT is unconfirmed", () => {
+    const r = calculateEstimate(spec("repair"), entries, {
+      markup_percent: 12,
+      vat_registered: null,
+      sales_vat_percent: 20,
+      tax_confirmed: false,
+    });
+    expect(r.vat).toBeNull();
+    expect(r.vatConfirmed).toBe(false);
+    expect(r.total?.expected).toBe(16800);
+    expect(r.warnings.some((w) => w.includes("VAT"))).toBe(true);
+    expect(r.status).toBe("estimated");
+  });
+  it("marks a fully verified complete calculation as detailed", () => {
+    const e = entries.map((r) => ({
+      ...r,
+      data: { ...r.data, verified: true },
+    }));
+    const r = calculateEstimate(spec("repair"), e, {
+      markup_percent: 12,
+      vat_registered: false,
+      sales_vat_percent: 20,
+      tax_confirmed: true,
+    });
+    expect(r.estimateType).toBe("detailed");
+    expect(r.confidence).toBe("Higher");
+  });
   it("does not multiply a per-job equipment allowance by floor area", () => {
     const e = entries.map((r) =>
       r.kind === "template"

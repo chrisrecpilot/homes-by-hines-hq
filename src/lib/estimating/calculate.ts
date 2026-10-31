@@ -386,7 +386,7 @@ export function calculateEstimate(
     benchmarkEstimate,
     provisionalCount,
     verifiedCount,
-    unpricedCount: 0,
+    unpricedCount,
     vatConfirmed: vatRate !== null,
     confidence:
       estimateType === "detailed" && !assumptions.length && !warnings.length
