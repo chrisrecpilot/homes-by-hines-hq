@@ -19,6 +19,7 @@ import { ProjectSnapshot } from "@/components/project-snapshot";
 import { EstimateCard } from "@/components/estimate-card";
 import { EstimateFollowUp } from "@/components/estimate-follow-up";
 import { QUOTE_STORAGE_KEY, readQuote, type StoredQuote } from "@/lib/estimating/quote-storage";
+import { replacementCategory } from "@/lib/estimating/project-intent";
 import {
   VisualChoiceCards,
   parseChoices,
@@ -305,12 +306,28 @@ function ChatWindow({
   async function send(text: string) {
     if (!text.trim() || busy || uploading) return;
     setResultExpanded(false);
-    if (/\b(actually|instead|new project|change my project)\b/i.test(text) && /garden room|extension|kitchen|bathroom|loft|landscaping/i.test(text)) setProject(null);
+    if (await startReplacement(text)) return;
     await sendMessage({ text });
+  }
+  async function startReplacement(text: string): Promise<boolean> {
+    const category = replacementCategory(text, project?.specification.category);
+    if (!category) return false;
+    const next = fresh();
+    setProject(null); setResultExpanded(false); setSelecting(true);
+    try {
+      const result = await selectChoice({ data: { sessionId: next.id, token: next.token, revision: 0, set: "starter", value: category, message: text, category } });
+      onRotate({ ...next, messages: [
+        { id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text }] },
+        { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: result.response }] },
+      ] });
+    } catch { toast.error("Couldn't start the new estimate. Please try again."); }
+    finally { setSelecting(false); }
+    return true;
   }
   async function submit({ text, files }: PromptInputMessage) {
     if (busy || uploading || (!text.trim() && !files.length)) return;
     if (text.length > 5000) throw new Error("Please keep your message under 5,000 characters.");
+    if (!files.length && await startReplacement(text)) return;
     setUploading(true);
     try {
       const uploaded = [];

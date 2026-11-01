@@ -9,7 +9,7 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Team chat streams via server route /api/chat (AI SDK + Lovable AI Gateway); conversations saved server-side to chat_conversations and in browser localStorage; chat-collected leads go into enquiries. Why: one lead inbox, staff can review chats.
+- Team chat streams via /api/chat; active quotes use sessionStorage, category changes rotate capability-owned sessions, and server-side chats retain history. Why: fresh visits and separate projects must not inherit customer context.
 - Admin access = role in user_roles, auto-granted by DB trigger to confirmed emails on the allowed domain; all staff tables gated by has_role(admin) RLS. Why: signup alone must never grant access.
 - Visitor analytics are first-party: PageTracker posts to /api/track, stored in page_views. Chat quick replies come from a <suggestions> line the model appends, stripped client-side.
 - Estimating uses deterministic quantity/person-day calculations with whole-penny money, editable admin-only catalogue data and immutable estimate snapshots; AI orchestrates tools but never supplies prices. Why: traceable costs and reliable revisions.
@@ -28,4 +28,4 @@
 - Kitchen benchmarks are scope/spec/region-matched whole-job records with applicability bounds; catalogue approval never seeds invented rates. Why: floor area alone cannot price cabinets, appliances and services.
 - PDFs remain private team-review uploads because the configured model advertises text/image inputs only; the next drawing step requires a supported PDF extraction service and explicit measurement confirmation. Why: stored files must never be represented as analysed drawings.
 - Chat applies customer details through one update_project tool: the model sends a partial patch in the customer's units, the server (buildPatch) converts to metric, drops any non-spec fields and reprices deterministically. Why: several changes in one sentence, and no chat text can touch prices or markup.
-- Enquiries are phone-first: phone required and email optional, enforced in the shared enquirySchema and the enquiries insert policy; chat enquiries append the current project summary and shown budget. Why: the team follows up by phone.
+- Phone-first enquiries use a service-only transactional RPC to validate immutable estimate/session links and deduplicate requests; existing admin RLS gates pipeline updates and files. Why: follow-up needs the exact shown quotation, never forged public-form context.

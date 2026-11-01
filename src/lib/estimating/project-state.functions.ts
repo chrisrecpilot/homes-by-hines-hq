@@ -24,7 +24,8 @@ export const selectProjectChoice = createServerFn({ method: "POST" })
     let response = "";
     if (data.category) {
       const spec = emptyProject(data.category, data.message);
-      if (data.category === "extension") spec.extensionType = "rear";
+      if (data.category === "extension" && /\brear\b/i.test(data.message)) spec.extensionType = "rear";
+      if (data.category === "garden_room" && /separate|freestanding|standalone/i.test(data.message)) spec.gardenAttachment = "standalone";
       state = await updateProjectState(data.sessionId, spec, data.revision, true);
     } else {
       const patch = choicePatch(data.set, data.value);
