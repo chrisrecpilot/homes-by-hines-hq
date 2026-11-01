@@ -289,6 +289,20 @@ function ChatWindow({
   async function pick(set: string, choice: VisualChoice, category?: ProjectSpec["category"]) {
     if (busy || uploading) return;
     if ((set === "refine" || set === "refine_room") && choice.value === "survey") { await send("I'd like to request a site visit for this project."); return; }
+    const existing = project?.specification.category;
+    if (set === "starter" && category && existing && existing !== category) {
+      setSelecting(true); setChoiceError(false); setProject(null); setResultExpanded(false);
+      const next = fresh();
+      try {
+        const result = await selectChoice({ data: { sessionId: next.id, token: next.token, revision: 0, set, value: choice.value, message: choice.message, category } });
+        onRotate({ ...next, messages: [
+          { id: crypto.randomUUID(), role: "user", metadata: { choice: true }, parts: [{ type: "text", text: choice.message }] },
+          { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: result.response }] },
+        ] });
+      } catch { setChoiceError(true); toast.error("We couldn't start that estimate just now. Please try again."); await refreshProject(); }
+      finally { setSelecting(false); }
+      return;
+    }
     setSelecting(true); setChoiceError(false);
     if (set === "starter") setMessages([{ id: crypto.randomUUID(), role: "user", metadata: { choice: true }, parts: [{ type: "text", text: choice.message }] }]);
     try {
