@@ -1,5 +1,14 @@
 # Current tasks
 
+## Quotation engine V2 — Phase A first
+- [ ] Fresh tab-scoped quotation persistence, explicit New estimate and independent category-switch records; no inherited localStorage quote.
+- [ ] First-class garden-room specification and category-only pricing safeguards, without expanding live pricing yet.
+- [ ] Persistent callback/site-visit actions, phone-first lead capture, site preferences and immutable quote context; prevent duplicate submissions.
+- [ ] Outstanding-only refinements and honest baseline disclosures for unsupported specification adjustments.
+- [ ] Existing admin enquiry workspace: search/filter, quote/conversation/files, pipeline, notes, follow-up and survey details with admin-only protection.
+- [ ] Focused rule/security tests and end-to-end extension → garden room, callback, refresh/new tabs and staff workflow checks.
+- [ ] Phase B pricing expansion — deliberately deferred until Phase A results are demonstrated.
+
 ## Cinematic chat transitions
 - [x] Add reusable idle demonstration typing with focus, value and reduced-motion safeguards.
 - [x] Animate the existing composer into conversation; gently reveal opening messages and choices without changing pricing or security.
