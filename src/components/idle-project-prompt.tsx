@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import { useReducedMotion } from "motion/react";
 
 const EXAMPLES = ["rear extension", "garden room", "loft conversion", "kitchen renovation", "new bathroom", "single-storey extension"];
 
 /** Visual demonstration only: never participates in form values or accessible text. */
 export function IdleProjectPrompt({ visible }: { visible: boolean }) {
-  const reducedMotion = useReducedMotion();
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReducedMotion(preference.matches);
+    sync();
+    preference.addEventListener("change", sync);
+    return () => preference.removeEventListener("change", sync);
+  }, []);
   const [example, setExample] = useState(0);
   const [characters, setCharacters] = useState(0);
   const [erasing, setErasing] = useState(false);
