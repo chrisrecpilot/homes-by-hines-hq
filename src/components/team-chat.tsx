@@ -113,9 +113,11 @@ function EstimatePanel({
   estimate,
   stale,
   busy,
-  onAction,
+  expanded,
+  onToggle,
 }: {
-  onAction: (text: string) => void;
+  expanded: boolean;
+  onToggle: () => void;
   estimate: EstimateResult;
   stale: boolean;
   busy: boolean;
@@ -127,28 +129,20 @@ function EstimatePanel({
   const s = estimate.specification;
   const area = (s.length && s.width ? s.length * s.width : s.approximateArea ?? 0) * (s.category === "extension" ? s.storeys ?? 1 : 1);
   return (
-    <details className="group shrink-0 border-b border-border text-card-foreground">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-1 py-2.5 text-xs [&::-webkit-details-marker]:hidden">
+    <Button variant="ghost" onClick={onToggle} aria-expanded={expanded} aria-label={expanded ? "Back to conversation" : "View estimated project budget"} className="h-auto w-full shrink-0 justify-between gap-3 rounded-none border-b border-border px-0 py-3 text-xs">
         <span className="flex min-w-0 items-center gap-2">
           <span className="size-1.5 shrink-0 rounded-full bg-primary" />
           <span className="truncate font-medium">
             {area ? `${area}m² ` : ""}
             {s.category.replaceAll("_", " ")}
           </span>
-          <span className="hidden shrink-0 text-muted-foreground sm:inline">
-            {PANEL_TYPE_LABELS[estimate.estimateType ?? "provisional"]} ·{" "}
-            {estimate.confidence.toLowerCase()} confidence
-          </span>
         </span>
-        <span className="shrink-0 font-display text-sm">
+        <span className="flex shrink-0 items-center gap-2 font-display text-base sm:text-xl">
           {gbp(range.low)}–{gbp(range.high)}
           {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && <span className="text-muted-foreground"> +VAT</span>}
+          <ChevronDown className={expanded ? "size-3 rotate-180" : "size-3"} />
         </span>
-      </summary>
-      <div className="max-h-[36dvh] overflow-y-auto pb-3 text-xs text-muted-foreground">
-        <EstimateCard estimate={estimate} onAction={onAction} />
-      </div>
-    </details>
+    </Button>
   );
 }
 export function TeamChat({ inline = false }: { inline?: boolean }) {
@@ -238,6 +232,7 @@ function ChatWindow({
   const readState = useServerFn(getProjectState);
   const selectChoice = useServerFn(selectProjectChoice);
   const [project, setProject] = useState<ProjectState | null>(null);
+  const [resultExpanded, setResultExpanded] = useState(false);
   const [selecting, setSelecting] = useState(false);
   const [choiceError, setChoiceError] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -292,6 +287,7 @@ function ChatWindow({
   }, [stored, messages]);
   async function send(text: string) {
     if (!text.trim() || busy || uploading) return;
+    setResultExpanded(false);
     await sendMessage({ text });
   }
   async function submit({ text, files }: PromptInputMessage) {
@@ -408,7 +404,7 @@ function ChatWindow({
           )}
           {project && active && <ProjectSnapshot specification={project.specification} busy={busy} onEdit={(text) => void send(text)} />}
           {currentEstimate && (
-            <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} onAction={(text) => void send(text)} />
+            <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} expanded={resultExpanded} onToggle={() => setResultExpanded((v) => !v)} />
           )}
           <Conversation className={inline && !active ? "min-h-0 flex-1" : "min-h-0 flex-1"}>
             <ConversationContent
@@ -432,7 +428,8 @@ function ChatWindow({
                   </div>
                 </div>
               )}
-              {messages.map((message) => (message.metadata as { choice?: boolean } | undefined)?.choice ? (
+              {resultExpanded && currentEstimate && !estimateStale && <EstimateCard estimate={currentEstimate} onAction={(text) => void send(text)} />}
+              {!resultExpanded && messages.map((message) => (message.metadata as { choice?: boolean } | undefined)?.choice ? (
                 <p key={message.id} className="self-end text-xs text-muted-foreground">
                   <span className="mr-1.5 inline-block size-1.5 rounded-full bg-primary align-middle" />
                   {message.parts.map((p) => (p.type === "text" ? p.text : "")).join("")}
@@ -499,7 +496,7 @@ function ChatWindow({
                 </Message>
               ))}
               {choiceError && <p role="alert" className="text-sm text-muted-foreground">That choice couldn't be updated. Please try it again.</p>}
-              {lastChoices && (
+              {!resultExpanded && lastChoices && (
                 <VisualChoiceCards
                   setId={lastChoices}
                   selected={selectedValue(lastChoices)}
@@ -510,7 +507,7 @@ function ChatWindow({
                   }}
                 />
               )}
-              {!!lastSuggestions.length && (
+              {!resultExpanded && !!lastSuggestions.length && (
                 <Pills items={lastSuggestions} onPick={(t) => void send(t)} disabled={busy} />
               )}
               {status === "submitted" && (
