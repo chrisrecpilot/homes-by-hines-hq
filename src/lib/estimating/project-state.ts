@@ -35,6 +35,7 @@ export function applyProjectPatch(spec: ProjectSpec, patch: ProjectPatch): Proje
 export function choicePatch(set: string, value: string): ProjectPatch | null {
   const map: Record<string, Record<string, ProjectPatch>> = {
     sizes: { "3x4": { length: 3, width: 4 }, "4x5": { length: 4, width: 5 }, "5x6": { length: 5, width: 6 }, "6x6": { length: 6, width: 6 } },
+    garden_sizes: { "3x4": { length: 3, width: 4 }, "4x5": { length: 4, width: 5 }, "6x6": { length: 6, width: 6 } },
     storeys: { "1": { storeys: 1 }, "2": { storeys: 2 } },
     garden_attachment: { standalone: { gardenAttachment: "standalone" }, attached: { gardenAttachment: "attached" } },
     garden_use: { office: { intendedUse: "office" }, gym: { intendedUse: "gym" }, studio: { intendedUse: "studio" }, leisure: { intendedUse: "leisure" }, habitable: { intendedUse: "habitable" } },
@@ -57,7 +58,7 @@ export function nextProjectQuestion(spec: ProjectSpec, missingFields?: string[])
   const missing = missingFields ?? minimumInputs(spec);
   const field = missing[0];
   if (field === "renovationScope") return `What sort of ${spec.category} work are you planning?\n<choices>${spec.category}_scope</choices>`;
-  if (field === "size") return spec.category === "extension" ? "Roughly how big are you thinking?\n<choices>sizes</choices>" : ["bathroom", "kitchen"].includes(spec.category) ? `Roughly how big is the room? Pick a size or tell us the measurements.\n<choices>${spec.category}_size</choices>` : "What is the approximate area or length? You can give rough measurements.";
+  if (field === "size") return spec.category === "garden_room" ? "Roughly how big will the garden room be?\n<choices>garden_sizes</choices>" : spec.category === "extension" ? "Roughly how big are you thinking?\n<choices>sizes</choices>" : ["bathroom", "kitchen"].includes(spec.category) ? `Roughly how big is the room? Pick a size or tell us the measurements.\n<choices>${spec.category}_size</choices>` : "What is the approximate area or length? You can give rough measurements.";
   if (field === "storeys") return "Single or double storey?\n<choices>storeys</choices>";
   if (field === "gardenAttachment") return "Will it be freestanding or attached to the house?\n<choices>garden_attachment</choices>";
   if (field === "intendedUse") return "What will you use the garden room for?\n<choices>garden_use</choices>";

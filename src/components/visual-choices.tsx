@@ -22,6 +22,11 @@ export type VisualChoice = {
 export type VisualChoiceSet = { id: string; options: VisualChoice[] };
 
 const SETS: Record<string, VisualChoiceSet> = {
+  garden_sizes: { id: "garden_sizes", options: [
+    { value: "3x4", label: "3m × 4m", description: "", message: "A 3m × 4m garden room." },
+    { value: "4x5", label: "4m × 5m", description: "", message: "A 4m × 5m garden room." },
+    { value: "6x6", label: "6m × 6m", description: "", message: "A 6m × 6m garden room." },
+  ] },
   garden_attachment: { id: "garden_attachment", options: [
     { value: "standalone", label: "Freestanding", description: "", message: "A freestanding garden room." },
     { value: "attached", label: "Attached to the house", description: "", message: "The garden room would be attached to the house." },
