@@ -500,7 +500,6 @@ function ChatWindow({
             <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} expanded={resultExpanded} onToggle={() => setResultExpanded((v) => !v)} />
           )}
           {currentEstimate?.estimateType === "benchmark" && !estimateStale && project && (project.specification.roof || project.specification.doorType || project.specification.wallFinish || project.specification.flooring || project.specification.specificationLevel) && <p className="shrink-0 border-b border-border py-2 text-xs text-muted-foreground">Baseline budget only — selected roof, doors and finishes still need pricing confirmation; no unapproved adjustments have been added.</p>}
-          {currentEstimate && headlineRange(currentEstimate) && !estimateStale && <EstimateFollowUp disabled={busy || uploading} onAction={(text) => void send(text)} />}
           {resultExpanded && currentEstimate && !estimateStale ? <div className="min-h-0 flex-1 overflow-y-auto" key="budget-result">
             <EstimateCard estimate={currentEstimate} onAction={(text) => void send(text)} />
           </div> : <Conversation className="min-h-0 flex-1">
@@ -611,6 +610,11 @@ function ChatWindow({
               )}
               {!resultExpanded && !!lastSuggestions.length && (
                 <Pills items={lastSuggestions} onPick={(t) => void send(t)} disabled={busy} />
+              )}
+              {!resultExpanded && currentEstimate && headlineRange(currentEstimate) && !estimateStale && (
+                <motion.div initial={{ opacity: 0, y: reducedMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} transition={{ ...layoutTransition, delay: reducedMotion ? 0 : 0.1 }}>
+                  <EstimateFollowUp disabled={busy || uploading} onAction={(text) => void send(text)} />
+                </motion.div>
               )}
               {(status === "submitted" || (selecting && messages.length === 1)) && (
                 <Shimmer className="text-sm">The team is thinking…</Shimmer>
