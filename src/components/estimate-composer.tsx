@@ -66,7 +66,7 @@ export function EstimateComposer({
       maxFiles={4}
       multiple
       onError={(e) => toast.error(e.message)}
-      className={"w-full text-foreground [&_[data-slot=input-group]]:rounded-lg [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card [&_[data-slot=input-group]]:shadow-none focus-within:[&_[data-slot=input-group]]:border-primary" + (hero ? " [&_[data-slot=input-group]]:border-foreground/40" : "")}
+      className={"quotation-composer w-full text-foreground [&_[data-slot=input-group]]:rounded-lg [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card focus-within:[&_[data-slot=input-group]]:border-primary" + (hero ? " quotation-composer-hero" : "")}
     >
       <PromptInputTextarea
         aria-label={hero ? "Describe your building project" : "Message the team"}
@@ -76,7 +76,7 @@ export function EstimateComposer({
             : "Add details or ask about your project…"
         }
         className={
-          hero ? "min-h-24 max-h-36 p-4 text-base lg:min-h-32 lg:text-lg" : "min-h-16 max-h-28 p-4 text-base"
+          hero ? "min-h-28 max-h-36 p-5 text-base sm:min-h-32 sm:p-6 sm:text-lg" : "min-h-16 max-h-28 p-4 text-base"
         }
         maxLength={5000}
       />
@@ -92,7 +92,7 @@ export function EstimateComposer({
           onStop={onStop}
           disabled={uploading}
           size="icon-sm"
-          className="size-11 shrink-0 rounded-md"
+          className="size-11 shrink-0 rounded-full transition-transform hover:scale-105 active:scale-95"
           aria-label={status === "streaming" ? "Stop reply" : "Send project description"}
         >
           {status !== "streaming" && status !== "submitted" ? <ArrowUp /> : undefined}

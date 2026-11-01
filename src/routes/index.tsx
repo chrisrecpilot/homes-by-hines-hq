@@ -129,7 +129,8 @@ function HeroSlideshow() {
     return () => window.clearInterval(id);
   }, []);
 
-  const current = heroSlides[active] ?? heroSlides[0]!;
+  const current = heroSlides[active] ?? heroSlides[0];
+  if (!current) return null;
 
   return (
     <>
@@ -148,7 +149,7 @@ function HeroSlideshow() {
           />
         ))}
       </div>
-      <div className="absolute inset-0 bg-ink/60" />
+      <div className="estimate-backdrop absolute inset-0" />
       <HeroCaption place={current.place} label={current.label} />
     </>
   );
@@ -156,11 +157,11 @@ function HeroSlideshow() {
 
 function HeroCaption({ place, label }: { place: string; label: string }) {
   return (
-    <div className="absolute inset-x-12 bottom-10 hidden items-end justify-between gap-4 border-t border-primary-foreground/25 pt-4 text-xs text-primary-foreground/80 lg:flex xl:inset-x-16">
+    <div className="absolute inset-x-8 bottom-5 hidden items-end justify-between gap-4 text-xs text-muted-foreground lg:flex">
       <span key={place + label} className="hero-caption">
         {place}
         <br />
-        <span className="mt-1 block text-primary-foreground">{label}</span>
+        <span className="mt-1 block">{label}</span>
       </span>
       <Link to="/work" className="underline underline-offset-4">
         View our work ↗
@@ -193,32 +194,23 @@ const pillars = [
 function Home() {
   return (
     <>
-      <section className="estimate-home grid overflow-hidden lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <div className="estimate-intro relative min-w-0 overflow-hidden bg-ink">
-          <HeroSlideshow />
-          <div className="relative flex h-full flex-col justify-center px-6 py-4 lg:px-12 lg:py-12 xl:px-16">
-            <div className="max-w-lg">
-              <p className="text-xs text-primary-foreground/80">
+      <section className="estimate-home relative isolate overflow-hidden">
+        <HeroSlideshow />
+        <div className="estimate-stage relative mx-auto flex h-full w-full max-w-3xl min-h-0 flex-col px-5 sm:px-8">
+          <div className="estimate-heading shrink-0 text-center">
+              <p className="text-xs font-medium text-muted-foreground">
                 Homes by Hines · Kent &amp; London
               </p>
-              <h1 className="mt-2 font-display text-2xl sm:text-3xl leading-tight text-primary-foreground lg:mt-6 lg:text-5xl xl:text-6xl">
+              <h1 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-5xl">
                 Tell us what you're building.
               </h1>
-              <p className="mt-3 hidden max-w-sm text-sm text-primary-foreground/85 sm:block lg:mt-6 lg:text-lg">
-                Your next project starts here. An AI-assisted estimate, backed by our team.
+              <p className="mt-4 text-sm text-muted-foreground sm:text-base">
+                Describe your project. Refine the details. Find your budget.
               </p>
-              <p className="mt-8 hidden border-t border-primary-foreground/25 pt-5 text-sm text-primary-foreground/80 lg:block">
-                Renovation. Development. Landscaping.
-                <br />
-                <span className="mt-2 block">
-                  One team, from the first idea to the final detail.
-                </span>
-              </p>
-            </div>
           </div>
-        </div>
-        <div className="min-h-0 min-w-0 bg-background text-foreground">
+          <div className="estimate-experience min-h-0 min-w-0 flex-1 text-foreground">
           <TeamChat inline />
+          </div>
         </div>
       </section>
 
