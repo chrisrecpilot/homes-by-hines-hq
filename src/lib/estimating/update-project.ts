@@ -1,4 +1,5 @@
 import type { ProjectPatch } from "./project-state";
+import type { JSONSchema7 } from "json-schema";
 import type { ProjectSpec } from "./types";
 import { toMetres, toSquareMetres, type AreaUnit, type MeasureUnit } from "./units";
 
@@ -30,10 +31,10 @@ export type UpdateProjectInput = {
   clearFields: string[];
 };
 
-const s = (t: string | string[], e?: unknown[]) => (e ? { type: t, enum: e } : { type: t });
+const s = (t: JSONSchema7["type"], e?: JSONSchema7["enum"]): JSONSchema7 => (e ? { type: t, enum: e } : { type: t });
 const n = (enumVals: string[]) => s(["string", "null"], [...enumVals, null]);
 
-export const UPDATE_PROJECT_SCHEMA = {
+export const UPDATE_PROJECT_SCHEMA: JSONSchema7 = {
   type: "object",
   additionalProperties: false,
   required: ["category", "summary", "extensionType", "renovationScope", "specificationLevel", "roomSize", "loftType", "workType", "finish", "length", "width", "lengthUnit", "area", "areaUnit", "storeys", "roof", "doorType", "wallFinish", "flooring", "underfloorHeating", "structuralOpening", "rooflights", "location", "clearFields"],
@@ -63,7 +64,7 @@ export const UPDATE_PROJECT_SCHEMA = {
     location: { ...s(["string", "null"]), description: "Town or postcode exactly as typed" },
     clearFields: { type: "array", items: { type: "string" }, description: "Fields the customer withdrew, e.g. ['roof']" },
   },
-} as const;
+};
 
 const CLEARABLE = new Set(["roof", "doorType", "wallFinish", "flooring", "underfloorHeating", "structuralOpening", "location", "specificationLevel", "roomSize"]);
 
@@ -72,18 +73,18 @@ export function buildPatch(input: UpdateProjectInput): ProjectPatch {
   const patch: Record<string, unknown> = {};
   const copy = ["category", "extensionType", "renovationScope", "specificationLevel", "roomSize", "loftType", "workType", "finish", "storeys", "roof", "doorType", "wallFinish", "flooring", "underfloorHeating", "structuralOpening", "location"] as const;
   for (const k of copy) if (input[k] !== null && input[k] !== undefined) patch[k] = input[k];
-  if (input.summary?.trim()) patch.description = input.summary.trim().slice(0, 3000);
+  if (input.summary?.trim()) patch["description"] = input.summary.trim().slice(0, 3000);
   const length = toMetres(input.length, input.lengthUnit);
   const width = toMetres(input.width, input.lengthUnit);
-  if (length) patch.length = length;
-  if (width) patch.width = width;
+  if (length) patch["length"] = length;
+  if (width) patch["width"] = width;
   if (!length && !width) {
     const area = toSquareMetres(input.area, input.areaUnit);
-    if (area) patch.approximateArea = area;
+    if (area) patch["approximateArea"] = area;
   }
   if (typeof input.rooflights === "number" && input.rooflights >= 0) {
     const note = `${input.rooflights} rooflight${input.rooflights === 1 ? "" : "s"} requested (priced separately once specified)`;
-    patch.assumptions = [note];
+    patch["assumptions"] = [note];
   }
   for (const f of input.clearFields ?? []) if (CLEARABLE.has(f)) patch[f] = null;
   return patch as ProjectPatch;

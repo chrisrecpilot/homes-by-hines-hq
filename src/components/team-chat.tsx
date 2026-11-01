@@ -1,6 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { MessageCircle, RotateCcw, X, FileText, Plus } from "lucide-react";
+import { MessageCircle, RotateCcw, X, FileText, ChevronDown } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Button } from "@/components/ui/button";
 import { EstimateComposer } from "@/components/estimate-composer";
+import { ProjectSnapshot } from "@/components/project-snapshot";
 import { EstimateCard } from "@/components/estimate-card";
 import {
   VisualChoiceCards,
@@ -51,6 +52,7 @@ const STARTERS = [
   "Bathroom refurbishment",
   "Loft conversion",
   "Landscaping",
+  "Garden room",
   "General building work",
 ];
 function splitSuggestions(text: string) {
@@ -80,7 +82,7 @@ function Pills({
   hero?: boolean;
 }) {
   return (
-    <div className={hero ? "grid grid-cols-2 gap-2" : "flex flex-wrap gap-2"}>
+    <div className={hero ? "flex flex-wrap justify-center gap-2" : "flex flex-wrap gap-2"}>
       {items.map((s) => (
         <Button
           key={s}
@@ -91,12 +93,12 @@ function Pills({
           onClick={() => onPick(s)}
           className={
             hero
-              ? "h-11 min-w-0 justify-between whitespace-normal border-border bg-transparent px-3 text-left text-xs text-foreground shadow-none hover:border-primary hover:bg-secondary hover:text-foreground [&:last-child]:col-span-2"
+              ? "category-pill min-h-10 h-auto min-w-0 rounded-full whitespace-normal border-border/80 bg-card/80 px-4 py-2 text-sm text-foreground shadow-none hover:border-primary hover:bg-primary/5 hover:text-foreground"
               : ""
           }
         >
           {s}
-          {hero && <Plus className="shrink-0 text-primary" />}
+          
         </Button>
       ))}
     </div>
@@ -111,7 +113,11 @@ function EstimatePanel({
   estimate,
   stale,
   busy,
+  expanded,
+  onToggle,
 }: {
+  expanded: boolean;
+  onToggle: () => void;
   estimate: EstimateResult;
   stale: boolean;
   busy: boolean;
@@ -123,45 +129,20 @@ function EstimatePanel({
   const s = estimate.specification;
   const area = (s.length && s.width ? s.length * s.width : s.approximateArea ?? 0) * (s.category === "extension" ? s.storeys ?? 1 : 1);
   return (
-    <details className="group max-h-[40dvh] shrink-0 overflow-y-auto border-b border-border bg-card text-card-foreground">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-1 py-2.5 text-xs [&::-webkit-details-marker]:hidden">
+    <Button variant="ghost" onClick={onToggle} aria-expanded={expanded} aria-label={expanded ? "Back to conversation" : "View estimated project budget"} className="h-auto w-full shrink-0 justify-between gap-3 rounded-none border-b border-border px-0 py-3 text-xs hover:bg-secondary hover:text-foreground">
         <span className="flex min-w-0 items-center gap-2">
           <span className="size-1.5 shrink-0 rounded-full bg-primary" />
           <span className="truncate font-medium">
             {area ? `${area}m² ` : ""}
             {s.category.replaceAll("_", " ")}
           </span>
-          <span className="hidden shrink-0 text-muted-foreground sm:inline">
-            {PANEL_TYPE_LABELS[estimate.estimateType ?? "provisional"]} ·{" "}
-            {estimate.confidence.toLowerCase()} confidence
-          </span>
         </span>
-        <span className="shrink-0 font-display text-sm">
+        <span className="flex shrink-0 items-center gap-2 font-display text-base sm:text-xl">
           {gbp(range.low)}–{gbp(range.high)}
           {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && <span className="text-muted-foreground"> +VAT</span>}
+          <ChevronDown className={expanded ? "size-3 rotate-180" : "size-3"} />
         </span>
-      </summary>
-      <div className="space-y-1 px-1 pb-3 text-xs text-muted-foreground">
-        <p>
-          Expected {gbp(range.expected)}
-          {(bench ? bench.vatBasis === "exclusive" : !estimate.vatConfirmed) && " plus VAT (to confirm)"} ·{" "}
-          {estimate.estimateType === "benchmark"
-            ? "based on South East regional construction costs"
-            : estimate.estimateType === "detailed"
-              ? "fully verified cost-based estimate"
-              : "cost-based estimate using approved provisional allowances"}
-          .
-        </p>
-        <p className={stale || busy ? "text-foreground" : undefined}>
-          {busy
-            ? "Updating your estimate…"
-            : stale
-              ? "Your latest changes may not be priced yet — we'll recalculate as we go."
-              : "Indicative · Based on current specification."}
-        </p>
-        <EstimateCard estimate={estimate} />
-      </div>
-    </details>
+    </Button>
   );
 }
 export function TeamChat({ inline = false }: { inline?: boolean }) {
@@ -251,6 +232,7 @@ function ChatWindow({
   const readState = useServerFn(getProjectState);
   const selectChoice = useServerFn(selectProjectChoice);
   const [project, setProject] = useState<ProjectState | null>(null);
+  const [resultExpanded, setResultExpanded] = useState(false);
   const [selecting, setSelecting] = useState(false);
   const [choiceError, setChoiceError] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -305,6 +287,7 @@ function ChatWindow({
   }, [stored, messages]);
   async function send(text: string) {
     if (!text.trim() || busy || uploading) return;
+    setResultExpanded(false);
     await sendMessage({ text });
   }
   async function submit({ text, files }: PromptInputMessage) {
@@ -386,7 +369,7 @@ function ChatWindow({
       data-chat-active={active}
       className={
         inline
-          ? "flex h-full min-h-0 flex-col px-5 lg:px-10 xl:px-12"
+          ? "quotation-window flex h-full min-h-0 flex-col"
           : "flex min-h-0 flex-1 flex-col"
       }
     >
@@ -395,20 +378,18 @@ function ChatWindow({
           ref={panel}
           className={
             inline
-              ? "flex min-h-0 flex-1 flex-col bg-background text-foreground"
+              ? "quotation-thread flex min-h-0 flex-1 flex-col text-foreground"
               : "flex min-h-0 flex-1 flex-col"
           }
         >
-          {inline && (
-            <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-3 lg:py-5">
+          {inline && active && (
+            <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border/70 py-2">
               <div className="min-w-0">
                 <p className="flex items-center gap-2 text-xs font-semibold uppercase">
                   <span className="size-1.5 shrink-0 rounded-full bg-primary" />
                   Project estimate
                 </p>
-                <p className="mt-1 hidden text-xs text-muted-foreground lg:block">
-                  Homes by Hines · No obligation
-                </p>
+
               </div>
               <Button
                 variant="ghost"
@@ -421,29 +402,26 @@ function ChatWindow({
               </Button>
             </div>
           )}
+          {project && active && <ProjectSnapshot specification={project.specification} busy={busy} onEdit={(text) => void send(text)} />}
           {currentEstimate && (
-            <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} />
+            <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} expanded={resultExpanded} onToggle={() => setResultExpanded((v) => !v)} />
           )}
-          <Conversation className="min-h-0 flex-1">
+          {resultExpanded && currentEstimate && !estimateStale ? <div className="min-h-0 flex-1 overflow-y-auto" key="budget-result">
+            <EstimateCard estimate={currentEstimate} onAction={(text) => void send(text)} />
+          </div> : <Conversation className="min-h-0 flex-1">
             <ConversationContent
-              className={inline ? "gap-5 px-0 py-4 lg:py-6" : "gap-5 px-4 py-5 sm:px-5"}
+              className={inline ? "gap-5 px-0 py-4" : "gap-5 px-4 py-5 sm:px-5"}
             >
               {!active && (
                 <div className="text-sm text-muted-foreground">
-                  <p className="font-display text-2xl text-foreground lg:text-3xl">
-                    What are you planning?
-                  </p>
-                  <p className="mt-2 text-sm">
-                    {inline
-                      ? "A house, a room, or something outdoors."
-                      : "Tell us about your house, site or garden."}
-                  </p>
-                  <div className="mt-4 lg:mt-6">
+                  {!inline && <p className="mb-4 text-sm">Tell us about your house, site or garden.</p>}
+                  <div className="category-options">
                     <Pills
                       items={STARTERS}
                       onPick={(t) => {
                         const categories = { "Rear extension": "extension", "Kitchen renovation": "kitchen", "Bathroom refurbishment": "bathroom", "Loft conversion": "loft", "Landscaping": "landscaping", "General building work": "general" } as const;
                         const category = categories[t as keyof typeof categories];
+                        if (t === "Garden room") { void send("I’d like a garden room. Please help me work out the size and intended use, then arrange a tailored estimate or site visit if pricing isn’t supported."); return; }
                         if (category) void pick("starter", { value: category, label: t, description: "", message: `I'd like an estimate for a ${t.toLowerCase()}.` }, category);
                       }}
                       disabled={busy}
@@ -452,7 +430,7 @@ function ChatWindow({
                   </div>
                 </div>
               )}
-              {messages.map((message) => (message.metadata as { choice?: boolean } | undefined)?.choice ? (
+              {!resultExpanded && messages.map((message) => (message.metadata as { choice?: boolean } | undefined)?.choice ? (
                 <p key={message.id} className="self-end text-xs text-muted-foreground">
                   <span className="mr-1.5 inline-block size-1.5 rounded-full bg-primary align-middle" />
                   {message.parts.map((p) => (p.type === "text" ? p.text : "")).join("")}
@@ -462,7 +440,7 @@ function ChatWindow({
                   <MessageContent
                     className={
                       message.role === "user"
-                        ? "group-[.is-user]:rounded-none group-[.is-user]:bg-secondary group-[.is-user]:text-foreground"
+                        ? "group-[.is-user]:rounded-lg group-[.is-user]:bg-secondary/80 group-[.is-user]:text-foreground"
                         : "min-w-0 w-full bg-transparent p-0"
                     }
                   >
@@ -519,7 +497,7 @@ function ChatWindow({
                 </Message>
               ))}
               {choiceError && <p role="alert" className="text-sm text-muted-foreground">That choice couldn't be updated. Please try it again.</p>}
-              {lastChoices && (
+              {!resultExpanded && lastChoices && (
                 <VisualChoiceCards
                   setId={lastChoices}
                   selected={selectedValue(lastChoices)}
@@ -530,7 +508,7 @@ function ChatWindow({
                   }}
                 />
               )}
-              {!!lastSuggestions.length && (
+              {!resultExpanded && !!lastSuggestions.length && (
                 <Pills items={lastSuggestions} onPick={(t) => void send(t)} disabled={busy} />
               )}
               {status === "submitted" && (
@@ -538,11 +516,11 @@ function ChatWindow({
               )}
             </ConversationContent>
             <ConversationScrollButton />
-          </Conversation>
+          </Conversation>}
         </div>
       }
       <div
-        className={inline ? "shrink-0 pb-4 pt-2 lg:pb-6" : "shrink-0 border-t border-border p-3"}
+        className={inline ? "quotation-input shrink-0 pb-2 pt-3" : "shrink-0 border-t border-border p-3"}
       >
         <EstimateComposer
           onSend={submit}
@@ -554,7 +532,7 @@ function ChatWindow({
         />
         {inline && (
           <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-            Indicative costs, not a fixed quotation.
+            AI-assisted · Team-backed · Indicative, not a fixed quotation.
           </p>
         )}
       </div>
