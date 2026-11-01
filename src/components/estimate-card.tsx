@@ -57,6 +57,7 @@ export function EstimateCard({
           {isBenchmark && bench.unit === "job" ? "UK market guidance · not a quotation" : estimate.estimateType ? TYPE_LABELS[estimate.estimateType] : "Estimate"}
         </p>
         <h3 className="mt-2 text-xl">{shownRange ? "Your estimated project budget" : "Best priced on site"}</h3>
+        {shownRange && <p className="mt-3 flex flex-wrap items-baseline gap-x-2 font-display text-3xl sm:text-4xl"><span>{gbp(shownRange.low)}</span><span className="text-border">–</span><span>{gbp(shownRange.high)}</span></p>}
         <p className="mt-2 text-xs capitalize text-muted-foreground">{s.category.replaceAll("_", " ")} · {estimate.confidence.toLowerCase()} confidence</p>
         <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
           {s.location && (
@@ -82,9 +83,6 @@ export function EstimateCard({
       <div className="p-4 sm:p-5">
         {shownRange ? (
           <>
-            <p className="flex flex-wrap items-baseline gap-x-2 font-display text-3xl sm:text-4xl">
-              <span>{gbp(shownRange.low)}</span><span className="text-border">–</span><span>{gbp(shownRange.high)}</span>
-            </p>
             <p className="mt-2 text-sm">
               Expected cost: <strong>{gbp(shownRange.expected)}</strong>
               <span className="text-muted-foreground"> · {vatDisclosure}</span>
