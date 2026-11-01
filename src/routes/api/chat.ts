@@ -276,6 +276,8 @@ ${JSON.stringify(projectState ? { specification: projectState.specification, sta
           },
           onFinish: async ({ messages: finalMessages }) => {
             const admin = await getAdmin();
+            let lastUser = 0;
+            finalMessages.forEach((m, index) => { if (m.role === "user") lastUser = index; });
             const row: {
               id: string;
               messages: unknown;
@@ -283,7 +285,7 @@ ${JSON.stringify(projectState ? { specification: projectState.specification, sta
               enquiry_id?: string;
             } = {
               id: activeSessionId,
-              messages: nextSession ? finalMessages.slice(Math.max(0, finalMessages.findLastIndex((m) => m.role === "user"))) : finalMessages,
+              messages: nextSession ? finalMessages.slice(lastUser) : finalMessages,
               updated_at: new Date().toISOString(),
             };
             if (enquiryId) row.enquiry_id = enquiryId;

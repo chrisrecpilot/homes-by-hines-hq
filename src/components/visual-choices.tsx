@@ -168,7 +168,7 @@ export function VisualChoiceCards({
   selected: string | null;
   disabled: boolean;
   onPick: (choice: VisualChoice) => void;
-  allowedValues?: string[];
+  allowedValues?: string[] | undefined;
 }) {
   const set = getChoiceSet(setId);
   if (!set) return null;

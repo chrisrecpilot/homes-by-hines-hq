@@ -254,12 +254,13 @@ function ChatWindow({
     transport,
     onError: () => toast.error("We couldn't send that message just now. Your project details are still here."),
     onFinish: ({ messages: finalMessages }) => {
-      for (const message of finalMessages) for (const part of message.parts) {
+      let lastUser = 0;
+      finalMessages.forEach((m, index) => { if (m.role === "user") lastUser = index; });
+      for (const message of finalMessages.slice(lastUser)) for (const part of message.parts) {
         if (part.type === "tool-update_project" && "output" in part) {
           const output = part.output as { nextSession?: { id: string; token: string } } | undefined;
           if (output?.nextSession) {
-            const lastUser = finalMessages.findLastIndex((m) => m.role === "user");
-            onRotate({ ...output.nextSession, messages: finalMessages.slice(Math.max(0, lastUser)) });
+            onRotate({ ...output.nextSession, messages: finalMessages.slice(lastUser) });
             return;
           }
         }
@@ -304,6 +305,7 @@ function ChatWindow({
   async function send(text: string) {
     if (!text.trim() || busy || uploading) return;
     setResultExpanded(false);
+    if (/\b(actually|instead|new project|change my project)\b/i.test(text) && /garden room|extension|kitchen|bathroom|loft|landscaping/i.test(text)) setProject(null);
     await sendMessage({ text });
   }
   async function submit({ text, files }: PromptInputMessage) {
