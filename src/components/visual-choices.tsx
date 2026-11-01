@@ -159,8 +159,9 @@ export function VisualChoiceCards({
 }) {
   const set = getChoiceSet(setId);
   if (!set) return null;
+  const hasImages = set.options.some((option) => option.image);
   return (
-    <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3" role="group" aria-label={`${setId.replaceAll("_", " ")} options`}>
+    <div className={hasImages ? "visual-options grid w-full grid-cols-2 items-start gap-3 sm:grid-cols-3" : "flex w-full flex-wrap gap-2"} role="group" aria-label={`${setId.replaceAll("_", " ")} options`}>
       {set.options.map((option) => {
         const isSelected = selected === option.value;
         return (
@@ -172,10 +173,10 @@ export function VisualChoiceCards({
             onClick={() => onPick(option)}
             aria-pressed={isSelected}
             className={cn(
-              "group h-auto min-w-0 flex-col items-stretch gap-0 overflow-hidden rounded-none border border-border bg-card p-0 text-left whitespace-normal transition-colors",
+              hasImages && option.image ? "group h-auto min-w-0 flex-col items-stretch gap-0 overflow-hidden rounded-lg border border-border bg-card p-0 text-left whitespace-normal transition-all" : "choice-pill h-auto min-h-10 min-w-0 rounded-full border-border bg-card px-4 py-2 text-sm whitespace-normal",
               "hover:border-primary hover:bg-card hover:text-card-foreground focus-visible:outline-2 focus-visible:outline-primary",
               "disabled:cursor-default",
-              isSelected && "border-primary ring-1 ring-primary",
+              isSelected && "border-primary bg-primary/5 ring-1 ring-primary",
               
             )}
           >
@@ -187,7 +188,7 @@ export function VisualChoiceCards({
                   loading="lazy"
                   width={1024}
                   height={768}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 {isSelected && (
                   <span className="absolute right-2 top-2 flex size-6 items-center justify-center bg-primary text-primary-foreground">
@@ -196,7 +197,7 @@ export function VisualChoiceCards({
                 )}
               </span>
             ) : (
-              <span className="flex min-h-11 w-full items-center justify-center px-3 py-3 text-center text-sm font-medium text-foreground">
+              <span className="flex w-full items-center justify-center text-center text-sm font-medium text-foreground">
                 {option.label}
                 {isSelected && <Check size={16} className="ml-2 text-primary" aria-hidden />}
               </span>
