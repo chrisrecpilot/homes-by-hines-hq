@@ -10,6 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { ChatStatus } from "ai";
+import { useState } from "react";
+import { IdleProjectPrompt } from "@/components/idle-project-prompt";
 
 function Attachments() {
   const a = usePromptInputAttachments();
@@ -50,6 +52,7 @@ export function EstimateComposer({
   hero = false,
   uploading = false,
   uploadProgress = null,
+  busy = false,
 }: {
   onSend: (message: PromptInputMessage) => Promise<void>;
   status: ChatStatus;
@@ -57,7 +60,11 @@ export function EstimateComposer({
   hero?: boolean;
   uploading?: boolean;
   uploadProgress?: string | null;
+  busy?: boolean;
 }) {
+  const [focused, setFocused] = useState(false);
+  const [empty, setEmpty] = useState(true);
+  const demonstration = hero && !focused && empty;
   return (
     <PromptInput
       onSubmit={onSend}
@@ -68,18 +75,21 @@ export function EstimateComposer({
       onError={(e) => toast.error(e.message)}
       className={"quotation-composer w-full text-foreground [&_[data-slot=input-group]]:rounded-lg [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card focus-within:[&_[data-slot=input-group]]:border-primary" + (hero ? " quotation-composer-hero" : "")}
     >
+      <div className="relative w-full min-w-0">
       <PromptInputTextarea
         aria-label={hero ? "Describe your building project" : "Message the team"}
-        placeholder={
-          hero
-            ? "Describe your project… e.g. a 5m × 4m rear extension with bifolds in Maidstone"
-            : "Add details or ask about your project…"
-        }
+        placeholder={demonstration ? "" : "Describe your project…"}
+        onFocus={() => setFocused(true)}
+        onPointerDown={() => setFocused(true)}
+        onBlur={(event) => { setFocused(false); setEmpty(event.currentTarget.value.length === 0); }}
+        onChange={(event) => setEmpty(event.currentTarget.value.length === 0)}
         className={
           hero ? "min-h-28 max-h-36 p-5 text-base sm:min-h-32 sm:p-6 sm:text-lg" : "min-h-16 max-h-28 p-4 text-base"
         }
         maxLength={5000}
       />
+      <IdleProjectPrompt visible={demonstration} />
+      </div>
       <PromptInputFooter className="items-center justify-between gap-2 px-2 pb-2">
         <div className="flex min-w-0 items-center gap-1">
           <Attachments />
@@ -90,7 +100,7 @@ export function EstimateComposer({
         <PromptInputSubmit
           status={status}
           onStop={onStop}
-          disabled={uploading}
+          disabled={uploading || busy}
           size="icon-sm"
           className="size-11 shrink-0 rounded-full transition-transform hover:scale-105 active:scale-95"
           aria-label={status === "streaming" ? "Stop reply" : "Send project description"}

@@ -1,5 +1,10 @@
 # Current tasks
 
+## Cinematic chat transitions
+- [x] Add reusable idle demonstration typing with focus, value and reduced-motion safeguards.
+- [x] Animate the existing composer into conversation; gently reveal opening messages and choices without changing pricing or security.
+- [x] Verify input identity, typed text, attachments and the real extension flow across desktop/mobile; 25 focused regression tests pass, no browser errors or overflow.
+
 ## World-class estimator UX/UI pass
 - [x] Centre the homepage experience over faded real-project photography; premium input, category pills and restrained motion.
 - [x] Add an editable project snapshot, refine result and existing image choices; Garden room uses the existing tailored-enquiry conversation without invented pricing.
