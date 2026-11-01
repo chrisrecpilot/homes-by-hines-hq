@@ -2,6 +2,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { MessageCircle, RotateCcw, X, FileText, ChevronDown } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
@@ -229,6 +230,8 @@ function ChatWindow({
   onReset?: () => void;
 }) {
   const upload = useServerFn(uploadEstimateFile);
+  const reducedMotion = useReducedMotion();
+  const layoutTransition = { duration: reducedMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] };
   const readState = useServerFn(getProjectState);
   const selectChoice = useServerFn(selectProjectChoice);
   const [project, setProject] = useState<ProjectState | null>(null);
@@ -262,6 +265,7 @@ function ChatWindow({
   async function pick(set: string, choice: VisualChoice, category?: "extension" | "kitchen" | "bathroom" | "loft" | "landscaping" | "general") {
     if (busy || uploading) return;
     setSelecting(true); setChoiceError(false);
+    if (set === "starter") setMessages([{ id: crypto.randomUUID(), role: "user", metadata: { choice: true }, parts: [{ type: "text", text: choice.message }] }]);
     try {
       const result = await selectChoice({ data: { sessionId: stored.id, token: stored.token, revision: project?.revision ?? 0,
         set, value: choice.value, message: choice.message, category } });
@@ -271,6 +275,7 @@ function ChatWindow({
       setMessages(next);
       setPicked((p) => ({ ...p, [set]: choice.value }));
     } catch {
+      if (set === "starter") setMessages(messages);
       setChoiceError(true);
       toast.error("We couldn't update that choice just now. Please try again; your details are still here.");
       await refreshProject();
@@ -365,7 +370,9 @@ function ChatWindow({
     return values[set] ?? picked[set] ?? null;
   }
   return (
-    <div
+    <motion.div
+      layout={inline ? "position" : false}
+      transition={{ layout: layoutTransition }}
       data-chat-active={active}
       className={
         inline
@@ -374,7 +381,9 @@ function ChatWindow({
       }
     >
       {
-        <div
+        <motion.div
+          layout={inline ? "position" : false}
+          transition={{ layout: layoutTransition }}
           ref={panel}
           className={
             inline
@@ -412,8 +421,9 @@ function ChatWindow({
             <ConversationContent
               className={inline ? "gap-5 px-0 py-4" : "gap-5 px-4 py-5 sm:px-5"}
             >
+              <AnimatePresence initial={false} mode="popLayout">
               {!active && (
-                <div className="text-sm text-muted-foreground">
+                <motion.div key="project-starters" exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.18 }} className="text-sm text-muted-foreground">
                   {!inline && <p className="mb-4 text-sm">Tell us about your house, site or garden.</p>}
                   <div className="category-options">
                     <Pills
@@ -421,21 +431,23 @@ function ChatWindow({
                       onPick={(t) => {
                         const categories = { "Rear extension": "extension", "Kitchen renovation": "kitchen", "Bathroom refurbishment": "bathroom", "Loft conversion": "loft", "Landscaping": "landscaping", "General building work": "general" } as const;
                         const category = categories[t as keyof typeof categories];
-                        if (t === "Garden room") { void send("I’d like a garden room. Please help me work out the size and intended use, then arrange a tailored estimate or site visit if pricing isn’t supported."); return; }
-                        if (category) void pick("starter", { value: category, label: t, description: "", message: `I'd like an estimate for a ${t.toLowerCase()}.` }, category);
+                        if (t === "Garden room") { void send("I'm looking to build a garden room."); return; }
+                        if (category) void pick("starter", { value: category, label: t, description: "", message: t === "Rear extension" ? "I'm looking to build a rear extension." : `I'd like help with ${t.toLowerCase()}.` }, category);
                       }}
                       disabled={busy}
                       hero={inline}
                     />
                   </div>
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
               {!resultExpanded && messages.map((message) => (message.metadata as { choice?: boolean } | undefined)?.choice ? (
-                <p key={message.id} className="self-end text-xs text-muted-foreground">
+                <motion.p key={message.id} initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} transition={layoutTransition} className="self-end text-xs text-muted-foreground">
                   <span className="mr-1.5 inline-block size-1.5 rounded-full bg-primary align-middle" />
                   {message.parts.map((p) => (p.type === "text" ? p.text : "")).join("")}
-                </p>
+                </motion.p>
               ) : (
+                <motion.div key={message.id} initial={{ opacity: 0, y: reducedMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} transition={{ ...layoutTransition, delay: reducedMotion ? 0 : 0.1 }}>
                 <Message key={message.id} from={message.role}>
                   <MessageContent
                     className={
@@ -495,9 +507,11 @@ function ChatWindow({
                     })()}
                   </MessageContent>
                 </Message>
+                </motion.div>
               ))}
               {choiceError && <p role="alert" className="text-sm text-muted-foreground">That choice couldn't be updated. Please try it again.</p>}
               {!resultExpanded && lastChoices && (
+                <motion.div key={lastChoices} initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} transition={{ ...layoutTransition, delay: reducedMotion ? 0 : 0.16 }}>
                 <VisualChoiceCards
                   setId={lastChoices}
                   selected={selectedValue(lastChoices)}
@@ -507,19 +521,22 @@ function ChatWindow({
                     else void send(choice.message);
                   }}
                 />
+                </motion.div>
               )}
               {!resultExpanded && !!lastSuggestions.length && (
                 <Pills items={lastSuggestions} onPick={(t) => void send(t)} disabled={busy} />
               )}
-              {status === "submitted" && (
+              {(status === "submitted" || (selecting && messages.length === 1)) && (
                 <Shimmer className="text-sm">The team is thinking…</Shimmer>
               )}
             </ConversationContent>
             <ConversationScrollButton />
           </Conversation>}
-        </div>
+        </motion.div>
       }
-      <div
+      <motion.div
+        layout={inline ? "position" : false}
+        transition={{ layout: layoutTransition }}
         className={inline ? "quotation-input shrink-0 pb-2 pt-3" : "shrink-0 border-t border-border p-3"}
       >
         <EstimateComposer
@@ -535,7 +552,7 @@ function ChatWindow({
             AI-assisted · Team-backed · Indicative, not a fixed quotation.
           </p>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
