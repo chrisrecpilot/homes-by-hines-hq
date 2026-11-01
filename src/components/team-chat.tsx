@@ -20,6 +20,8 @@ import { EstimateCard } from "@/components/estimate-card";
 import { EstimateFollowUp } from "@/components/estimate-follow-up";
 import { QUOTE_STORAGE_KEY, readQuote, type StoredQuote } from "@/lib/estimating/quote-storage";
 import { replacementCategory } from "@/lib/estimating/project-intent";
+import { advanceFollowUp, followUpSchema, type FollowUp } from "@/lib/estimating/follow-up";
+import { submitQuoteRequest } from "@/lib/estimating/lead.functions";
 import {
   VisualChoiceCards,
   parseChoices,
@@ -234,6 +236,15 @@ function ChatWindow({
   const layoutTransition = { duration: reducedMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] };
   const readState = useServerFn(getProjectState);
   const selectChoice = useServerFn(selectProjectChoice);
+  const submitRequest = useServerFn(submitQuoteRequest);
+  const [followUp, setFollowUp] = useState<FollowUp | null>(null);
+  useEffect(() => {
+    try { const parsed = followUpSchema.safeParse(JSON.parse(window.sessionStorage.getItem(`hbh-follow-up-${stored.id}`) ?? "null")); if (parsed.success) setFollowUp(parsed.data); } catch { /* Optional recovery. */ }
+  }, [stored.id]);
+  function retainFollowUp(flow: FollowUp | null) {
+    setFollowUp(flow);
+    try { if (flow) window.sessionStorage.setItem(`hbh-follow-up-${stored.id}`, JSON.stringify(flow)); else window.sessionStorage.removeItem(`hbh-follow-up-${stored.id}`); } catch { /* Storage may be blocked. */ }
+  }
   const [project, setProject] = useState<ProjectState | null>(null);
   const [resultExpanded, setResultExpanded] = useState(false);
   const [selecting, setSelecting] = useState(false);
@@ -307,7 +318,33 @@ function ChatWindow({
     if (!text.trim() || busy || uploading) return;
     setResultExpanded(false);
     if (await startReplacement(text)) return;
+    if (await handleFollowUp(text)) return;
     await sendMessage({ text });
+  }
+  async function handleFollowUp(text: string): Promise<boolean> {
+    const request = /\b(request|arrange)\b.*\bsite visit\b/i.test(text) ? "site_visit" : /\brequest a callback\b/i.test(text) ? "callback" : null;
+    if (!followUp && !request) return false;
+    const user: UIMessage = { id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text }] };
+    const flow = followUp ?? { request: request ?? "callback", step: "name", name: "", phone: "", email: null, address: project?.specification.location ?? null, preference: null };
+    const next = followUp ? advanceFollowUp(flow, text) : { flow, prompt: "Of course. What's your name?" };
+    const turns = [...messages, user];
+    if (next.flow.step === "ready") {
+      setSelecting(true);
+      try {
+        const confirmation = next.flow.request === "site_visit" ? "Your site-visit request is with the team. We'll contact you to agree a time — it isn't booked yet." : "Your callback request is with the team. We'll contact you to discuss the project.";
+        const final: UIMessage[] = [...turns, { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: confirmation }] }];
+        await submitRequest({ data: { sessionId: stored.id, token: stored.token, enquiry: { name: next.flow.name, phone: next.flow.phone, email: next.flow.email,
+          request: next.flow.request, enquiry_type: project?.specification.category === "landscaping" || project?.specification.category === "garden_room" ? "landscaping" : project?.specification.category === "extension" ? "development" : "renovation",
+          message: "Customer requested follow-up on the current project.", site_address: next.flow.address, visit_preference: next.flow.preference },
+          transcript: final.filter((m) => m.role === "user" || m.role === "assistant").map((m) => ({ role: m.role as "user" | "assistant", text: m.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n") })) } });
+        setMessages(final); retainFollowUp(null);
+      } catch { toast.error("Couldn't save your request. Please try again."); }
+      finally { setSelecting(false); }
+    } else {
+      retainFollowUp(next.flow);
+      setMessages([...turns, { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: next.prompt }] }]);
+    }
+    return true;
   }
   async function startReplacement(text: string): Promise<boolean> {
     const category = replacementCategory(text, project?.specification.category);
@@ -328,6 +365,7 @@ function ChatWindow({
     if (busy || uploading || (!text.trim() && !files.length)) return;
     if (text.length > 5000) throw new Error("Please keep your message under 5,000 characters.");
     if (!files.length && await startReplacement(text)) return;
+    if (!files.length && await handleFollowUp(text)) return;
     setUploading(true);
     try {
       const uploaded = [];
