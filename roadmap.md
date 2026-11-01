@@ -1,5 +1,10 @@
 # Current tasks
 
+## World-class estimator UX/UI pass
+- [ ] Centre the homepage experience over faded real-project photography; premium input, category pills and restrained motion.
+- [ ] Add an editable project snapshot, refine result and image choices, and surface Garden room without invented pricing.
+- [ ] Verify desktop/mobile, saved-state continuity and current estimating flows; capture both views.
+
 ## Full AI estimator upgrade (lean scope)
 - [x] Expert UK-builder prompt with security rules; single update_project tool for multi-detail changes; ft/ft² conversion.
 - [x] Sourced kitchen/bathroom market-guidance benchmarks (Checkatrade 2026, Fixatrader 2025), editable in admin.
