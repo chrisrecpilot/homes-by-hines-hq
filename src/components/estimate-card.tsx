@@ -1,4 +1,4 @@
-import { Download, Mail, MapPin, Pencil, Ruler, CalendarDays } from "lucide-react";
+import { Download, Paperclip, MapPin, Pencil, Ruler, CalendarDays, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { gbp, headlineRange, type EstimateResult } from "@/lib/estimating/types";
 
@@ -51,13 +51,13 @@ export function EstimateCard({
     URL.revokeObjectURL(url);
   }
   return (
-    <article className="my-3 w-full min-w-0 border border-border bg-card text-card-foreground">
-      <div className="border-b border-border p-5">
-        <p className="eyebrow text-primary">
+    <article className="budget-result my-3 w-full min-w-0 overflow-hidden rounded-lg border border-border bg-card text-card-foreground">
+      <div className="border-b border-border p-4 sm:p-5">
+        <p className="text-xs font-medium text-primary">
           {isBenchmark && bench.unit === "job" ? "UK market guidance · not a quotation" : estimate.estimateType ? TYPE_LABELS[estimate.estimateType] : "Estimate"}
         </p>
-        <h3 className="mt-3 text-2xl capitalize">{s.category.replaceAll("_", " ")}</h3>
-        <p className="mt-2 text-sm text-muted-foreground">{s.description}</p>
+        <h3 className="mt-2 text-xl">{shownRange ? "Your estimated project budget" : "Best priced on site"}</h3>
+        <p className="mt-2 text-xs capitalize text-muted-foreground">{s.category.replaceAll("_", " ")} · {estimate.confidence.toLowerCase()} confidence</p>
         <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
           {s.location && (
             <span className="flex items-center gap-1">
@@ -79,14 +79,11 @@ export function EstimateCard({
           )}
         </div>
       </div>
-      <div className="p-5">
+      <div className="p-4 sm:p-5">
         {shownRange ? (
           <>
-            <p className="text-sm text-muted-foreground">
-              Your estimated project budget · {estimate.confidence.toLowerCase()} confidence
-            </p>
-            <p className="mt-2 font-display text-3xl">
-              {gbp(shownRange.low)}–{gbp(shownRange.high)}
+            <p className="flex flex-wrap items-baseline gap-x-2 font-display text-3xl sm:text-4xl">
+              <span>{gbp(shownRange.low)}</span><span className="text-border">–</span><span>{gbp(shownRange.high)}</span>
             </p>
             <p className="mt-2 text-sm">
               Expected cost: <strong>{gbp(shownRange.expected)}</strong>
@@ -94,8 +91,8 @@ export function EstimateCard({
             </p>
             {isBenchmark ? (
               <details className="group mt-5 border-t border-border pt-4 text-sm">
-                <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-[0.14em] text-primary">
-                  What's included and how it's priced
+                <summary className="cursor-pointer text-xs font-medium">
+                  What this is based on
                 </summary>
                 <div className="mt-3 space-y-2">
                 <p className="text-muted-foreground">
@@ -135,7 +132,7 @@ export function EstimateCard({
                 </div>
               </details>
             ) : (
-              <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
+              <details className="mt-5 border-t border-border pt-4 text-sm"><summary className="cursor-pointer text-xs font-medium">Calculated breakdown &amp; price method</summary><dl className="mt-3 space-y-2">
                 {(
                   [
                     ["Labour", "labour"],
@@ -168,7 +165,7 @@ export function EstimateCard({
                     provisional allowances pending supplier verification.
                   </p>
                 )}
-              </dl>
+              </dl></details>
             )}
             {estimate.missing.length > 0 && (
               <p className="mt-3 text-xs text-muted-foreground">
@@ -180,7 +177,6 @@ export function EstimateCard({
           </>
         ) : (
           <>
-            <h4 className="text-xl">Best priced on site</h4>
             <p className="mt-2 text-sm text-muted-foreground">
               The scope varies too much for a reliable guide figure. A free visit lets us price it properly.
             </p>
@@ -188,7 +184,7 @@ export function EstimateCard({
         )}
         <details className="mt-5 border-t border-border pt-3 text-xs">
           <summary className="cursor-pointer font-medium">
-            Scope & assumptions
+            Assumptions &amp; inclusions / exclusions
           </summary>
           <div className="mt-3 space-y-3">
             {estimate.customerNotes?.map((note) => <p key={note}>{note}</p>)}
@@ -212,10 +208,8 @@ export function EstimateCard({
             ))}
           </div>
         </details>
-        <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-          This is an initial estimate, not a binding quotation. Final pricing depends on a site
-          survey, confirmed specifications and necessary structural or technical assessments. Any
-          recommended contingency is separate from our price.
+        <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+          Indicative, not a binding quotation. Subject to a site visit and confirmed specifications. Contingency is separate.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           {onAction && (
@@ -226,20 +220,21 @@ export function EstimateCard({
                 onClick={() => onAction("I'd like to refine my estimate.")}
               >
                 <Pencil />
-                Refine
+                Refine estimate
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => onAction("I'd like to upload plans or photos.")}
               >
-                <Mail />
+                <Paperclip />
                 Upload plans
               </Button>
               <Button
                 size="sm"
                 onClick={() => onAction("I'd like to arrange a site visit and formal quotation.")}
               >
+                <ArrowUpRight />
                 Arrange a site visit
               </Button>
             </>
