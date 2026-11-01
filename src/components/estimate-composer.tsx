@@ -52,6 +52,7 @@ export function EstimateComposer({
   hero = false,
   uploading = false,
   uploadProgress = null,
+  busy = false,
 }: {
   onSend: (message: PromptInputMessage) => Promise<void>;
   status: ChatStatus;
@@ -59,6 +60,7 @@ export function EstimateComposer({
   hero?: boolean;
   uploading?: boolean;
   uploadProgress?: string | null;
+  busy?: boolean;
 }) {
   const [focused, setFocused] = useState(false);
   const [empty, setEmpty] = useState(true);
@@ -98,7 +100,7 @@ export function EstimateComposer({
         <PromptInputSubmit
           status={status}
           onStop={onStop}
-          disabled={uploading}
+          disabled={uploading || busy}
           size="icon-sm"
           className="size-11 shrink-0 rounded-full transition-transform hover:scale-105 active:scale-95"
           aria-label={status === "streaming" ? "Stop reply" : "Send project description"}

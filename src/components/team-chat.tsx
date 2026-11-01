@@ -545,6 +545,7 @@ function ChatWindow({
           onStop={stop}
           hero={inline && !active}
           uploading={uploading}
+          busy={busy}
           uploadProgress={uploadProgress}
         />
         {inline && (
