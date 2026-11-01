@@ -6,6 +6,14 @@ import { toMetres, toSquareMetres, type AreaUnit, type MeasureUnit } from "./uni
 /** Model-facing input: null always means "unchanged". The server converts units and validates. */
 export type UpdateProjectInput = {
   category: ProjectSpec["category"] | null;
+  gardenAttachment?: ProjectSpec["gardenAttachment"];
+  intendedUse?: ProjectSpec["intendedUse"];
+  insulation?: boolean | null;
+  electricalSupply?: boolean | null;
+  heating?: boolean | null;
+  plumbing?: boolean | null;
+  siteAccess?: string | null;
+  groundConditions?: string | null;
   summary: string | null;
   extensionType: ProjectSpec["extensionType"];
   renovationScope: ProjectSpec["renovationScope"];
@@ -39,7 +47,15 @@ export const UPDATE_PROJECT_SCHEMA: JSONSchema7 = {
   additionalProperties: false,
   required: ["category", "summary", "extensionType", "renovationScope", "specificationLevel", "roomSize", "loftType", "workType", "finish", "length", "width", "lengthUnit", "area", "areaUnit", "storeys", "roof", "doorType", "wallFinish", "flooring", "underfloorHeating", "structuralOpening", "rooflights", "location", "clearFields"],
   properties: {
-    category: n(["extension", "loft", "bathroom", "kitchen", "garden_wall", "landscaping", "plastering", "knock_through", "repair", "general"]),
+    category: n(["extension", "loft", "bathroom", "kitchen", "garden_wall", "landscaping", "garden_room", "plastering", "knock_through", "repair", "general"]),
+    gardenAttachment: n(["standalone", "attached"]),
+    intendedUse: n(["office", "gym", "studio", "leisure", "habitable"]),
+    insulation: s(["boolean", "null"]),
+    electricalSupply: s(["boolean", "null"]),
+    heating: s(["boolean", "null"]),
+    plumbing: s(["boolean", "null"]),
+    siteAccess: s(["string", "null"]),
+    groundConditions: s(["string", "null"]),
     summary: { ...s(["string", "null"]), description: "One-line project description in the customer's words" },
     extensionType: n(["rear", "side", "wraparound", "other"]),
     renovationScope: n(["refresh", "replacement", "full"]),
@@ -71,6 +87,7 @@ const CLEARABLE = new Set(["roof", "doorType", "wallFinish", "flooring", "underf
 /** Convert the model's partial update into a validated metric patch. Pricing fields are never accepted. */
 export function buildPatch(input: UpdateProjectInput): ProjectPatch {
   const patch: Record<string, unknown> = {};
+  for (const k of ["gardenAttachment", "intendedUse", "insulation", "electricalSupply", "heating", "plumbing", "siteAccess", "groundConditions"] as const) if (input[k] !== null && input[k] !== undefined) patch[k] = input[k];
   const copy = ["category", "extensionType", "renovationScope", "specificationLevel", "roomSize", "loftType", "workType", "finish", "storeys", "roof", "doorType", "wallFinish", "flooring", "underfloorHeating", "structuralOpening", "location"] as const;
   for (const k of copy) if (input[k] !== null && input[k] !== undefined) patch[k] = input[k];
   if (input.summary?.trim()) patch["description"] = input.summary.trim().slice(0, 3000);

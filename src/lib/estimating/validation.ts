@@ -24,6 +24,11 @@ export function minimumInputs(spec: ProjectSpec, catalog: CatalogEntry[] = []): 
       if (!size) missing.push("size");
       if (!spec.existingRoof) missing.push("existingRoof");
     },
+    garden_room: () => {
+      if (!spec.gardenAttachment) missing.push("gardenAttachment");
+      if (!size) missing.push("size");
+      if (!spec.intendedUse) missing.push("intendedUse");
+    },
     landscaping: () => {
       if (!spec.workType) missing.push("workType");
       if (!size && !spec.length) missing.push("size");
@@ -74,6 +79,12 @@ export function taskPhase(task: Task): string | null {
 }
 
 export function benchmarkApplies(spec: ProjectSpec, data: Record<string, unknown>): boolean {
+  if (data["category"] && data["category"] !== spec.category) return false;
+  if (spec.category === "garden_room") {
+    if (data["gardenAttachment"] !== spec.gardenAttachment || data["intendedUse"] !== spec.intendedUse || data["installedInsulated"] !== true) return false;
+    if (spec.plumbing === true && data["plumbing"] !== true) return false;
+    if (!Array.isArray(data["inclusions"]) || !data["inclusions"].length || !Array.isArray(data["exclusions"])) return false;
+  }
   if (spec.category === "kitchen" || spec.category === "bathroom") {
     if (!data["region"] || !Array.isArray(data["inclusions"]) || !data["inclusions"].length || !Array.isArray(data["exclusions"])) return false;
     if (data["renovationScope"] !== spec.renovationScope) return false;

@@ -151,7 +151,7 @@ export function calculateEstimate(
     missing.push("Project scope template needs team approval.");
   const uncoveredPhases = spec.category === "extension"
     ? EXTENSION_PHASES.filter((phase) => !spec.excludedPhases.includes(phase) && !tasks.some((task) => taskPhase(task) === phase))
-    : ["kitchen", "bathroom", "loft", "general", "garden_wall", "landscaping"].includes(spec.category) && template?.data["wholeProjectScope"] !== true
+    : ["kitchen", "bathroom", "loft", "general", "garden_wall", "landscaping", "garden_room"].includes(spec.category) && template?.data["wholeProjectScope"] !== true
       ? ["approved whole-project scope"] : [];
   for (const phase of uncoveredPhases) missing.push(`Essential construction phase missing: ${phase}.`);
   for (const phase of spec.excludedPhases) assumptions.push(`Explicitly excluded construction phase: ${phase}.`);

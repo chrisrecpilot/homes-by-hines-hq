@@ -3,6 +3,8 @@ import { projectSchema, type EstimateResult, type ProjectSpec } from "./types";
 import { minimumInputs } from "./validation";
 
 export type ProjectState = {
+  projectId?: string;
+  startedAt?: string;
   specification: ProjectSpec;
   revision: number;
   estimate: EstimateResult | null;
@@ -23,7 +25,8 @@ export function emptyProject(category: ProjectSpec["category"], description: str
 }
 export function applyProjectPatch(spec: ProjectSpec, patch: ProjectPatch): ProjectSpec {
   const valid = patchSchema.parse(patch);
-  const result = { ...spec, ...valid };
+  const base = valid.category && valid.category !== spec.category ? emptyProject(valid.category, valid.description ?? "New project enquiry") : spec;
+  const result = { ...base, ...valid };
   if ("length" in valid || "width" in valid) result.approximateArea = null;
   if ("approximateArea" in valid) { result.length = null; result.width = null; }
   if (valid.doorType) result.bifolds = valid.doorType === "bifold";
@@ -33,6 +36,8 @@ export function choicePatch(set: string, value: string): ProjectPatch | null {
   const map: Record<string, Record<string, ProjectPatch>> = {
     sizes: { "3x4": { length: 3, width: 4 }, "4x5": { length: 4, width: 5 }, "5x6": { length: 5, width: 6 }, "6x6": { length: 6, width: 6 } },
     storeys: { "1": { storeys: 1 }, "2": { storeys: 2 } },
+    garden_attachment: { standalone: { gardenAttachment: "standalone" }, attached: { gardenAttachment: "attached" } },
+    garden_use: { office: { intendedUse: "office" }, gym: { intendedUse: "gym" }, studio: { intendedUse: "studio" }, leisure: { intendedUse: "leisure" }, habitable: { intendedUse: "habitable" } },
     roof: { flat: { roof: "flat" }, pitched: { roof: "pitched" }, not_sure: { roof: null } },
     doors: { french: { doorType: "french" }, bifold: { doorType: "bifold" }, sliding: { doorType: "sliding" } },
     walls: { brick: { wallFinish: "brick" }, render: { wallFinish: "render" }, mixed: { wallFinish: "mixed" } },
@@ -54,6 +59,8 @@ export function nextProjectQuestion(spec: ProjectSpec, missingFields?: string[])
   if (field === "renovationScope") return `What sort of ${spec.category} work are you planning?\n<choices>${spec.category}_scope</choices>`;
   if (field === "size") return spec.category === "extension" ? "Roughly how big are you thinking?\n<choices>sizes</choices>" : ["bathroom", "kitchen"].includes(spec.category) ? `Roughly how big is the room? Pick a size or tell us the measurements.\n<choices>${spec.category}_size</choices>` : "What is the approximate area or length? You can give rough measurements.";
   if (field === "storeys") return "Single or double storey?\n<choices>storeys</choices>";
+  if (field === "gardenAttachment") return "Will it be freestanding or attached to the house?\n<choices>garden_attachment</choices>";
+  if (field === "intendedUse") return "What will you use the garden room for?\n<choices>garden_use</choices>";
   if (field === "specificationLevel") return "What level of finish are you thinking?\n<choices>specification</choices>";
   if (field === "layoutRetained") return "Will the plumbing and fittings stay in their current positions?\n<choices>bathroom_layout</choices>";
   if (field === "fittingsRetained") return "Are you keeping the existing sanitaryware or replacing it?\n<choices>bathroom_fittings</choices>";
@@ -63,6 +70,10 @@ export function nextProjectQuestion(spec: ProjectSpec, missingFields?: string[])
   if (field === "finish") return "What material or finish are you thinking?";
   if (field) return "Could you tell us a little more about the work and its size?";
   return spec.category === "extension" ? "Want to make that a little more accurate?\n<choices>refine</choices>" : "Want to add photos so we can refine it, or arrange a visit?\n<choices>refine_room</choices>";
+}
+export function outstandingRefinements(spec: ProjectSpec): string[] {
+  if (spec.category !== "extension") return ["photos"];
+  return [...(!spec.roof ? ["roof"] : []), ...(!spec.doorType ? ["doors"] : []), ...(!spec.wallFinish ? ["finishes"] : []), "photos"];
 }
 /** Never send internal cost diagnostics or incomplete line items to a visitor or model. */
 export function customerEstimate(result: EstimateResult): EstimateResult {
