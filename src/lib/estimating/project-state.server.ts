@@ -18,10 +18,13 @@ export async function updateProjectState(sessionId: string, input: ProjectSpec |
   specification.location = normalizeLocation(specification.location);
   if (previous && JSON.stringify(previous.specification) === JSON.stringify(specification) && !previous.pending) return previous;
   const revision = expectedRevision + 1;
+  const changedCategory = previous?.specification.category !== specification.category;
   const state: ProjectState = { specification, revision, specificationVersion: revision,
-    estimate: previous?.estimate ?? null, currentEstimateId: previous?.currentEstimateId ?? null,
-    estimateRevision: previous?.estimateRevision ?? 0, pricingMethod: previous?.pricingMethod ?? null,
-    pricingStatus: "needs_input", calculatedAt: previous?.calculatedAt ?? null, pending: true };
+    projectId: changedCategory ? crypto.randomUUID() : previous?.projectId ?? crypto.randomUUID(),
+    startedAt: changedCategory ? new Date().toISOString() : previous?.startedAt ?? new Date().toISOString(),
+    estimate: null, currentEstimateId: null,
+    estimateRevision: 0, pricingMethod: null,
+    pricingStatus: "needs_input", calculatedAt: null, pending: true };
   const { data: claimed, error } = await supabaseAdmin.from("estimating_sessions")
     .update({ project_state: state as unknown as Json, project_revision: revision })
     .eq("id", sessionId).eq("project_revision", expectedRevision).select("id").maybeSingle();

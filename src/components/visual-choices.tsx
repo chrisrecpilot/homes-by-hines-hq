@@ -22,6 +22,22 @@ export type VisualChoice = {
 export type VisualChoiceSet = { id: string; options: VisualChoice[] };
 
 const SETS: Record<string, VisualChoiceSet> = {
+  garden_sizes: { id: "garden_sizes", options: [
+    { value: "3x4", label: "3m × 4m", description: "", message: "A 3m × 4m garden room." },
+    { value: "4x5", label: "4m × 5m", description: "", message: "A 4m × 5m garden room." },
+    { value: "6x6", label: "6m × 6m", description: "", message: "A 6m × 6m garden room." },
+  ] },
+  garden_attachment: { id: "garden_attachment", options: [
+    { value: "standalone", label: "Freestanding", description: "", message: "A freestanding garden room." },
+    { value: "attached", label: "Attached to the house", description: "", message: "The garden room would be attached to the house." },
+  ] },
+  garden_use: { id: "garden_use", options: [
+    { value: "office", label: "Office", description: "", message: "A garden office." },
+    { value: "gym", label: "Gym", description: "", message: "A garden gym." },
+    { value: "studio", label: "Studio", description: "", message: "A garden studio." },
+    { value: "leisure", label: "Leisure room", description: "", message: "A garden leisure room." },
+    { value: "habitable", label: "Living accommodation", description: "", message: "Habitable garden accommodation." },
+  ] },
   kitchen_scope: { id: "kitchen_scope", options: [
     { value: "refresh", label: "Cosmetic refresh", description: "", message: "A cosmetic kitchen refresh." },
     { value: "replacement", label: "New fitted kitchen", description: "", message: "A new fitted kitchen." },
@@ -151,18 +167,20 @@ export function VisualChoiceCards({
   selected,
   disabled,
   onPick,
+  allowedValues,
 }: {
   setId: string;
   selected: string | null;
   disabled: boolean;
   onPick: (choice: VisualChoice) => void;
+  allowedValues?: string[] | undefined;
 }) {
   const set = getChoiceSet(setId);
   if (!set) return null;
   const hasImages = set.options.some((option) => option.image);
   return (
     <div className={hasImages ? "visual-options grid w-full grid-cols-2 items-start gap-3 sm:grid-cols-3" : "flex w-full flex-wrap gap-2"} role="group" aria-label={`${setId.replaceAll("_", " ")} options`}>
-      {set.options.map((option) => {
+      {set.options.filter((option) => !allowedValues || allowedValues.includes(option.value)).map((option) => {
         const isSelected = selected === option.value;
         return (
           <Button

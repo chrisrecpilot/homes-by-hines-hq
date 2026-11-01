@@ -43,30 +43,78 @@ export type Database = {
           created_at: string
           email: string | null
           enquiry_type: string
+          estimate_version_id: string | null
+          follow_up_at: string | null
           id: string
+          internal_notes: string
+          lead_status: string
           message: string
           name: string
+          next_action: string
           phone: string | null
+          project_snapshot: Json | null
+          request_type: string | null
+          session_id: string | null
+          site_address: string | null
+          survey_at: string | null
+          visit_preference: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           enquiry_type?: string
+          estimate_version_id?: string | null
+          follow_up_at?: string | null
           id?: string
+          internal_notes?: string
+          lead_status?: string
           message: string
           name: string
+          next_action?: string
           phone?: string | null
+          project_snapshot?: Json | null
+          request_type?: string | null
+          session_id?: string | null
+          site_address?: string | null
+          survey_at?: string | null
+          visit_preference?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           enquiry_type?: string
+          estimate_version_id?: string | null
+          follow_up_at?: string | null
           id?: string
+          internal_notes?: string
+          lead_status?: string
           message?: string
           name?: string
+          next_action?: string
           phone?: string | null
+          project_snapshot?: Json | null
+          request_type?: string | null
+          session_id?: string | null
+          site_address?: string | null
+          survey_at?: string | null
+          visit_preference?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "enquiries_estimate_version_id_fkey"
+            columns: ["estimate_version_id"]
+            isOneToOne: false
+            referencedRelation: "estimate_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "enquiries_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "estimating_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       estimate_actuals: {
         Row: {
@@ -346,6 +394,21 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      save_quote_enquiry: {
+        Args: {
+          p_address?: string
+          p_email: string
+          p_estimate: string
+          p_message: string
+          p_name: string
+          p_phone: string
+          p_preference?: string
+          p_request: string
+          p_session: string
+          p_type: string
+        }
+        Returns: string
       }
     }
     Enums: {

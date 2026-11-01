@@ -17,6 +17,11 @@ import { Button } from "@/components/ui/button";
 import { EstimateComposer } from "@/components/estimate-composer";
 import { ProjectSnapshot } from "@/components/project-snapshot";
 import { EstimateCard } from "@/components/estimate-card";
+import { EstimateFollowUp } from "@/components/estimate-follow-up";
+import { QUOTE_STORAGE_KEY, readQuote, type StoredQuote } from "@/lib/estimating/quote-storage";
+import { replacementCategory } from "@/lib/estimating/project-intent";
+import { advanceFollowUp, followUpSchema, type FollowUp } from "@/lib/estimating/follow-up";
+import { submitQuoteRequest } from "@/lib/estimating/lead.functions";
 import {
   VisualChoiceCards,
   parseChoices,
@@ -25,23 +30,18 @@ import {
 } from "@/components/visual-choices";
 import { uploadEstimateFile } from "@/lib/estimating/uploads.functions";
 import { getProjectState, selectProjectChoice } from "@/lib/estimating/project-state.functions";
-import { choicePatch, type ProjectState } from "@/lib/estimating/project-state";
-import { gbp, headlineRange, type EstimateResult } from "@/lib/estimating/types";
+import { choicePatch, outstandingRefinements, type ProjectState } from "@/lib/estimating/project-state";
+import { gbp, headlineRange, type ProjectSpec, type EstimateResult } from "@/lib/estimating/types";
 
-const STORAGE_KEY = "hbh-team-chat";
-type Stored = { id: string; token: string; messages: UIMessage[] };
+const STORAGE_KEY = QUOTE_STORAGE_KEY;
+type Stored = StoredQuote;
 function fresh(): Stored {
   return { id: crypto.randomUUID(), token: crypto.randomUUID(), messages: [] };
 }
 function loadStored(): Stored {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Stored;
-      if (parsed.id && parsed.token && Array.isArray(parsed.messages)) return parsed;
-      // Preserve older transcripts locally but use a new owned conversation ID.
-      if (Array.isArray(parsed.messages)) return { ...fresh(), messages: parsed.messages };
-    }
+    const parsed = readQuote(window.sessionStorage);
+    if (parsed) return parsed;
   } catch {
     /* Storage may be unavailable. */
   }
@@ -155,7 +155,7 @@ export function TeamChat({ inline = false }: { inline?: boolean }) {
   function reset() {
     const next = fresh();
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
       /* Continue without browser persistence when storage is unavailable. */
     }
@@ -165,7 +165,7 @@ export function TeamChat({ inline = false }: { inline?: boolean }) {
     return (
       <div className="h-full min-h-0 w-full">
         {stored ? (
-          <ChatWindow key={stored.id} stored={stored} inline onReset={reset} />
+          <ChatWindow key={stored.id} stored={stored} inline onReset={reset} onRotate={setStored} />
         ) : (
           <div className="h-full animate-pulse bg-background" />
         )}
@@ -214,7 +214,7 @@ export function TeamChat({ inline = false }: { inline?: boolean }) {
               </Button>
             </div>
           </div>
-          {stored && <ChatWindow key={stored.id} stored={stored} />}
+          {stored && <ChatWindow key={stored.id} stored={stored} onReset={reset} onRotate={setStored} />}
         </div>
       )}
     </>
@@ -224,16 +224,27 @@ function ChatWindow({
   stored,
   inline = false,
   onReset,
+  onRotate,
 }: {
   stored: Stored;
   inline?: boolean;
   onReset?: () => void;
+  onRotate: (next: Stored) => void;
 }) {
   const upload = useServerFn(uploadEstimateFile);
   const reducedMotion = useReducedMotion();
   const layoutTransition = { duration: reducedMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] };
   const readState = useServerFn(getProjectState);
   const selectChoice = useServerFn(selectProjectChoice);
+  const submitRequest = useServerFn(submitQuoteRequest);
+  const [followUp, setFollowUp] = useState<FollowUp | null>(null);
+  useEffect(() => {
+    try { const parsed = followUpSchema.safeParse(JSON.parse(window.sessionStorage.getItem(`hbh-follow-up-${stored.id}`) ?? "null")); if (parsed.success) setFollowUp(parsed.data); } catch { /* Optional recovery. */ }
+  }, [stored.id]);
+  function retainFollowUp(flow: FollowUp | null) {
+    setFollowUp(flow);
+    try { if (flow) window.sessionStorage.setItem(`hbh-follow-up-${stored.id}`, JSON.stringify(flow)); else window.sessionStorage.removeItem(`hbh-follow-up-${stored.id}`); } catch { /* Storage may be blocked. */ }
+  }
   const [project, setProject] = useState<ProjectState | null>(null);
   const [resultExpanded, setResultExpanded] = useState(false);
   const [selecting, setSelecting] = useState(false);
@@ -254,7 +265,20 @@ function ChatWindow({
     messages: stored.messages,
     transport,
     onError: () => toast.error("We couldn't send that message just now. Your project details are still here."),
-    onFinish: () => { void refreshProject(); },
+    onFinish: ({ messages: finalMessages }) => {
+      let lastUser = 0;
+      finalMessages.forEach((m, index) => { if (m.role === "user") lastUser = index; });
+      for (const message of finalMessages.slice(lastUser)) for (const part of message.parts) {
+        if (part.type === "tool-update_project" && "output" in part) {
+          const output = part.output as { nextSession?: { id: string; token: string } } | undefined;
+          if (output?.nextSession) {
+            onRotate({ ...output.nextSession, messages: finalMessages.slice(lastUser) });
+            return;
+          }
+        }
+      }
+      void refreshProject();
+    },
   });
   const busy = status === "submitted" || status === "streaming" || selecting;
   async function refreshProject() {
@@ -262,8 +286,9 @@ function ChatWindow({
     catch { /* Existing conversation remains usable if recovery temporarily fails. */ }
   }
   useEffect(() => { void refreshProject(); }, [stored.id]);
-  async function pick(set: string, choice: VisualChoice, category?: "extension" | "kitchen" | "bathroom" | "loft" | "landscaping" | "general") {
+  async function pick(set: string, choice: VisualChoice, category?: ProjectSpec["category"]) {
     if (busy || uploading) return;
+    if ((set === "refine" || set === "refine_room") && choice.value === "survey") { await send("I'd like to request a site visit for this project."); return; }
     setSelecting(true); setChoiceError(false);
     if (set === "starter") setMessages([{ id: crypto.randomUUID(), role: "user", metadata: { choice: true }, parts: [{ type: "text", text: choice.message }] }]);
     try {
@@ -285,7 +310,7 @@ function ChatWindow({
   const panel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...stored, messages }));
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...stored, messages }));
     } catch {
       /* Continue without browser persistence when storage is unavailable. */
     }
@@ -293,11 +318,55 @@ function ChatWindow({
   async function send(text: string) {
     if (!text.trim() || busy || uploading) return;
     setResultExpanded(false);
+    if (await startReplacement(text)) return;
+    if (await handleFollowUp(text)) return;
     await sendMessage({ text });
+  }
+  async function handleFollowUp(text: string): Promise<boolean> {
+    const request = /\b(request|arrange)\b.*\bsite visit\b/i.test(text) ? "site_visit" : /\brequest a callback\b/i.test(text) ? "callback" : null;
+    if (!followUp && !request) return false;
+    const user: UIMessage = { id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text }] };
+    const flow = followUp ?? { request: request ?? "callback", step: "name", name: "", phone: "", email: null, address: project?.specification.location ?? null, preference: null };
+    const next = followUp ? advanceFollowUp(flow, text) : { flow, prompt: "Of course. What's your name?" };
+    const turns = [...messages, user];
+    if (next.flow.step === "ready") {
+      setSelecting(true);
+      try {
+        const confirmation = next.flow.request === "site_visit" ? "Your site-visit request is with the team. We'll contact you to agree a time — it isn't booked yet." : "Your callback request is with the team. We'll contact you to discuss the project.";
+        const final: UIMessage[] = [...turns, { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: confirmation }] }];
+        await submitRequest({ data: { sessionId: stored.id, token: stored.token, enquiry: { name: next.flow.name, phone: next.flow.phone, email: next.flow.email,
+          request: next.flow.request, enquiry_type: project?.specification.category === "landscaping" || project?.specification.category === "garden_room" ? "landscaping" : project?.specification.category === "extension" ? "development" : "renovation",
+          message: "Customer requested follow-up on the current project.", site_address: next.flow.address, visit_preference: next.flow.preference },
+          transcript: final.filter((m) => m.role === "user" || m.role === "assistant").map((m) => ({ role: m.role as "user" | "assistant", text: m.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n") })) } });
+        setMessages(final); retainFollowUp(null);
+      } catch { toast.error("Couldn't save your request. Please try again."); }
+      finally { setSelecting(false); }
+    } else {
+      retainFollowUp(next.flow);
+      setMessages([...turns, { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: next.prompt }] }]);
+    }
+    return true;
+  }
+  async function startReplacement(text: string): Promise<boolean> {
+    const category = replacementCategory(text, project?.specification.category);
+    if (!category) return false;
+    const next = fresh();
+    setProject(null); setResultExpanded(false); setSelecting(true);
+    try {
+      const result = await selectChoice({ data: { sessionId: next.id, token: next.token, revision: 0, set: "starter", value: category, message: text, category } });
+      onRotate({ ...next, messages: [
+        { id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text }] },
+        { id: crypto.randomUUID(), role: "assistant", parts: [{ type: "text", text: result.response }] },
+      ] });
+    } catch { toast.error("Couldn't start the new estimate. Please try again."); }
+    finally { setSelecting(false); }
+    return true;
   }
   async function submit({ text, files }: PromptInputMessage) {
     if (busy || uploading || (!text.trim() && !files.length)) return;
     if (text.length > 5000) throw new Error("Please keep your message under 5,000 characters.");
+    if (!files.length && await startReplacement(text)) return;
+    if (!files.length && await handleFollowUp(text)) return;
     setUploading(true);
     try {
       const uploaded = [];
@@ -357,7 +426,7 @@ function ChatWindow({
     }
     return null;
   }, [messages]);
-  const currentEstimate = project ? project.estimate : latestEstimate?.estimate ?? null;
+  const currentEstimate = project?.estimate ?? null;
   const estimateStale = project ? project.estimateRevision !== project.revision || project.pending : false;
   function selectedValue(set: string): string | null {
     const spec = project?.specification;
@@ -402,12 +471,13 @@ function ChatWindow({
               </div>
               <Button
                 variant="ghost"
-                size="icon-sm"
+                size="sm"
                 onClick={onReset}
-                title="New conversation"
-                aria-label="New conversation"
+                title="New estimate"
+                aria-label="New estimate"
               >
                 <RotateCcw />
+                New estimate
               </Button>
             </div>
           )}
@@ -415,6 +485,8 @@ function ChatWindow({
           {currentEstimate && (
             <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} expanded={resultExpanded} onToggle={() => setResultExpanded((v) => !v)} />
           )}
+          {currentEstimate?.estimateType === "benchmark" && !estimateStale && project && (project.specification.roof || project.specification.doorType || project.specification.wallFinish || project.specification.flooring || project.specification.specificationLevel) && <p className="shrink-0 border-b border-border py-2 text-xs text-muted-foreground">Baseline budget only — selected roof, doors and finishes still need pricing confirmation; no unapproved adjustments have been added.</p>}
+          {currentEstimate && headlineRange(currentEstimate) && !estimateStale && <EstimateFollowUp disabled={busy || uploading} onAction={(text) => void send(text)} />}
           {resultExpanded && currentEstimate && !estimateStale ? <div className="min-h-0 flex-1 overflow-y-auto" key="budget-result">
             <EstimateCard estimate={currentEstimate} onAction={(text) => void send(text)} />
           </div> : <Conversation className="min-h-0 flex-1">
@@ -429,9 +501,8 @@ function ChatWindow({
                     <Pills
                       items={STARTERS}
                       onPick={(t) => {
-                        const categories = { "Rear extension": "extension", "Kitchen renovation": "kitchen", "Bathroom refurbishment": "bathroom", "Loft conversion": "loft", "Landscaping": "landscaping", "General building work": "general" } as const;
+                        const categories = { "Rear extension": "extension", "Kitchen renovation": "kitchen", "Bathroom refurbishment": "bathroom", "Loft conversion": "loft", "Landscaping": "landscaping", "Garden room": "garden_room", "General building work": "general" } as const;
                         const category = categories[t as keyof typeof categories];
-                        if (t === "Garden room") { void send("I'm looking to build a garden room."); return; }
                         if (category) void pick("starter", { value: category, label: t, description: "", message: t === "Rear extension" ? "I'm looking to build a rear extension." : `I'd like help with ${t.toLowerCase()}.` }, category);
                       }}
                       disabled={busy}
@@ -514,6 +585,7 @@ function ChatWindow({
                 <motion.div key={lastChoices} initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} transition={{ ...layoutTransition, delay: reducedMotion ? 0 : 0.16 }}>
                 <VisualChoiceCards
                   setId={lastChoices}
+                  allowedValues={lastChoices === "refine" && project ? outstandingRefinements(project.specification) : undefined}
                   selected={selectedValue(lastChoices)}
                   disabled={busy}
                   onPick={(choice: VisualChoice) => {

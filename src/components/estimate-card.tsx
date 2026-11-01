@@ -1,5 +1,6 @@
 import { Download, Paperclip, MapPin, Pencil, Ruler, CalendarDays, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EstimateFollowUp } from "@/components/estimate-follow-up";
 import { gbp, headlineRange, type EstimateResult } from "@/lib/estimating/types";
 
 const TYPE_LABELS = {
@@ -87,6 +88,7 @@ export function EstimateCard({
               Expected cost: <strong>{gbp(shownRange.expected)}</strong>
               <span className="text-muted-foreground"> · {vatDisclosure}</span>
             </p>
+            {isBenchmark && estimate.customerNotes?.map((note) => <p key={note} className="mt-3 text-xs text-muted-foreground">{note}</p>)}
             {isBenchmark ? (
               <details className="group mt-5 border-t border-border pt-4 text-sm">
                 <summary className="cursor-pointer text-xs font-medium">
@@ -210,6 +212,7 @@ export function EstimateCard({
           Indicative, not a binding quotation. Subject to a site visit and confirmed specifications. Contingency is separate.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
+          {onAction && <EstimateFollowUp onAction={onAction} />}
           {onAction && (
             <>
               <Button
@@ -227,13 +230,6 @@ export function EstimateCard({
               >
                 <Paperclip />
                 Upload plans
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => onAction("I'd like to arrange a site visit and formal quotation.")}
-              >
-                <ArrowUpRight />
-                Arrange a site visit
               </Button>
             </>
           )}

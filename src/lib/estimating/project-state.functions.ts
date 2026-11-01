@@ -23,12 +23,19 @@ export const selectProjectChoice = createServerFn({ method: "POST" })
     let state = await readProjectState(data.sessionId);
     let response = "";
     if (data.category) {
+      if (state && state.specification.category !== data.category) throw new Error("Start a new estimate for a different project.");
       const spec = emptyProject(data.category, data.message);
-      if (data.category === "extension") spec.extensionType = "rear";
+      if (data.category === "extension" && /\brear\b/i.test(data.message)) spec.extensionType = "rear";
+      if (data.category === "garden_room" && /separate|freestanding|standalone/i.test(data.message)) spec.gardenAttachment = "standalone";
       state = await updateProjectState(data.sessionId, spec, data.revision, true);
     } else {
       const patch = choicePatch(data.set, data.value);
-      if (patch) state = await updateProjectState(data.sessionId, patch, data.revision);
+      if (patch) {
+        const category = state?.specification.category;
+        const allowed: Record<string, string[]> = { garden_attachment: ["garden_room"], garden_use: ["garden_room"], garden_sizes: ["garden_room"], storeys: ["extension"], sizes: ["extension"], kitchen_scope: ["kitchen"], bathroom_scope: ["bathroom"], kitchen_size: ["kitchen"], bathroom_size: ["bathroom"] };
+        if (allowed[data.set] && (!category || !allowed[data.set]?.includes(category))) throw new Error("This option isn't available for this project.");
+        state = await updateProjectState(data.sessionId, patch, data.revision);
+      }
       else if (data.set === "refine" || data.set === "refine_room") {
         const replies: Record<string, string> = { roof: "Which roof would you prefer?\n<choices>roof</choices>", doors: "Which doors would you prefer?\n<choices>doors</choices>", finishes: "What exterior finish are you thinking?\n<choices>walls</choices>", photos: "You can attach photos or plans below. PDFs will be securely stored for the team to review.", survey: "Of course. What's your name?" };
         response = replies[data.value] ?? "What would you like to explore next?";

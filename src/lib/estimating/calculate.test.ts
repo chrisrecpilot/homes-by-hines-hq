@@ -14,6 +14,7 @@ import { type CatalogEntry, type ProjectSpec } from "./types";
 
 const spec = (category: ProjectSpec["category"], length = 5, width = 4): ProjectSpec => ({
   category,
+  gardenAttachment: null, intendedUse: null, insulation: null, electricalSupply: null, heating: null, plumbing: null, siteAccess: null, groundConditions: null,
   extensionType: category === "extension" ? "rear" : null,
   renovationScope: "full", specificationLevel: "standard", layoutRetained: true, fittingsRetained: false, roomSize: null, loftType: null, existingRoof: null, workType: "wall", finish: "brick",
   approximateArea: null,

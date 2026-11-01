@@ -12,6 +12,8 @@ export function ProjectSnapshot({ specification: s, busy, onEdit }: { specificat
     ["Size", s.length && s.width ? `${s.length}m × ${s.width}m` : s.approximateArea ? `${s.approximateArea}m²` : s.roomSize],
     ["Storeys", s.storeys ? s.storeys === 1 ? "Single storey" : `${s.storeys} storeys` : null],
     ["Roof", s.roof], ["Doors", s.doorType], ["Location", s.location],
+    ["Walls", s.wallFinish], ["Flooring", s.flooring], ["Specification", s.specificationLevel],
+    ["Attachment", s.gardenAttachment], ["Use", s.intendedUse],
   ].filter(([, v]) => v);
   return <details className="project-snapshot group shrink-0 border-b border-border/70">
     <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-3 text-xs [&::-webkit-details-marker]:hidden">

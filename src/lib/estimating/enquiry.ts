@@ -8,4 +8,6 @@ export const enquirySchema = z.object({
   enquiry_type: z.enum(["renovation", "development", "landscaping", "general"]),
   request: z.enum(["site_visit", "callback", "formal_quote", "estimate_copy"]),
   message: z.string().trim().min(1).max(3000),
+  site_address: z.string().trim().max(500).nullable().optional(),
+  visit_preference: z.string().trim().max(300).nullable().optional(),
 });
