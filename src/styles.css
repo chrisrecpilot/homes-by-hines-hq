@@ -225,8 +225,8 @@
   --estimate-glow-active: 0 0 0 1px color-mix(in oklab, var(--primary) 50%, transparent), 0 5px 34px color-mix(in oklab, var(--primary) 16%, transparent);
 }
 .estimate-home { height: calc(100svh - 96px); min-height: 650px; max-height: 980px; }
-.estimate-home .slow-zoom { filter: saturate(.75); }
-.estimate-backdrop { background: color-mix(in oklab, var(--background) 82%, transparent); }
+.estimate-home .slow-zoom { filter: saturate(.9); }
+.estimate-backdrop { background: color-mix(in oklab, var(--background) 76%, transparent); }
 .estimate-stage { padding-top: 48px; padding-bottom: 64px; }
 .estimate-heading { padding-bottom: 28px; }
 .quotation-window[data-chat-active="false"] { justify-content: center; padding-bottom: 32px; }
