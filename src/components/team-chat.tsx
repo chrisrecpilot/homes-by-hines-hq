@@ -288,6 +288,7 @@ function ChatWindow({
   useEffect(() => { void refreshProject(); }, [stored.id]);
   async function pick(set: string, choice: VisualChoice, category?: ProjectSpec["category"]) {
     if (busy || uploading) return;
+    if ((set === "refine" || set === "refine_room") && choice.value === "survey") { await send("I'd like to request a site visit for this project."); return; }
     setSelecting(true); setChoiceError(false);
     if (set === "starter") setMessages([{ id: crypto.randomUUID(), role: "user", metadata: { choice: true }, parts: [{ type: "text", text: choice.message }] }]);
     try {
