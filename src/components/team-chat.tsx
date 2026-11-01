@@ -129,7 +129,7 @@ function EstimatePanel({
   const s = estimate.specification;
   const area = (s.length && s.width ? s.length * s.width : s.approximateArea ?? 0) * (s.category === "extension" ? s.storeys ?? 1 : 1);
   return (
-    <Button variant="ghost" onClick={onToggle} aria-expanded={expanded} aria-label={expanded ? "Back to conversation" : "View estimated project budget"} className="h-auto w-full shrink-0 justify-between gap-3 rounded-none border-b border-border px-0 py-3 text-xs">
+    <Button variant="ghost" onClick={onToggle} aria-expanded={expanded} aria-label={expanded ? "Back to conversation" : "View estimated project budget"} className="h-auto w-full shrink-0 justify-between gap-3 rounded-none border-b border-border px-0 py-3 text-xs hover:bg-secondary hover:text-foreground">
         <span className="flex min-w-0 items-center gap-2">
           <span className="size-1.5 shrink-0 rounded-full bg-primary" />
           <span className="truncate font-medium">
@@ -406,7 +406,9 @@ function ChatWindow({
           {currentEstimate && (
             <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} expanded={resultExpanded} onToggle={() => setResultExpanded((v) => !v)} />
           )}
-          <Conversation className={inline && !active ? "min-h-0 flex-1" : "min-h-0 flex-1"}>
+          {resultExpanded && currentEstimate && !estimateStale ? <div className="min-h-0 flex-1 overflow-y-auto" key="budget-result">
+            <EstimateCard estimate={currentEstimate} onAction={(text) => void send(text)} />
+          </div> : <Conversation className="min-h-0 flex-1">
             <ConversationContent
               className={inline ? "gap-5 px-0 py-4" : "gap-5 px-4 py-5 sm:px-5"}
             >
@@ -428,7 +430,6 @@ function ChatWindow({
                   </div>
                 </div>
               )}
-              {resultExpanded && currentEstimate && !estimateStale && <EstimateCard estimate={currentEstimate} onAction={(text) => void send(text)} />}
               {!resultExpanded && messages.map((message) => (message.metadata as { choice?: boolean } | undefined)?.choice ? (
                 <p key={message.id} className="self-end text-xs text-muted-foreground">
                   <span className="mr-1.5 inline-block size-1.5 rounded-full bg-primary align-middle" />
@@ -515,7 +516,7 @@ function ChatWindow({
               )}
             </ConversationContent>
             <ConversationScrollButton />
-          </Conversation>
+          </Conversation>}
         </div>
       }
       <div
