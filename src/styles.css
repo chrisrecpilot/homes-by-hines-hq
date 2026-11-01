@@ -235,8 +235,8 @@
 .quotation-window[data-chat-active="false"] .quotation-input > p { text-align: center; }
 .quotation-window[data-chat-active="true"] { padding: 0 24px 12px; border: 1px solid var(--border); border-radius: 8px; background: color-mix(in oklab, var(--card) 96%, transparent); box-shadow: var(--estimate-shadow); }
 .quotation-composer [data-slot="input-group"] { box-shadow: var(--estimate-shadow); transition: box-shadow 600ms ease, border-color 400ms ease; }
-.quotation-composer-hero [data-slot="input-group"] { animation: quotation-breathe 5s ease-in-out infinite; border-color: color-mix(in oklab, var(--primary) 30%, var(--border)); }
-.quotation-composer:focus-within [data-slot="input-group"] { animation: none; box-shadow: var(--estimate-glow-active); }
+.quotation-composer [data-slot="input-group"] { animation: quotation-breathe 5s ease-in-out infinite; border-color: color-mix(in oklab, var(--primary) 30%, var(--border)); }
+.quotation-composer:focus-within [data-slot="input-group"] { border-color: var(--primary); }
 .category-pill, .choice-pill { transition: background 200ms ease, border-color 200ms ease, transform 200ms ease; }
 .category-pill:hover, .choice-pill:hover { transform: translateY(-2px); }
 .category-pill:active, .choice-pill:active { transform: scale(.98); }
@@ -255,7 +255,7 @@
   .category-pill { font-size: 12px; padding-left: 12px; padding-right: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .quotation-composer-hero [data-slot="input-group"], .budget-result, .hero-caption { animation: none; }
+  .quotation-composer [data-slot="input-group"], .budget-result, .hero-caption { animation: none; }
   .category-pill, .choice-pill, .visual-options img { transition: none; transform: none; }
 }
 
