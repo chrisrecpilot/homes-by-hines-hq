@@ -485,6 +485,7 @@ function ChatWindow({
           {currentEstimate && (
             <EstimatePanel estimate={currentEstimate} stale={estimateStale} busy={selecting || Boolean(project?.pending)} expanded={resultExpanded} onToggle={() => setResultExpanded((v) => !v)} />
           )}
+          {currentEstimate?.estimateType === "benchmark" && !estimateStale && project && (project.specification.roof || project.specification.doorType || project.specification.wallFinish || project.specification.flooring || project.specification.specificationLevel) && <p className="shrink-0 border-b border-border py-2 text-xs text-muted-foreground">Baseline budget only — selected roof, doors and finishes still need pricing confirmation; no unapproved adjustments have been added.</p>}
           {currentEstimate && headlineRange(currentEstimate) && !estimateStale && <EstimateFollowUp disabled={busy || uploading} onAction={(text) => void send(text)} />}
           {resultExpanded && currentEstimate && !estimateStale ? <div className="min-h-0 flex-1 overflow-y-auto" key="budget-result">
             <EstimateCard estimate={currentEstimate} onAction={(text) => void send(text)} />

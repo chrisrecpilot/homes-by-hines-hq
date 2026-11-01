@@ -1,12 +1,13 @@
 # Current tasks
 
 ## Quotation engine V2 — Phase A first
-- [ ] Fresh tab-scoped quotation persistence, explicit New estimate and independent category-switch records; no inherited localStorage quote.
-- [ ] First-class garden-room specification and category-only pricing safeguards, without expanding live pricing yet.
-- [ ] Persistent callback/site-visit actions, phone-first lead capture, site preferences and immutable quote context; prevent duplicate submissions.
-- [ ] Outstanding-only refinements and honest baseline disclosures for unsupported specification adjustments.
-- [ ] Existing admin enquiry workspace: search/filter, quote/conversation/files, pipeline, notes, follow-up and survey details with admin-only protection.
-- [ ] Focused rule/security tests and end-to-end extension → garden room, callback, refresh/new tabs and staff workflow checks.
+- [x] Fresh tab-scoped quotation persistence, explicit New estimate and independent category-switch records; no inherited localStorage quote. Browser verified refresh, new tabs and category switch.
+- [x] First-class garden-room specification and category-only pricing safeguards, without expanding live pricing yet.
+- [x] Persistent callback/site-visit actions, phone-first lead capture, site preferences and immutable quote context; duplicate callback submitted twice and one linked record read back; garden visit/address/preferences read back.
+- [x] Outstanding-only refinements and honest baseline disclosures for unsupported specification adjustments.
+- [x] Existing admin enquiry workspace: search/filter, quote/conversation/files, pipeline, notes, follow-up and survey details with admin-only protection; new linkage fields and service-only RPC verified in database.
+- [x] 82 focused rule/regression tests pass; browser extension → garden room, callback, visit request, refresh/new tabs, New estimate and mobile controls verified with no overflow.
+- [ ] Signed-in staff lead-management workflow — blocked: backend has no auth users; an authorised confirmed team account is required.
 - [ ] Phase B pricing expansion — deliberately deferred until Phase A results are demonstrated.
 
 ## Cinematic chat transitions
