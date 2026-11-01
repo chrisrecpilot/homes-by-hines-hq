@@ -5,6 +5,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 
 import { supabase } from "@/integrations/supabase/client";
 import { EstimatingAdmin } from "@/components/estimating-admin";
+import { EnquiryWorkspace } from "@/components/enquiry-workspace";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -55,7 +56,7 @@ function AdminPage() {
       <section className="mx-auto max-w-xl px-6 py-24">
         <h1 className="font-display text-3xl">No access</h1>
         <p className="mt-4 text-sm text-muted-foreground">
-          {role.data?.email} isn't on the team list. Only confirmed @recruitpilot.ai accounts can view this area.
+          This account isn't authorised for the Homes by Hines team area.
         </p>
         <button onClick={signOut} className="mt-6 text-xs uppercase tracking-[0.18em] text-primary">
           Sign out
@@ -92,7 +93,7 @@ function AdminPage() {
         ))}
       </div>
       <div className="mt-8">
-        {tab === "enquiries" && <Enquiries />}
+        {tab === "enquiries" && <EnquiryWorkspace />}
         {tab === "chats" && <Chats />}
         {tab === "visitors" && <Visitors />}
         {tab === "estimating" && <EstimatingAdmin />}
